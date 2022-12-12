@@ -44,14 +44,28 @@ class FormController extends GetxController {
       possibleFields.addAll(row);
     });
     dprint(possibleFields);
-    jsonForm.forEach((key, value) {
-      var field = FormItemField.fromJson({"name": key, ...value});
-      if (!field.read_only && possibleFields.contains(field.name)) {
-        fields.add(field);
-        form.addAll({
-          key: getFormControl(field),
-        });
+    possibleFields.forEach((value) {
+      FormItemField field;
+      //  = FormItemField.fromJson({"name": key, ...value});
+      if (jsonForm.containsKey(value)) {
+        field = FormItemField.fromJson({"name": value, ...jsonForm[value]});
+      } else {
+        field = FormItemField(
+          name: value,
+          label: value,
+          type: FieldType.string,
+        );
       }
+      fields.add(field);
+      form.addAll({
+        value: getFormControl(field),
+      });
+      // if (!field.read_only && possibleFields.contains(field.name)) {
+      //   fields.add(field);
+      //   form.addAll({
+      //     key: getFormControl(field),
+      //   });
+      // }
     });
     update();
   }

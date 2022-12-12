@@ -43,6 +43,11 @@ class FormItemField {
   FormItemField({
     required this.name,
     required this.type,
+    required this.label,
+    this.obscure,
+    this.placeholder,
+    this.url,
+    this.multiple = false,
     this.required = false,
     this.read_only = false,
     this.max_length,

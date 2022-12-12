@@ -21,18 +21,17 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
     FormItemField(
       name: json['name'] as String,
       type: $enumDecode(_$FieldTypeEnumMap, json['type']),
+      label: json['label'] as String,
+      obscure: json['obscure'] as bool?,
+      placeholder: json['placeholder'] as String?,
+      url: json['url'] as String?,
+      multiple: json['multiple'] as bool? ?? false,
       required: json['required'] as bool? ?? false,
       read_only: json['read_only'] as bool? ?? false,
       max_length: json['max_length'] as int?,
-    )
-      ..label = json['label'] as String
-      ..placeholder = json['placeholder'] as String?
-      ..url = json['url'] as String?
-      ..obscure = json['obscure'] as bool?
-      ..multiple = json['multiple'] as bool?
-      ..choices = (json['choices'] as List<dynamic>?)
-          ?.map((e) => FormChoice.fromJson(e as Map<String, dynamic>))
-          .toList();
+    )..choices = (json['choices'] as List<dynamic>?)
+        ?.map((e) => FormChoice.fromJson(e as Map<String, dynamic>))
+        .toList();
 
 Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
     <String, dynamic>{

@@ -83,10 +83,8 @@ class MyHomePage extends StatelessWidget {
                 return data;
               },
               formGroupOrder: const [
-                ["name"],
-                ["contact_name"],
-                ["contact_email"],
-                ["location"]
+                ["username"],
+                ["password"]
               ],
               formTitle: "Signup",
             ),
