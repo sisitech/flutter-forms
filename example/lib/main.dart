@@ -72,16 +72,24 @@ class MyHomePage extends StatelessWidget {
                 child: Text("Sign Up"),
               ),
             ),
-            // MyCustomForm(
-            //   formItems: options,
-            //   formGroupOrder: const [
-            //     ["name"],
-            //     ["contact_name"],
-            //     ["contact_email"],
-            //     ["location"]
-            //   ],
-            //   formTitle: "Signup",
-            // ),
+            MyCustomForm(
+              formItems: options,
+              extraFields: const {
+                "client_id": "adda",
+                "grant_type": "password",
+              },
+              PreSaveData: (data) {
+                data["presve"] = true;
+                return data;
+              },
+              formGroupOrder: const [
+                ["name"],
+                ["contact_name"],
+                ["contact_email"],
+                ["location"]
+              ],
+              formTitle: "Signup",
+            ),
           ],
         ),
       ),

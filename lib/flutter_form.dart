@@ -20,7 +20,13 @@ class MyCustomForm extends StatelessWidget {
   final dynamic formItems;
   final Widget? formHeader;
   final Widget? formFooter;
+  final bool? isValidateOnly;
+  final Function? PreSaveData;
+
+  final String? url;
   final List<List<String>> formGroupOrder;
+
+  final Map<String, dynamic>? extraFields;
 
   MyCustomForm(
       {super.key,
@@ -28,9 +34,18 @@ class MyCustomForm extends StatelessWidget {
       this.formItems,
       required this.formGroupOrder,
       this.formHeader,
-      this.formFooter}) {
+      this.formFooter,
+      this.extraFields,
+      this.isValidateOnly = false,
+      this.url,
+      this.PreSaveData}) {
     final controller = Get.put(
-        FormController(formItems: formItems, formGroupOrder: formGroupOrder),
+        FormController(
+          formItems: formItems,
+          formGroupOrder: formGroupOrder,
+          extraFields: extraFields,
+          PreSaveData: PreSaveData,
+        ),
         tag: formTitle);
   }
 

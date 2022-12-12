@@ -8,10 +8,22 @@ import 'models.dart';
 class FormController extends GetxController {
   final dynamic formItems;
   List<List<String>> formGroupOrder;
+  final Map<String, dynamic>? extraFields;
+  final bool? isValidateOnly;
+  final String? url;
+  final Function? PreSaveData;
+
+  var isLoading = false.obs;
 
   List<FormItemField> fields = [];
 
-  FormController({required this.formItems, this.formGroupOrder = const []}) {
+  FormController(
+      {required this.formItems,
+      this.isValidateOnly,
+      this.url,
+      this.extraFields,
+      this.PreSaveData,
+      this.formGroupOrder = const []}) {
     dprint("Initialized this controller for me..");
   }
 
@@ -36,7 +48,6 @@ class FormController extends GetxController {
       var field = FormItemField.fromJson({"name": key, ...value});
       if (!field.read_only && possibleFields.contains(field.name)) {
         fields.add(field);
-
         form.addAll({
           key: getFormControl(field),
         });
@@ -73,21 +84,27 @@ class FormController extends GetxController {
     return validators;
   }
 
+  preparePostData() {
+    var value = {...form.value, ...extraFields ?? {}};
+    if (PreSaveData != null) {
+      value = PreSaveData!(value);
+    }
+    return value;
+  }
+
   submit() {
     if (!form.valid) {
       dprint("Not valied");
       dprint(form.errors);
       form.markAllAsTouched();
+      return;
     }
-    dprint(form.value);
-    // form.control("name").setErrors({"Already taken.": "Already taken."});
-    // form.control("name").markAsTouched();
-    // var nameField = form.control("name");
-    // print(nameField.disabled);
+    // dprint({url, isValidateOnly});
+    // dprint(extraFields);
 
-    // nameField.markAsDisabled();
-    // print();
-    // print(nameField.disabled);
+    var data = preparePostData();
+
+    dprint(data);
     dprint('Hello Reactive Forms!!!');
     update();
   }
