@@ -92,28 +92,49 @@ Widget getInput(FormItemField field) {
   );
 }
 
+labelName(field) => field.label + "${field.required ? '*' : ''}";
+inputDecoration(field) => InputDecoration(
+      labelText: labelName(field),
+      helperText: field.placeholder,
+      // helperStyle: TextStyle(height: 0.7),
+      // errorStyle: TextStyle(height: 0.7),
+    );
 getInputBasedOnType(FormItemField field) {
-  inputDecoration(field) => InputDecoration(
-        labelText: field.label + "${field.required ? '*' : ''}",
-        helperText: field.placeholder,
-        // helperStyle: TextStyle(height: 0.7),
-        // errorStyle: TextStyle(height: 0.7),
-      );
-
   var defaultValidationMessage = {
-    'required': (error) => 'The name must not be empty'
+    'required': (error) => 'This field must not be empty'
   };
-  var requiredValidators = [
-    Validators.required,
-  ];
-  var reactiveInput;
+  Widget reactiveInput;
   switch (field.type) {
     case FieldType.string:
+      var isTextArea = field.max_length != null && field.max_length! > 300;
       reactiveInput = ReactiveTextField(
           formControlName: field.name,
           validationMessages: defaultValidationMessage,
           textInputAction: TextInputAction.next,
+          maxLength: field.max_length,
+          maxLines: isTextArea ? 3 : 1,
           decoration: inputDecoration(field));
+      break;
+    case FieldType.boolean:
+      reactiveInput = Row(
+        children: [
+          Text(labelName(field)),
+          ReactiveCheckbox(
+            formControlName: field.name,
+          ),
+        ],
+      );
+      break;
+    case FieldType.field:
+      reactiveInput = ReactiveDropdownField(
+        formControlName: field.name,
+        items: field.choices!
+            .map((e) => DropdownMenuItem(
+                  value: e.value,
+                  child: Text(e.display_name),
+                ))
+            .toList(),
+      );
       break;
     default:
       reactiveInput = ReactiveTextField(

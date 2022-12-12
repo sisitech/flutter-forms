@@ -36,17 +36,41 @@ class FormController extends GetxController {
       var field = FormItemField.fromJson({"name": key, ...value});
       if (!field.read_only && possibleFields.contains(field.name)) {
         fields.add(field);
-        List<Map<String, dynamic>? Function(AbstractControl<dynamic>)>
-            validators = [];
-        if (field.required) {
-          validators.add(Validators.required);
-        }
+
         form.addAll({
-          key: FormControl<String>(validators: validators),
+          key: getFormControl(field),
         });
       }
     });
     update();
+  }
+
+  getFormControl(FormItemField field) {
+    var validators = getFieldValidators(field);
+    var formControl;
+    switch (field.type) {
+      case FieldType.string:
+        formControl = FormControl<String>(validators: validators);
+        break;
+      case FieldType.boolean:
+        formControl = FormControl<bool>(validators: validators);
+        break;
+      case FieldType.field:
+        formControl = FormControl<Object>(validators: validators);
+        break;
+      default:
+        formControl = FormControl(validators: validators);
+    }
+    return formControl;
+  }
+
+  getFieldValidators(FormItemField field) {
+    List<Map<String, dynamic>? Function(AbstractControl<dynamic>)> validators =
+        [];
+    if (field.required) {
+      validators.add(Validators.required);
+    }
+    return validators;
   }
 
   submit() {

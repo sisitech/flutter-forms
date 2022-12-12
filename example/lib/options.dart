@@ -69,12 +69,23 @@ const options = {
         "label": "Shop Logo",
         "max_length": 100
       },
+      "role": {
+        "type": "field",
+        "required": false,
+        "read_only": false,
+        "label": "Role",
+        "max_length": 4,
+        "choices": [
+          {"value": "TSC", "display_name": "TSC"},
+          {"value": "BRD", "display_name": "BOM"}
+        ]
+      },
       "location": {
         "type": "string",
         "required": false,
         "read_only": false,
         "label": "Location",
-        "max_length": 200
+        "max_length": 400
       },
       "created_by": {
         "type": "field",

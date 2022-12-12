@@ -6,6 +6,17 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+FormChoice _$FormChoiceFromJson(Map<String, dynamic> json) => FormChoice(
+      display_name: json['display_name'] as String,
+      value: json['value'],
+    );
+
+Map<String, dynamic> _$FormChoiceToJson(FormChoice instance) =>
+    <String, dynamic>{
+      'display_name': instance.display_name,
+      'value': instance.value,
+    };
+
 FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
     FormItemField(
       name: json['name'] as String,
@@ -18,7 +29,10 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       ..placeholder = json['placeholder'] as String?
       ..url = json['url'] as String?
       ..obscure = json['obscure'] as bool?
-      ..multiple = json['multiple'] as bool?;
+      ..multiple = json['multiple'] as bool?
+      ..choices = (json['choices'] as List<dynamic>?)
+          ?.map((e) => FormChoice.fromJson(e as Map<String, dynamic>))
+          .toList();
 
 Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
     <String, dynamic>{
@@ -32,6 +46,7 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
       'url': instance.url,
       'obscure': instance.obscure,
       'multiple': instance.multiple,
+      'choices': instance.choices,
     };
 
 const _$FieldTypeEnumMap = {

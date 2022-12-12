@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
@@ -18,6 +16,17 @@ enum FieldType {
 }
 
 @JsonSerializable()
+class FormChoice {
+  late String display_name;
+  late dynamic value;
+
+  FormChoice({required this.display_name, this.value});
+  factory FormChoice.fromJson(Map<String, dynamic> json) =>
+      _$FormChoiceFromJson(json);
+  Map<String, dynamic> toJson() => _$FormChoiceToJson(this);
+}
+
+@JsonSerializable()
 class FormItemField {
   late String name;
   late String label;
@@ -29,6 +38,7 @@ class FormItemField {
   late String? url;
   late bool? obscure;
   late bool? multiple;
+  late List<FormChoice>? choices;
 
   FormItemField({
     required this.name,

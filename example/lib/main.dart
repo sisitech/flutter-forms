@@ -51,8 +51,11 @@ class MyHomePage extends StatelessWidget {
               formGroupOrder: const [
                 [
                   "name",
-                  // "active",
                 ],
+                [
+                  'role',
+                ],
+                ["active"],
                 [
                   "contact_name",
                   // "contact_phone",
