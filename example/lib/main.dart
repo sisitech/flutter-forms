@@ -47,13 +47,27 @@ class MyHomePage extends StatelessWidget {
             ),
             MyCustomForm(
               formItems: options,
+              formHeader: Text("Welcome home"),
               formGroupOrder: const [
-                ["name", "active"],
-                ["contact_name", "contact_phone"],
-                ["contact_email", "image"],
+                [
+                  "name",
+                  // "active",
+                ],
+                [
+                  "contact_name",
+                  // "contact_phone",
+                ],
+                [
+                  "contact_email",
+                  // "image",
+                ],
                 ["location"]
               ],
               formTitle: "Login",
+              formFooter: Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text("Sign Up"),
+              ),
             ),
             // MyCustomForm(
             //   formItems: options,

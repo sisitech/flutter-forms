@@ -2,6 +2,7 @@ library flutter_form;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
+import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -17,13 +18,17 @@ class Calculator {
 class MyCustomForm extends StatelessWidget {
   final String formTitle;
   final dynamic formItems;
+  final Widget? formHeader;
+  final Widget? formFooter;
   final List<List<String>> formGroupOrder;
 
   MyCustomForm(
       {super.key,
       required this.formTitle,
       this.formItems,
-      required this.formGroupOrder}) {
+      required this.formGroupOrder,
+      this.formHeader,
+      this.formFooter}) {
     final controller = Get.put(
         FormController(formItems: formItems, formGroupOrder: formGroupOrder),
         tag: formTitle);
@@ -32,8 +37,6 @@ class MyCustomForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<FormController>(tag: formTitle);
-    // const fields=form
-
     return GetBuilder(
         init: controller,
         builder: (_) {
@@ -42,17 +45,16 @@ class MyCustomForm extends StatelessWidget {
             formGroup: controller.form,
             child: Column(
               children: <Widget>[
-                ...controller.fields
-                    .map(
-                      (field) => getInput(field),
-                    )
-                    .toList(),
+                formHeader ?? Container(),
+                ...controller.formGroupOrder.map(
+                    (rowElements) => getRowInputs(controller, rowElements)),
                 const SizedBox(
                   height: 10,
                 ),
                 MySubmitButton(
                   formTitle: formTitle,
-                )
+                ),
+                formFooter ?? Container(),
               ],
             ),
           );
@@ -61,16 +63,43 @@ class MyCustomForm extends StatelessWidget {
   }
 }
 
+Widget getRowInputs(FormController controller, List<String> fieldNames) {
+  var rowFields = controller.fields.where(
+    (field) => fieldNames.contains(field.name),
+  );
+  dprint(rowFields);
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...rowFields
+            .map(
+              (field) => getInput(field),
+            )
+            .toList()
+      ],
+    ),
+  );
+}
+
 Widget getInput(FormItemField field) {
-  return ReactiveTextField(
-    formControlName: field.name,
-    validationMessages: {'required': (error) => 'The name must not be empty'},
-    textInputAction: TextInputAction.next,
-    decoration: InputDecoration(
-      labelText: field.label + "${field.required ? '*' : ''}",
-      helperText: field.placeholder,
-      helperStyle: TextStyle(height: 0.7),
-      errorStyle: TextStyle(height: 0.7),
+  return Expanded(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: ReactiveTextField(
+        formControlName: field.name,
+        validationMessages: {
+          'required': (error) => 'The name must not be empty'
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          labelText: field.label + "${field.required ? '*' : ''}",
+          helperText: field.placeholder,
+          helperStyle: TextStyle(height: 0.7),
+          errorStyle: TextStyle(height: 0.7),
+        ),
+      ),
     ),
   );
 }
