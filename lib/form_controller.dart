@@ -36,7 +36,14 @@ class FormController extends GetxController {
       var field = FormItemField.fromJson({"name": key, ...value});
       if (!field.read_only && possibleFields.contains(field.name)) {
         fields.add(field);
-        form.addAll({key: FormControl<String>()});
+        List<Map<String, dynamic>? Function(AbstractControl<dynamic>)>
+            validators = [];
+        if (field.required) {
+          validators.add(Validators.required);
+        }
+        form.addAll({
+          key: FormControl<String>(validators: validators),
+        });
       }
     });
     update();
@@ -49,8 +56,8 @@ class FormController extends GetxController {
       form.markAllAsTouched();
     }
     dprint(form.value);
-    form.control("name").setErrors({"required": "Already taken."});
-    form.control("name").markAsTouched();
+    // form.control("name").setErrors({"Already taken.": "Already taken."});
+    // form.control("name").markAsTouched();
     // var nameField = form.control("name");
     // print(nameField.disabled);
 

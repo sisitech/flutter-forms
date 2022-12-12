@@ -72,9 +72,9 @@ class MyHomePage extends StatelessWidget {
             // MyCustomForm(
             //   formItems: options,
             //   formGroupOrder: const [
-            //     ["name", "active"],
-            //     ["contact_name", "contact_phone"],
-            //     ["contact_email", "image"],
+            //     ["name"],
+            //     ["contact_name"],
+            //     ["contact_email"],
             //     ["location"]
             //   ],
             //   formTitle: "Signup",

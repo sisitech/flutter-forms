@@ -87,21 +87,43 @@ Widget getInput(FormItemField field) {
   return Expanded(
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: ReactiveTextField(
-        formControlName: field.name,
-        validationMessages: {
-          'required': (error) => 'The name must not be empty'
-        },
-        textInputAction: TextInputAction.next,
-        decoration: InputDecoration(
-          labelText: field.label + "${field.required ? '*' : ''}",
-          helperText: field.placeholder,
-          helperStyle: TextStyle(height: 0.7),
-          errorStyle: TextStyle(height: 0.7),
-        ),
-      ),
+      child: getInputBasedOnType(field),
     ),
   );
+}
+
+getInputBasedOnType(FormItemField field) {
+  inputDecoration(field) => InputDecoration(
+        labelText: field.label + "${field.required ? '*' : ''}",
+        helperText: field.placeholder,
+        // helperStyle: TextStyle(height: 0.7),
+        // errorStyle: TextStyle(height: 0.7),
+      );
+
+  var defaultValidationMessage = {
+    'required': (error) => 'The name must not be empty'
+  };
+  var requiredValidators = [
+    Validators.required,
+  ];
+  var reactiveInput;
+  switch (field.type) {
+    case FieldType.string:
+      reactiveInput = ReactiveTextField(
+          formControlName: field.name,
+          validationMessages: defaultValidationMessage,
+          textInputAction: TextInputAction.next,
+          decoration: inputDecoration(field));
+      break;
+    default:
+      reactiveInput = ReactiveTextField(
+        formControlName: field.name,
+        validationMessages: defaultValidationMessage,
+        textInputAction: TextInputAction.next,
+        decoration: inputDecoration(field),
+      );
+  }
+  return reactiveInput;
 }
 
 class MySubmitButton extends StatelessWidget {
