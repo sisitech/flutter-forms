@@ -2,6 +2,7 @@ import 'package:example/options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/models.dart';
+import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
 
 void main() {
@@ -55,9 +56,19 @@ class MyHomePage extends StatelessWidget {
             ),
             Text(Calculator().showSomething()),
             MyCustomForm(
-              formItems: options,
+              // formItems: options,
+              url: "o/token/",
               submitButtonText: "Login",
               submitButtonPreText: "",
+              loadingMessage: "Signing in...",
+              onSuccess: (res) {
+                dprint("Success login.");
+                dprint(res);
+              },
+              handleErrors: (value) {
+                return "Your password might be wrong";
+              },
+              contentType: ContentType.form_url_encoded,
               extraFields: {
                 "client_id": config.clientId,
                 "grant_type": config.grantType,
@@ -73,6 +84,7 @@ class MyHomePage extends StatelessWidget {
             ),
             MyCustomForm(
               formItems: options,
+              contentType: ContentType.json,
               formHeader: Text("Welcome home"),
               formGroupOrder: const [
                 [

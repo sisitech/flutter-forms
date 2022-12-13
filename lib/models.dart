@@ -1,6 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
+enum ContentType {
+  json,
+  form_url_encoded,
+}
+
 enum FieldType {
   integer,
   string,

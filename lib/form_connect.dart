@@ -1,7 +1,7 @@
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 class FormProvider extends GetConnect {
   APIConfig? config;
@@ -36,6 +36,15 @@ class FormProvider extends GetConnect {
       {contentType = "application/json"}) {
     var url = "${config!.apiEndpoint}/${path}";
     return post(url, body, contentType: contentType);
+  }
+
+  Future<Response> formPostUrlEncoded(String? path, dynamic body,
+      {contentType = "application/x-www-form-urlencoded"}) {
+    var url = "${config!.apiEndpoint}/${path}";
+    var bodyStr = mapToFormUrlEncoded(body);
+    var contentType = "application/x-www-form-urlencoded";
+    // dprint(url);
+    return formPost(config!.tokenUrl, bodyStr, contentType: contentType);
   }
 
   mapToFormUrlEncoded(Map body) {

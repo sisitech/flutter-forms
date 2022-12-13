@@ -15,15 +15,27 @@ class Calculator {
   showSomething() => "Wlecomec";
 }
 
+const Map<String, dynamic> actions = {
+  "POST": {"": {}},
+};
+const Map<String, dynamic> defaultOptions = {
+  "name": "",
+  "actions": actions,
+};
+
 class MyCustomForm extends StatelessWidget {
   final String formTitle;
-  final dynamic formItems;
+  final dynamic? formItems;
   final Widget? formHeader;
   final Widget? formFooter;
   final bool? isValidateOnly;
   final Function? PreSaveData;
   final String? submitButtonText;
   final String? submitButtonPreText;
+  final ContentType contentType;
+  final Function? handleErrors;
+  final Function? onSuccess;
+  final String loadingMessage;
 
   final String? url;
   final List<List<String>> formGroupOrder;
@@ -33,7 +45,7 @@ class MyCustomForm extends StatelessWidget {
   MyCustomForm({
     super.key,
     required this.formTitle,
-    this.formItems,
+    this.formItems = defaultOptions,
     required this.formGroupOrder,
     this.formHeader,
     this.formFooter,
@@ -41,8 +53,12 @@ class MyCustomForm extends StatelessWidget {
     this.isValidateOnly = false,
     this.url,
     this.PreSaveData,
+    this.loadingMessage = "Loading ...",
+    this.handleErrors,
     this.submitButtonText = "",
+    this.onSuccess,
     this.submitButtonPreText = "Add",
+    this.contentType = ContentType.json,
   }) {
     final controller = Get.put(
         FormController(
@@ -50,6 +66,11 @@ class MyCustomForm extends StatelessWidget {
           formGroupOrder: formGroupOrder,
           extraFields: extraFields,
           PreSaveData: PreSaveData,
+          loadingMessage: loadingMessage,
+          url: url,
+          onSuccess: onSuccess,
+          contentType: contentType,
+          handleErrors: handleErrors,
         ),
         tag: formTitle);
   }
@@ -60,7 +81,7 @@ class MyCustomForm extends StatelessWidget {
     return GetBuilder(
         init: controller,
         builder: (_) {
-          print("Rebuilding");
+          dprint("Rebuilding");
           return ReactiveForm(
             formGroup: controller.form,
             child: Column(
@@ -68,6 +89,22 @@ class MyCustomForm extends StatelessWidget {
                 formHeader ?? Container(),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: controller.errors.length,
+                    itemBuilder: (context, index) {
+                      return Text(
+                        controller.errors[index],
+                        style: TextStyle(color: Colors.red),
+                      );
+                    },
+                  ),
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -189,8 +226,9 @@ class MySubmitButton extends StatelessWidget {
     return Obx(
       () => ElevatedButton(
           onPressed: controller!.isLoading == true ? null : _onPressed,
-          child:
-              Text(controller!.isLoading == true ? "Loading..." : submitText)),
+          child: Text(controller!.isLoading == true
+              ? controller!.loadingMessage
+              : submitText)),
     );
   }
 

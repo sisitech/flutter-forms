@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
@@ -7,25 +9,34 @@ import 'form_connect.dart';
 import 'models.dart';
 
 class FormController extends GetxController {
-  final dynamic formItems;
+  final Map<String, dynamic> formItems;
   List<List<String>> formGroupOrder;
   final Map<String, dynamic>? extraFields;
-  final bool? isValidateOnly;
+  final bool isValidateOnly;
   final String? url;
   final Function? PreSaveData;
+  final ContentType contentType;
+  final Function? handleErrors;
+  final String loadingMessage;
+  final Function? onSuccess;
 
   var isLoading = false.obs;
   FormProvider serv = Get.put<FormProvider>(FormProvider());
 
   List<FormItemField> fields = [];
-
+  List<String> errors = [];
   FormController(
       {required this.formItems,
-      this.isValidateOnly,
+      this.isValidateOnly = false,
       this.url,
       this.extraFields,
+      this.onSuccess,
+      this.handleErrors,
       this.PreSaveData,
+      required this.loadingMessage,
+      required this.contentType,
       this.formGroupOrder = const []}) {
+    // dprint(formItems);
     dprint("Initialized this controller for me..");
   }
 
@@ -39,7 +50,9 @@ class FormController extends GetxController {
 
   setUpForm() {
     fields = [];
+    dprint("Getting options");
     var jsonForm = formItems["actions"]["POST"] as Map<String, dynamic>;
+    // dprint(jsonForm);
     var possibleFields = [];
     // dprint(formGroupOrder);
     formGroupOrder.forEach((row) {
@@ -110,33 +123,75 @@ class FormController extends GetxController {
 
   submit() async {
     if (!form.valid) {
-      dprint("Not valied");
-      dprint(form.errors);
+      // dprint("Not valied");
+      // dprint(form.errors);
       form.markAllAsTouched();
       return;
     }
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
-
+    const successStatusCodes = [200, 201, 204];
     var data = preparePostData();
     try {
       isLoading.value = true;
-
-      dprint("Making api vcall");
-      var res = await serv.login(data);
-      dprint(res.statusCode);
-      dprint(res.body);
-      dprint(res.isOk);
-      dprint("Done with call");
+      // dprint("Making api vcall");
+      errors = [];
+      update();
+      Response res;
+      if (contentType == ContentType.form_url_encoded) {
+        // dprint("Url encoded");
+        res = await serv.formPostUrlEncoded(url, data);
+      } else {
+        // dprint("None url encoded");
+        res = await serv.formPost(url, data);
+      }
       isLoading.value = false;
+      if (successStatusCodes.contains(res.statusCode)) {
+        if (onSuccess != null) {
+          onSuccess!(res.body);
+        }
+      } else if (res.statusCode == 400) {
+        try {
+          // dprint("Done with call");
+          var formErrors = res.body as Map<String, dynamic>;
+          // dprint(formErrors);
+          formErrors.forEach((key, value) {
+            if (fields.map((e) => e.name).contains(key)) {
+              String display = getErrorDisplay(value);
+              form.control(key).setErrors({display: "dada"});
+            } else {
+              String display = getErrorDisplay(value);
+              if (handleErrors == null) {
+                errors.add(display);
+              }
+            }
+          });
+          if (handleErrors != null) {
+            String display = handleErrors!(formErrors);
+            errors.add(display);
+          }
+        } catch (e) {
+          dprint(e);
+        }
+      }
     } catch (e) {
       dprint("Error clals");
       isLoading.value = false;
       dprint(e);
     }
 
-    dprint(data);
-    dprint('Hello Reactive Forms!!!');
+    // dprint(data);
+    // dprint('Hello Reactive Forms!!!');
     update();
+  }
+
+  getErrorDisplay(dynamic value) {
+    String display = "";
+    if (value.runtimeType == List<dynamic>) {
+      display = value.join("\n");
+    } else {
+      display = value;
+    }
+    return display;
   }
 }
