@@ -29,7 +29,7 @@ class MyCustomForm extends StatelessWidget {
   final dynamic? formItems;
   final Widget? formHeader;
   final Widget? formFooter;
-  final bool? isValidateOnly;
+  final bool isValidateOnly;
   final Function? PreSaveData;
   final String? submitButtonText;
   final String? submitButtonPreText;
@@ -68,6 +68,7 @@ class MyCustomForm extends StatelessWidget {
           extraFields: extraFields,
           PreSaveData: PreSaveData,
           loadingMessage: loadingMessage,
+          isValidateOnly: isValidateOnly,
           url: url,
           onSuccess: onSuccess,
           contentType: contentType,

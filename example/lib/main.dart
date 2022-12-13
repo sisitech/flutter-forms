@@ -87,6 +87,10 @@ class MyHomePage extends StatelessWidget {
               formItems: options,
               contentType: ContentType.json,
               formHeader: Text("Welcome home"),
+              onSuccess: (value) {
+                dprint(value);
+              },
+              isValidateOnly: true,
               formGroupOrder: const [
                 [
                   "name",

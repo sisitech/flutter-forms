@@ -133,6 +133,13 @@ class FormController extends GetxController {
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
     var data = preparePostData();
+    dprint(isValidateOnly);
+    if (isValidateOnly) {
+      if (onSuccess != null) {
+        onSuccess!(data);
+      }
+      return;
+    }
     try {
       isLoading.value = true;
       // dprint("Making api vcall");
