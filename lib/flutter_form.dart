@@ -6,6 +6,7 @@ import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import 'input_controller.dart';
 import 'models.dart';
 
 /// A Calculator.
@@ -186,14 +187,24 @@ getInputBasedOnType(FormItemField field) {
       );
       break;
     case FieldType.field:
-      reactiveInput = ReactiveDropdownField(
-        formControlName: field.name,
-        items: field.choices!
-            .map((e) => DropdownMenuItem(
-                  value: e.value,
-                  child: Text(e.display_name),
-                ))
-            .toList(),
+      var inputCont = Get.put(InputController(field: field), tag: field.name);
+      reactiveInput = Obx(
+        () => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Text(
+                  inputCont.isLoading.value ? 'Loading...' : labelName(field)),
+            ),
+            Expanded(
+              child: ReactiveDropdownField(
+                formControlName: field.name,
+                items: inputCont.choices.value,
+              ),
+            ),
+          ],
+        ),
       );
       break;
     default:

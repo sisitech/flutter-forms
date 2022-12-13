@@ -34,10 +34,12 @@ const options = {
         "label": "Active"
       },
       "contact_name": {
-        "type": "string",
+        "type": "field",
         "required": false,
         "read_only": false,
         "label": "Contact name",
+        "url": "api/v1/users",
+        "display_name": "full_name",
         "max_length": 45,
         "placeholder": "The name of the customer to deliver to"
       },

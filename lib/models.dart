@@ -69,6 +69,7 @@ class FormItemField {
   late String? url;
   late bool? obscure;
   late bool? multiple;
+  late String? display_name;
   late List<FormChoice>? choices;
 
   FormItemField({
@@ -78,6 +79,7 @@ class FormItemField {
     this.obscure = false,
     this.placeholder,
     this.url,
+    this.display_name,
     this.multiple = false,
     this.required = false,
     this.read_only = false,

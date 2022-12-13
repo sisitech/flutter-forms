@@ -1,4 +1,5 @@
 import 'package:example/options.dart';
+import 'package:example/options_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/models.dart';
@@ -56,7 +57,7 @@ class MyHomePage extends StatelessWidget {
             ),
             Text(Calculator().showSomething()),
             MyCustomForm(
-              // formItems: options,
+              formItems: loginOptions,
               url: "o/token/",
               submitButtonText: "Login",
               submitButtonPreText: "",
