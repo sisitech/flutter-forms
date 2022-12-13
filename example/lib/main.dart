@@ -1,8 +1,17 @@
 import 'package:example/options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/flutter_form.dart';
+import 'package:flutter_form/models.dart';
+import 'package:get/get.dart';
 
 void main() {
+  Get.put<APIConfig>(APIConfig(
+      apiEndpoint: "https://dukapi.roometo.com",
+      version: "api/v1",
+      clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+      tokenUrl: 'o/token/',
+      grantType: "password",
+      revokeTokenUrl: 'o/revoke_token/'));
   runApp(const MyApp());
 }
 
@@ -12,9 +21,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -29,6 +39,8 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    APIConfig config = Get.find<APIConfig>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -42,6 +54,20 @@ class MyHomePage extends StatelessWidget {
               height: 20,
             ),
             Text(Calculator().showSomething()),
+            MyCustomForm(
+              formItems: options,
+              submitButtonText: "Login",
+              submitButtonPreText: "",
+              extraFields: {
+                "client_id": config.clientId,
+                "grant_type": config.grantType,
+              },
+              formGroupOrder: const [
+                ["username"],
+                ["password"]
+              ],
+              formTitle: "Signup",
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -71,22 +97,6 @@ class MyHomePage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 20),
                 child: Text("Sign Up"),
               ),
-            ),
-            MyCustomForm(
-              formItems: options,
-              extraFields: const {
-                "client_id": "adda",
-                "grant_type": "password",
-              },
-              PreSaveData: (data) {
-                data["presve"] = true;
-                return data;
-              },
-              formGroupOrder: const [
-                ["username"],
-                ["password"]
-              ],
-              formTitle: "Signup",
             ),
           ],
         ),

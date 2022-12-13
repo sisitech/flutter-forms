@@ -3,6 +3,7 @@ import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
+import 'form_connect.dart';
 import 'models.dart';
 
 class FormController extends GetxController {
@@ -14,6 +15,7 @@ class FormController extends GetxController {
   final Function? PreSaveData;
 
   var isLoading = false.obs;
+  FormProvider serv = Get.put<FormProvider>(FormProvider());
 
   List<FormItemField> fields = [];
 
@@ -106,7 +108,7 @@ class FormController extends GetxController {
     return value;
   }
 
-  submit() {
+  submit() async {
     if (!form.valid) {
       dprint("Not valied");
       dprint(form.errors);
@@ -117,6 +119,21 @@ class FormController extends GetxController {
     // dprint(extraFields);
 
     var data = preparePostData();
+    try {
+      isLoading.value = true;
+
+      dprint("Making api vcall");
+      var res = await serv.login(data);
+      dprint(res.statusCode);
+      dprint(res.body);
+      dprint(res.isOk);
+      dprint("Done with call");
+      isLoading.value = false;
+    } catch (e) {
+      dprint("Error clals");
+      isLoading.value = false;
+      dprint(e);
+    }
 
     dprint(data);
     dprint('Hello Reactive Forms!!!');

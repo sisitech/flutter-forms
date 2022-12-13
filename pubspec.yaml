@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.5
+  http: ^0.13.5
   json_annotation: ^4.7.0
 
   reactive_forms: ^14.1.0

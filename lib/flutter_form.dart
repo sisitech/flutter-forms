@@ -22,23 +22,28 @@ class MyCustomForm extends StatelessWidget {
   final Widget? formFooter;
   final bool? isValidateOnly;
   final Function? PreSaveData;
+  final String? submitButtonText;
+  final String? submitButtonPreText;
 
   final String? url;
   final List<List<String>> formGroupOrder;
 
   final Map<String, dynamic>? extraFields;
 
-  MyCustomForm(
-      {super.key,
-      required this.formTitle,
-      this.formItems,
-      required this.formGroupOrder,
-      this.formHeader,
-      this.formFooter,
-      this.extraFields,
-      this.isValidateOnly = false,
-      this.url,
-      this.PreSaveData}) {
+  MyCustomForm({
+    super.key,
+    required this.formTitle,
+    this.formItems,
+    required this.formGroupOrder,
+    this.formHeader,
+    this.formFooter,
+    this.extraFields,
+    this.isValidateOnly = false,
+    this.url,
+    this.PreSaveData,
+    this.submitButtonText = "",
+    this.submitButtonPreText = "Add",
+  }) {
     final controller = Get.put(
         FormController(
           formItems: formItems,
@@ -68,6 +73,8 @@ class MyCustomForm extends StatelessWidget {
                 ),
                 MySubmitButton(
                   formTitle: formTitle,
+                  submitButtonPreText: submitButtonPreText,
+                  submitButtonText: submitButtonText,
                 ),
                 formFooter ?? Container(),
               ],
@@ -164,14 +171,27 @@ getInputBasedOnType(FormItemField field) {
 
 class MySubmitButton extends StatelessWidget {
   FormController? controller;
+  final String? submitButtonText;
+  final String? submitButtonPreText;
   final String formTitle;
-  MySubmitButton({super.key, required this.formTitle}) {
+  MySubmitButton({
+    super.key,
+    required this.formTitle,
+    this.submitButtonText,
+    this.submitButtonPreText,
+  }) {
     controller = Get.find<FormController>(tag: formTitle);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(child: Text('Submit'), onPressed: _onPressed);
+    var submitText = "${submitButtonPreText} ${submitButtonText}";
+    return Obx(
+      () => ElevatedButton(
+          onPressed: controller!.isLoading == true ? null : _onPressed,
+          child:
+              Text(controller!.isLoading == true ? "Loading..." : submitText)),
+    );
   }
 
   void _onPressed() {

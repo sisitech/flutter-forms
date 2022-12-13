@@ -1,23 +1,48 @@
+import 'package:flutter_form/models.dart';
+import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class FormProvider extends GetConnect {
+  APIConfig? config;
+  FormProvider() {
+    config = Get.find<APIConfig>();
+    // dprint(config.toString());
+  }
   @override
   void onInit() {
-    // All request will pass to jsonEncode so CasesModel.fromJson()
-    httpClient.baseUrl = 'https://api.covid19api.com';
-    // baseUrl = 'https://api.covid19api.com'; // It define baseUrl to
-    // Http and websockets if used with no [httpClient] instance
-    httpClient.addRequestModifier<dynamic>((request) async {
-      final response = await get("http://yourapi/token");
-      final token = response.body['token'];
-      // Set the header
-      request.headers['Authorization'] = "$token";
-      return request;
-    });
+    dprint(config);
+    dprint("The base url is");
+    dprint(httpClient.baseUrl);
+    // httpClient.addRequestModifier<dynamic>((request) {
+    //   request.headers['Authorization'] = 'Bearer sdfsdfgsdfsdsdf12345678';
+    //   return request;
+    // });
   }
 
   // Get request
   Future<Response> getUser(int id) => get('http://youapi/users/$id');
-  // Post request
 
+  Future<Response> login(Map body) async {
+    dprint(body);
+    var url = "${config!.apiEndpoint}/${config!.tokenUrl}";
+    var bodyStr = mapToFormUrlEncoded(body);
+    var contentType = "application/x-www-form-urlencoded";
+    // dprint(url);
+    return formPost(config!.tokenUrl, bodyStr, contentType: contentType);
+  }
+
+  Future<Response> formPost(String? path, dynamic body,
+      {contentType = "application/json"}) {
+    var url = "${config!.apiEndpoint}/${path}";
+    return post(url, body, contentType: contentType);
+  }
+
+  mapToFormUrlEncoded(Map body) {
+    var fields = [];
+    body.forEach((key, value) {
+      fields.add("${key}=${value}");
+    });
+    return fields.join("&");
+  }
 }
