@@ -172,6 +172,7 @@ getInputBasedOnType(FormItemField field) {
           textInputAction: TextInputAction.next,
           maxLength: field.max_length,
           maxLines: isTextArea ? 3 : 1,
+          obscureText: field.obscure ?? false,
           decoration: inputDecoration(field));
       break;
     case FieldType.boolean:

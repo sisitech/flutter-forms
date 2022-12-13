@@ -131,6 +131,7 @@ class FormController extends GetxController {
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
     const successStatusCodes = [200, 201, 204];
+    const errorStatusCodes = [400, 401, 403];
     var data = preparePostData();
     try {
       isLoading.value = true;
@@ -150,7 +151,7 @@ class FormController extends GetxController {
         if (onSuccess != null) {
           onSuccess!(res.body);
         }
-      } else if (res.statusCode == 400) {
+      } else if (errorStatusCodes.contains(res.statusCode)) {
         try {
           // dprint("Done with call");
           var formErrors = res.body as Map<String, dynamic>;

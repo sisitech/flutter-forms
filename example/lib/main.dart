@@ -96,7 +96,7 @@ class MyHomePage extends StatelessWidget {
                 ["active"],
                 [
                   "contact_name",
-                  // "contact_phone",
+                  "contact_phone",
                 ],
                 [
                   "contact_email",

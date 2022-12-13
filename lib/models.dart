@@ -75,7 +75,7 @@ class FormItemField {
     required this.name,
     required this.type,
     required this.label,
-    this.obscure,
+    this.obscure = false,
     this.placeholder,
     this.url,
     this.multiple = false,

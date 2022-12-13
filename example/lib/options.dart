@@ -46,6 +46,7 @@ const options = {
         "required": false,
         "read_only": false,
         "label": "Contact phone",
+        "obscure": true,
         "max_length": 25
       },
       "contact_email": {
