@@ -22,9 +22,11 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       type: $enumDecode(_$FieldTypeEnumMap, json['type']),
       label: json['label'] as String,
-      obscure: json['obscure'] as bool?,
+      obscure: json['obscure'] as bool? ?? false,
       placeholder: json['placeholder'] as String?,
       url: json['url'] as String?,
+      display_name: json['display_name'] as String? ?? "name",
+      value_field: json['value_field'] as String? ?? "id",
       multiple: json['multiple'] as bool? ?? false,
       required: json['required'] as bool? ?? false,
       read_only: json['read_only'] as bool? ?? false,
@@ -45,6 +47,8 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
       'url': instance.url,
       'obscure': instance.obscure,
       'multiple': instance.multiple,
+      'display_name': instance.display_name,
+      'value_field': instance.value_field,
       'choices': instance.choices,
     };
 
