@@ -62,9 +62,11 @@ class MyHomePage extends StatelessWidget {
               submitButtonText: "Login",
               submitButtonPreText: "",
               loadingMessage: "Signing in...",
-              onSuccess: (res) {
+              onSuccess: (res) async {
                 dprint("Success login.");
                 dprint(res);
+                await Future.delayed(const Duration(milliseconds: 10000));
+                dprint("Done");
               },
               handleErrors: (value) {
                 return "Your password might be wrong";

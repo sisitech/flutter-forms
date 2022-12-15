@@ -1,3 +1,5 @@
+library flutter_form;
+
 import 'package:flutter_auth/auth_connect.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';

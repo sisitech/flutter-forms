@@ -39,7 +39,7 @@ const options = {
         "read_only": false,
         "label": "Contact name",
         "url": "api/v1/users",
-        "display_name": "full_name",
+        "display_name": "username",
         "max_length": 45,
         "placeholder": "The name of the customer to deliver to"
       },

@@ -1,3 +1,5 @@
+library flutter_form;
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -153,10 +155,9 @@ class FormController extends GetxController {
         // dprint("None url encoded");
         res = await serv.formPost(url, data);
       }
-      isLoading.value = false;
       if (successStatusCodes.contains(res.statusCode)) {
         if (onSuccess != null) {
-          onSuccess!(res.body);
+          await onSuccess!(res.body);
         }
       } else if (errorStatusCodes.contains(res.statusCode)) {
         try {
@@ -182,6 +183,7 @@ class FormController extends GetxController {
           dprint(e);
         }
       }
+      isLoading.value = false;
     } catch (e) {
       dprint("Error clals");
       isLoading.value = false;
