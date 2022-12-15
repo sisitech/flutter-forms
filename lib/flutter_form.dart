@@ -38,6 +38,8 @@ class MyCustomForm extends StatelessWidget {
   final Function? onSuccess;
   final String loadingMessage;
 
+  final Map<String, dynamic>? instance;
+
   final String? url;
   final List<List<String>> formGroupOrder;
 
@@ -58,6 +60,7 @@ class MyCustomForm extends StatelessWidget {
     this.handleErrors,
     this.submitButtonText = "",
     this.onSuccess,
+    this.instance,
     this.submitButtonPreText = "Add",
     this.contentType = ContentType.json,
   }) {
@@ -69,6 +72,7 @@ class MyCustomForm extends StatelessWidget {
           PreSaveData: PreSaveData,
           loadingMessage: loadingMessage,
           isValidateOnly: isValidateOnly,
+          instance: instance,
           url: url,
           onSuccess: onSuccess,
           contentType: contentType,

@@ -62,10 +62,14 @@ class MyHomePage extends StatelessWidget {
               submitButtonText: "Login",
               submitButtonPreText: "",
               loadingMessage: "Signing in...",
+              instance: {
+                "username": "myadmin",
+                "password": "#myadmin",
+              },
               onSuccess: (res) async {
                 dprint("Success login.");
                 dprint(res);
-                await Future.delayed(const Duration(milliseconds: 10000));
+                await Future.delayed(const Duration(milliseconds: 1000));
                 dprint("Done");
               },
               handleErrors: (value) {

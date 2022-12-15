@@ -21,6 +21,7 @@ class FormController extends GetxController {
   final Function? handleErrors;
   final String loadingMessage;
   final Function? onSuccess;
+  final Map<String, dynamic>? instance;
 
   var isLoading = false.obs;
   FormProvider serv = Get.put<FormProvider>(FormProvider());
@@ -34,6 +35,7 @@ class FormController extends GetxController {
       this.extraFields,
       this.onSuccess,
       this.handleErrors,
+      this.instance,
       this.PreSaveData,
       required this.loadingMessage,
       required this.contentType,
@@ -77,13 +79,11 @@ class FormController extends GetxController {
       form.addAll({
         value: getFormControl(field),
       });
-      // if (!field.read_only && possibleFields.contains(field.name)) {
-      //   fields.add(field);
-      //   form.addAll({
-      //     key: getFormControl(field),
-      //   });
-      // }
     });
+
+    if (this.instance != null) {
+      this.form.updateValue(this.instance);
+    }
     update();
   }
 
