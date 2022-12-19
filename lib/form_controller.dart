@@ -116,7 +116,7 @@ class FormController extends GetxController {
         formControl = FormControl<String>(validators: validators);
         break;
       case FieldType.boolean:
-        formControl = FormControl<bool>(validators: validators);
+        formControl = FormControl<bool>(value: false, validators: validators);
         break;
       case FieldType.field:
         formControl = FormControl<Object>(validators: validators);
