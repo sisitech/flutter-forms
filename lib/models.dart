@@ -8,6 +8,14 @@ enum ContentType {
   form_url_encoded,
 }
 
+enum FormStatus { Add, Update }
+
+extension FormStatusDefinti on FormStatus {
+  String statusDisplay() {
+    return toString().replaceAll("FormStatus.", "");
+  }
+}
+
 enum FieldType {
   integer,
   string,

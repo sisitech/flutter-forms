@@ -37,6 +37,8 @@ class MyCustomForm extends StatelessWidget {
   final Function? handleErrors;
   final Function? onSuccess;
   final String loadingMessage;
+  FormStatus status;
+  final Function? onStatus;
 
   final Map<String, dynamic>? instance;
 
@@ -44,6 +46,8 @@ class MyCustomForm extends StatelessWidget {
   final List<List<String>> formGroupOrder;
 
   final Map<String, dynamic>? extraFields;
+
+  final String? instanceUrl;
 
   MyCustomForm({
     super.key,
@@ -56,12 +60,15 @@ class MyCustomForm extends StatelessWidget {
     this.isValidateOnly = false,
     this.url,
     this.PreSaveData,
+    this.onStatus,
+    this.instanceUrl,
+    this.status = FormStatus.Add,
     this.loadingMessage = "Loading ...",
     this.handleErrors,
     this.submitButtonText = "",
     this.onSuccess,
     this.instance,
-    this.submitButtonPreText = "Add",
+    this.submitButtonPreText,
     this.contentType = ContentType.json,
   }) {
     final controller = Get.put(
@@ -73,7 +80,9 @@ class MyCustomForm extends StatelessWidget {
           loadingMessage: loadingMessage,
           isValidateOnly: isValidateOnly,
           instance: instance,
+          instanceUrl: instanceUrl,
           url: url,
+          status: status,
           onSuccess: onSuccess,
           contentType: contentType,
           handleErrors: handleErrors,
@@ -92,7 +101,15 @@ class MyCustomForm extends StatelessWidget {
             formGroup: controller.form,
             child: Column(
               children: <Widget>[
-                formHeader ?? Container(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: formHeader ??
+                      Text(
+                        submitButtonPreText ??
+                            "${controller.status.statusDisplay()} $submitButtonText",
+                        style: Get.theme.textTheme.titleLarge,
+                      ),
+                ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
                 const SizedBox(
@@ -116,7 +133,8 @@ class MyCustomForm extends StatelessWidget {
                 ),
                 MySubmitButton(
                   formTitle: formTitle,
-                  submitButtonPreText: submitButtonPreText,
+                  submitButtonPreText:
+                      submitButtonPreText ?? controller.status.statusDisplay(),
                   submitButtonText: submitButtonText,
                 ),
                 formFooter ?? Container(),
@@ -165,9 +183,19 @@ inputDecoration(field) => InputDecoration(
       // errorStyle: TextStyle(height: 0.7),
     );
 getInputBasedOnType(FormItemField field) {
+  // dprint("Getting the labelStyle");
+  // dprint(Get.theme.textTheme.bodyText1);
+  // dprint(Get.theme.inputDecorationTheme.labelStyle);
   var defaultValidationMessage = {
     'required': (error) => 'This field must not be empty'
   };
+  Widget LabelWidget(FormItemField field) {
+    return Text(
+      labelName(field),
+      style: Get.theme.textTheme.bodyText1,
+    );
+  }
+
   Widget reactiveInput;
   switch (field.type) {
     case FieldType.string:
@@ -182,13 +210,16 @@ getInputBasedOnType(FormItemField field) {
           decoration: inputDecoration(field));
       break;
     case FieldType.boolean:
-      reactiveInput = Row(
-        children: [
-          Text(labelName(field)),
-          ReactiveCheckbox(
-            formControlName: field.name,
-          ),
-        ],
+      reactiveInput = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Row(
+          children: [
+            LabelWidget(field),
+            ReactiveCheckbox(
+              formControlName: field.name,
+            ),
+          ],
+        ),
       );
       break;
     case FieldType.field:
@@ -199,8 +230,8 @@ getInputBasedOnType(FormItemField field) {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 10),
-              child: Text(
-                  inputCont.isLoading.value ? 'Loading...' : labelName(field)),
+              child: LabelWidget(field),
+              // Text(inputCont.isLoading.value ? 'Loading...' : labelName(field)),
             ),
             Expanded(
               child: ReactiveDropdownField(
@@ -250,8 +281,8 @@ class MySubmitButton extends StatelessWidget {
   }
 
   void _onPressed() {
-    final controller = Get.find<FormController>(tag: formTitle);
     // controller.form
+    final controller = Get.find<FormController>(tag: formTitle);
     controller.submit();
   }
 }

@@ -24,4 +24,22 @@ class FormProvider extends AuthProvider {
     // dprint(url);
     return formPost(config!.tokenUrl, bodyStr, contentType: contentType);
   }
+
+  Future<Response> formPatch(String? path, dynamic body,
+      {contentType = "application/json"}) {
+    var url = "${config!.apiEndpoint}/${path}";
+    dprint(url);
+
+    return patch(url, removeNullFields(body), contentType: contentType);
+  }
+
+  removeNullFields(Map<String, dynamic> formData) {
+    Map<String, dynamic> res = {};
+    formData.forEach((key, value) {
+      if (value != null) {
+        res[key] = value;
+      }
+    });
+    return res;
+  }
 }

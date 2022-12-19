@@ -16,18 +16,23 @@ class FormController extends GetxController {
   final Map<String, dynamic>? extraFields;
   final bool isValidateOnly;
   final String? url;
+  final String? instanceUrl;
   final Function? PreSaveData;
   final ContentType contentType;
   final Function? handleErrors;
   final String loadingMessage;
   final Function? onSuccess;
   final Map<String, dynamic>? instance;
+  FormStatus status;
+  final Function? onStatus;
 
   var isLoading = false.obs;
   FormProvider serv = Get.put<FormProvider>(FormProvider());
 
   List<FormItemField> fields = [];
   List<String> errors = [];
+  int? instanceId;
+
   FormController(
       {required this.formItems,
       this.isValidateOnly = false,
@@ -36,6 +41,9 @@ class FormController extends GetxController {
       this.onSuccess,
       this.handleErrors,
       this.instance,
+      this.onStatus,
+      this.instanceUrl,
+      this.status = FormStatus.Add,
       this.PreSaveData,
       required this.loadingMessage,
       required this.contentType,
@@ -51,6 +59,14 @@ class FormController extends GetxController {
   }
 
   var form = FormGroup({});
+
+  updateStatus(FormStatus Newstatus) {
+    status = Newstatus;
+    dprint("New status $status");
+    if (onStatus != null) {
+      onStatus!(Newstatus);
+    }
+  }
 
   setUpForm() {
     fields = [];
@@ -83,7 +99,12 @@ class FormController extends GetxController {
 
     if (this.instance != null) {
       this.form.updateValue(this.instance);
+      if (this.instance!.containsKey("id")) {
+        this.instanceId = instance?["id"];
+        updateStatus(FormStatus.Update);
+      }
     }
+
     update();
   }
 
@@ -153,13 +174,20 @@ class FormController extends GetxController {
         res = await serv.formPostUrlEncoded(url, data);
       } else {
         // dprint("None url encoded");
-        res = await serv.formPost(url, data);
+        if (status == FormStatus.Update) {
+          var updateUrl = "${getInstanceUrl()}/${instanceId}/";
+          res = await serv.formPatch(updateUrl, data);
+        } else {
+          res = await serv.formPost(url, data);
+        }
       }
+      dprint(res.statusCode);
       if (successStatusCodes.contains(res.statusCode)) {
         if (onSuccess != null) {
           await onSuccess!(res.body);
         }
       } else if (errorStatusCodes.contains(res.statusCode)) {
+        dprint(res.body);
         try {
           // dprint("Done with call");
           var formErrors = res.body as Map<String, dynamic>;
@@ -193,6 +221,13 @@ class FormController extends GetxController {
     // dprint(data);
     // dprint('Hello Reactive Forms!!!');
     update();
+  }
+
+  getInstanceUrl() {
+    if (instanceUrl != null) {
+      return this.instanceUrl?.toUrlNoSlash();
+    }
+    return this.url?.toUrlNoSlash();
   }
 
   getErrorDisplay(dynamic value) {
