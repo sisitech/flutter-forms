@@ -1,5 +1,7 @@
 library flutter_form;
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/utils.dart';
@@ -8,6 +10,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import 'input_controller.dart';
 import 'models.dart';
+import 'utils.dart';
 
 /// A Calculator.
 class Calculator {
@@ -220,6 +223,34 @@ getInputBasedOnType(FormItemField field) {
             ),
           ],
         ),
+      );
+      break;
+    case FieldType.date:
+      reactiveInput = ReactiveDatePicker(
+        formControlName: field.name,
+        builder: (BuildContext context,
+            ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
+          dprint(picker.control.value);
+          return GestureDetector(
+            onTap: picker.showPicker,
+            child: Container(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  LabelWidget(field),
+                  IconButton(
+                    onPressed: picker.showPicker,
+                    icon: Icon(Icons.date_range),
+                  ),
+                  Text(dateToCustomString(picker.control.value))
+                ],
+              ),
+            ),
+          );
+          ;
+        },
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now(),
       );
       break;
     case FieldType.field:

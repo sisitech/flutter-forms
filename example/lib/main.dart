@@ -1,12 +1,15 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form/custom_input.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:form_example/options.dart';
 import 'package:form_example/options_login.dart';
 import 'package:get/get.dart';
+
+import 'custom_field.dart';
 
 void main() {
   Get.put<APIConfig>(APIConfig(
@@ -132,6 +135,7 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Hello Forms"),
+            CustomFieldForm(),
             const SizedBox(
               height: 20,
             ),
@@ -186,6 +190,7 @@ class MyHomePage extends StatelessWidget {
                   'role',
                 ],
                 ["active"],
+                ["modified"],
                 [
                   "contact_name",
                 ],

@@ -22,9 +22,9 @@ const options = {
         "label": "Created"
       },
       "modified": {
-        "type": "datetime",
-        "required": false,
-        "read_only": true,
+        "type": "date",
+        "required": true,
+        "read_only": false,
         "label": "Modified"
       },
       "active": {
