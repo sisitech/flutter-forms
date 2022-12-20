@@ -1,10 +1,11 @@
-import 'package:example/options.dart';
-import 'package:example/options_login.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
+import 'package:form_example/options.dart';
+import 'package:form_example/options_login.dart';
 import 'package:get/get.dart';
 
 void main() {
@@ -28,134 +29,88 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Flutter Demo',
-      // darkTheme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(
-      //     seedColor: Color(0xffD4AB13),
-      //     brightness: Brightness.dark,
-      //   ).copyWith(
-      //     secondary: Color(0xff017b94),
-      //   ),
-      // ),
-      // This theme was made for FlexColorScheme version 6.1.1. Make sure
-// you use same or higher version, but still same major version. If
-// you use a lower version, some properties may not be supported. In
-// that case you can also remove them after copying the theme to your app.
-      // themeMode: ThemeMode.light,
-      themeMode: ThemeMode.dark,
-      // This theme was made for FlexColorScheme version 6.1.1. Make sure
-// you use same or higher version, but still same major version. If
-// you use a lower version, some properties may not be supported. In
-// that case you can also remove them after copying the theme to your app.
-      // This theme was made for FlexColorScheme version 6.1.1. Make sure
-// you use same or higher version, but still same major version. If
-// you use a lower version, some properties may not be supported. In
-// that case you can also remove them after copying the theme to your app.
-      // This theme was made for FlexColorScheme version 6.1.1. Make sure
-// you use same or higher version, but still same major version. If
-// you use a lower version, some properties may not be supported. In
-// that case you can also remove them after copying the theme to your app.
-      theme: FlexThemeData.light(
-        colors: const FlexSchemeColor(
-          primary: Color(0xff7240ff),
-          primaryContainer: Color(0xffd1c0ff),
-          secondary: Color(0xffac3306),
-          secondaryContainer: Color(0xffffdbcf),
-          tertiary: Color(0xff006875),
-          tertiaryContainer: Color(0xff95f0ff),
-          appBarColor: Color(0xffffdbcf),
-          error: Color(0xffb00020),
-        ),
-        surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-        blendLevel: 9,
-        subThemesData: const FlexSubThemesData(
-          blendOnLevel: 10,
-          blendOnColors: false,
-          defaultRadius: 17.0,
-          bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-          navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
-          navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
-          navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
-          navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
-          navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-        ),
-        visualDensity: FlexColorScheme.comfortablePlatformDensity,
-        useMaterial3: true,
-        swapLegacyOnMaterial3: true,
-        // To use the playground font, add GoogleFonts package and uncomment
-        // fontFamily: GoogleFonts.notoSans().fontFamily,
-      ),
-      darkTheme: FlexThemeData.dark(
-        colors: const FlexSchemeColor(
-          primary: Color(0xffb499ff),
-          primaryContainer: Color(0xff7240ff),
-          secondary: Color(0xffffb59d),
-          secondaryContainer: Color(0xff872100),
-          tertiary: Color(0xff86d2e1),
-          tertiaryContainer: Color(0xff004e59),
-          appBarColor: Color(0xff872100),
-          error: Color(0xffcf6679),
-        ),
-        surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
-        blendLevel: 15,
-        subThemesData: const FlexSubThemesData(
-          blendOnLevel: 20,
-          defaultRadius: 17.0,
-          bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-          navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
-          navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
-          navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
-          navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
-          navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-        ),
-        visualDensity: FlexColorScheme.comfortablePlatformDensity,
-        useMaterial3: true,
-        swapLegacyOnMaterial3: true,
-        // To use the Playground font, add GoogleFonts package and uncomment
-        // fontFamily: GoogleFonts.notoSans().fontFamily,
-      ),
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
+    return DynamicColorBuilder(
+        builder: (ColorScheme? light, ColorScheme? dark) {
+      ColorScheme lightScheme;
+      ColorScheme darkScheme;
+      if (light != null && dark != null) {
+        dprint("Received material you you,");
+        lightScheme = light.harmonized();
+        darkScheme = dark.harmonized();
+      } else {
+        dprint("Material you not suppoeted.");
+        lightScheme = ColorScheme.fromSeed(seedColor: PRIMARY_COLOR);
+        darkScheme = ColorScheme.fromSeed(
+            seedColor: PRIMARY_COLOR, brightness: Brightness.dark);
+      }
 
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-// If you do not have a themeMode switch, uncomment this line
-// to let the device system mode control the theme mode:
-// themeMode: ThemeMode.system,
-
-      // darkTheme: ThemeData(
-      //   useMaterial3: true,
-      //   colorScheme: ColorScheme.fromSeed(
-      //     seedColor: PRIMARY_COLOR,
-      //     primary: PRIMARY_COLOR,
-      //     brightness: Brightness.dark,
-      //   ).copyWith(
-      //     secondary: SECONDARY_COLOR,
-      //   ),
-      // ),
-      // themeMode: ThemeMode.light,
-      // // themeMode: ThemeMode.dark,
-      // theme: ThemeData(
-      //   useMaterial3: true,
-      //   // brightness: Brightness.dark,
-      //   colorScheme: ColorScheme.fromSeed(
-      //     seedColor: PRIMARY_COLOR,
-      //     primary: PRIMARY_COLOR,
-      //     brightness: Brightness.light,
-      //   ).copyWith(
-      //     secondary: SECONDARY_COLOR,
-      //   ),
-      // ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+      return GetMaterialApp(
+        title: 'Flutter Demo',
+        themeMode: ThemeMode.system,
+        theme: FlexThemeData.light(
+          colorScheme: lightScheme,
+          // colors: const FlexSchemeColor(
+          //   primary: Color(0xff7240ff),
+          //   primaryContainer: Color(0xffd1c0ff),
+          //   secondary: Color(0xffac3306),
+          //   secondaryContainer: Color(0xffffdbcf),
+          //   tertiary: Color(0xff006875),
+          //   tertiaryContainer: Color(0xff95f0ff),
+          //   appBarColor: Color(0xffffdbcf),
+          //   error: Color(0xffb00020),
+          // ),
+          surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+          blendLevel: 9,
+          subThemesData: const FlexSubThemesData(
+            blendOnLevel: 10,
+            blendOnColors: false,
+            defaultRadius: 17.0,
+            bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+            navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
+            navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
+            navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+            navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
+            navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+          ),
+          visualDensity: FlexColorScheme.comfortablePlatformDensity,
+          useMaterial3: true,
+          swapLegacyOnMaterial3: true,
+          // To use the playground font, add GoogleFonts package and uncomment
+          // fontFamily: GoogleFonts.notoSans().fontFamily,
+        ),
+        darkTheme: FlexThemeData.dark(
+          colorScheme: darkScheme,
+          // colors: const FlexSchemeColor(
+          //   primary: Color(0xffb499ff),
+          //   primaryContainer: Color(0xff7240ff),
+          //   secondary: Color(0xffffb59d),
+          //   secondaryContainer: Color(0xff872100),
+          //   tertiary: Color(0xff86d2e1),
+          //   tertiaryContainer: Color(0xff004e59),
+          //   appBarColor: Color(0xff872100),
+          //   error: Color(0xffcf6679),
+          // ),
+          surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+          blendLevel: 15,
+          subThemesData: const FlexSubThemesData(
+            blendOnLevel: 20,
+            defaultRadius: 17.0,
+            bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+            navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
+            navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
+            navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+            navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
+            navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+          ),
+          visualDensity: FlexColorScheme.comfortablePlatformDensity,
+          useMaterial3: true,
+          swapLegacyOnMaterial3: true,
+          // To use the Playground font, add GoogleFonts package and uncomment
+          // fontFamily: GoogleFonts.notoSans().fontFamily,
+        ),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      );
+    });
   }
 }
 
