@@ -34,6 +34,8 @@ class FormProvider extends AuthProvider {
   }
 
   removeNullFields(Map<String, dynamic> formData) {
+    dprint("formData");
+    dprint(formData);
     Map<String, dynamic> res = {};
     formData.forEach((key, value) {
       if (value != null) {

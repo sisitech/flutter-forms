@@ -98,7 +98,13 @@ class FormController extends GetxController {
     });
 
     if (this.instance != null) {
-      this.form.updateValue(this.instance);
+      this.instance?.forEach((key, value) {
+        if (possibleFields.contains(key)) {
+          form.control(key).patchValue(value);
+        }
+        // this.form.updateValue(this.instance);
+      });
+
       if (this.instance!.containsKey("id")) {
         this.instanceId = instance?["id"];
         updateStatus(FormStatus.Update);
@@ -147,7 +153,7 @@ class FormController extends GetxController {
   submit() async {
     if (!form.valid) {
       // dprint("Not valied");
-      // dprint(form.errors);
+      dprint(form.errors);
       form.markAllAsTouched();
       return;
     }
