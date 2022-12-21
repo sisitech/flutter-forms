@@ -38,8 +38,9 @@ const options = {
         "required": false,
         "read_only": false,
         "label": "Contact name",
-        "url": "api/v1/users",
+        "url": "api/v1/sers",
         "display_name": "username",
+        "search_field": "username",
         "max_length": 45,
         "placeholder": "The name of the customer to deliver to"
       },
@@ -50,6 +51,7 @@ const options = {
         "label": "Contact name",
         "url": "api/v1/users",
         "display_name": "username",
+        "search_field": "username",
         "max_length": 45,
         "value_field": "email",
         "placeholder": "Search by username ..."

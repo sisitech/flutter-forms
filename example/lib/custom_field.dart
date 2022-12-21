@@ -23,7 +23,7 @@ class _CustomFieldFormState extends State<CustomFieldForm> {
   });
   var contactField = FormItemField.fromJson({
     "name": "name",
-    "type": "field",
+    "type": "multifield",
     "required": false,
     "read_only": false,
     "label": "Contact name",

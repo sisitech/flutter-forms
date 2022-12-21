@@ -67,16 +67,19 @@ class MultiSelectView extends StatelessWidget {
                   child: LinearProgressIndicator(),
                 ),
               ),
-            if (inputController.noResults.value)
+            if (inputController.noResults.value != "")
               Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("No Results"),
+                  Text(
+                    "${inputController.noResults.value}",
+                    style: Get.theme.textTheme.caption,
+                  ),
                   IconButton(
                     onPressed: () {
-                      dprint("Make it go awy");
-                      inputController.noResults.value = false;
+                      dprint("${inputController.noResults.value}");
+                      inputController.noResults.value = "";
                     },
                     icon: const Icon(Icons.cancel),
                   )

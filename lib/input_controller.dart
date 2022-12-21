@@ -25,7 +25,7 @@ class InputController extends GetxController {
 
   var isLoading = false.obs;
 
-  var noResults = false.obs;
+  var noResults = "".obs;
 
   bool showOptions = false;
   Timer? _debounce;
@@ -69,7 +69,7 @@ class InputController extends GetxController {
     dprint("resetting options");
     formChoices.value = [];
     choices.value = [];
-    noResults.value = false;
+    noResults.value = "";
   }
 
   getOptions({String? search}) async {
@@ -80,6 +80,7 @@ class InputController extends GetxController {
     if (search != null) {
       queryParams[field.search_field] = search;
     }
+    // dprint(queryParams);
 
     if (field.choices != null) {
       rawChoices = field.choices;
@@ -89,6 +90,13 @@ class InputController extends GetxController {
         var choices = await formProvider.formGet(field.url, query: queryParams);
         isLoading.value = false;
         var urlChoices = [];
+        dprint(choices);
+        dprint(choices.statusCode);
+        if (choices.statusCode == null) {
+          dprint("NO internet conncetion");
+          noResults.value = "Failed, Try again later!.";
+          return;
+        }
 
         if (choices.statusCode == 200) {
           if (choices.body.containsKey("results")) {
@@ -109,14 +117,15 @@ class InputController extends GetxController {
               )
               .toList();
         }
-        // dprint(choices.body);
+        noResults.value =
+            rawChoices != null && rawChoices!.isEmpty ? "No results." : "";
+        dprint(choices.body);
       } catch (e) {
-        noResults.value = true;
+        noResults.value = "Failed, Try again later!.";
         dprint(e);
         isLoading.value = false;
       }
     }
-    noResults.value = rawChoices?.isEmpty ?? true;
 
     // dprint(rawChoices!.map((e) => {e.display_name, e.value}));
     formChoices.value = rawChoices ?? [];
