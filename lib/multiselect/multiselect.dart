@@ -141,9 +141,13 @@ class MultiSelectCustomField extends ReactiveFormField<String?, String?> {
               if (fieldValue == null) {
                 valueChoice = null;
               } else {
-                valueChoice = controller.formChoices.value
-                    ?.where((element) => "${element.value}" == fieldValue)
-                    .first;
+                var filt = controller.formChoices.value
+                    ?.where((element) => "${element.value}" == fieldValue);
+                if (filt!.isNotEmpty) {
+                  valueChoice = filt.first;
+                } else {
+                  valueChoice = controller.selected.value;
+                }
               }
               controller.selectValue(valueChoice);
 
