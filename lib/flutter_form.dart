@@ -11,6 +11,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'input_controller.dart';
 import 'models.dart';
 import 'multiselect/multiselect.dart';
+import 'reactive_text_field.dart';
 import 'utils.dart';
 
 /// A Calculator.
@@ -209,9 +210,11 @@ getInputBasedOnType(FormItemField field) {
       reactiveInput = ReactiveTextField(
           formControlName: field.name,
           validationMessages: defaultValidationMessage,
-          textInputAction: TextInputAction.next,
           maxLength: field.max_length,
-          maxLines: isTextArea ? 3 : 1,
+          minLines: isTextArea ? 2 : 1,
+          textInputAction:
+              isTextArea ? TextInputAction.newline : TextInputAction.next,
+          maxLines: isTextArea ? null : 1,
           obscureText: field.obscure ?? false,
           decoration: inputDecoration(field));
       break;
