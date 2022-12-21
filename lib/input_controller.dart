@@ -94,7 +94,7 @@ class InputController extends GetxController {
         dprint(choices.statusCode);
         if (choices.statusCode == null) {
           dprint("NO internet conncetion");
-          noResults.value = "Failed, Try again later!.";
+          noResults.value = "No internet connection! Try again later!";
           return;
         }
 
