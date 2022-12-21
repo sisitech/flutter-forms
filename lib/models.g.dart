@@ -24,19 +24,26 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       label: json['label'] as String,
       obscure: json['obscure'] as bool? ?? false,
       placeholder: json['placeholder'] as String?,
-      url: json['url'] as String?,
-      display_name: json['display_name'] as String? ?? "name",
-      value_field: json['value_field'] as String? ?? "id",
-      multiple: json['multiple'] as bool? ?? false,
       required: json['required'] as bool? ?? false,
       read_only: json['read_only'] as bool? ?? false,
       max_length: json['max_length'] as int?,
+      url: json['url'] as String?,
+      display_name: json['display_name'] as String? ?? "name",
+      search_field: json['search_field'] as String? ?? "name",
+      value_field: json['value_field'] as String? ?? "id",
+      multiple: json['multiple'] as bool? ?? false,
     )..choices = (json['choices'] as List<dynamic>?)
         ?.map((e) => FormChoice.fromJson(e as Map<String, dynamic>))
         .toList();
 
 Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
     <String, dynamic>{
+      'url': instance.url,
+      'multiple': instance.multiple,
+      'display_name': instance.display_name,
+      'search_field': instance.search_field,
+      'value_field': instance.value_field,
+      'choices': instance.choices,
       'name': instance.name,
       'label': instance.label,
       'placeholder': instance.placeholder,
@@ -44,12 +51,7 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
       'required': instance.required,
       'read_only': instance.read_only,
       'max_length': instance.max_length,
-      'url': instance.url,
       'obscure': instance.obscure,
-      'multiple': instance.multiple,
-      'display_name': instance.display_name,
-      'value_field': instance.value_field,
-      'choices': instance.choices,
     };
 
 const _$FieldTypeEnumMap = {

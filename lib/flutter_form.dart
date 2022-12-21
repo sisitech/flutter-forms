@@ -10,6 +10,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import 'input_controller.dart';
 import 'models.dart';
+import 'multiselect/multiselect.dart';
 import 'utils.dart';
 
 /// A Calculator.
@@ -161,7 +162,9 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
       children: [
         ...rowFields
             .map(
-              (field) => getInput(field),
+              (field) => getInput(
+                field,
+              ),
             )
             .toList()
       ],
@@ -253,8 +256,15 @@ getInputBasedOnType(FormItemField field) {
         lastDate: DateTime.now(),
       );
       break;
+    // case FieldType.multifield:
+    //   // reactiveInput=MultiSelectCustomField(
+    //   //   formControlName:field.name ,
+    //   // )
+
+    //   break;
     case FieldType.field:
       var inputCont = Get.put(InputController(field: field), tag: field.name);
+
       reactiveInput = Obx(
         () => Row(
           mainAxisSize: MainAxisSize.min,
@@ -267,10 +277,10 @@ getInputBasedOnType(FormItemField field) {
             Expanded(
               child: ReactiveDropdownField(
                 formControlName: field.name,
-                items: inputCont.choices.value,
+                items: inputCont.choices?.value ?? [],
               ),
             ),
-          ],
+          ], 
         ),
       );
       break;

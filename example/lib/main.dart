@@ -125,6 +125,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     APIConfig config = Get.find<APIConfig>();
+    dprint(context.width);
 
     return Scaffold(
       appBar: AppBar(
