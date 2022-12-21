@@ -14,6 +14,7 @@ class MultiSelectView extends StatelessWidget {
   /// The callback to notify that the user has pressed the increment button.
   final Function onChange;
   final InputController inputController;
+  final FormItemField fieldOption;
 
   /// Creates a [Counter] instance.
   /// The [value] of the counter is required and must not by null.
@@ -22,6 +23,7 @@ class MultiSelectView extends StatelessWidget {
     this.value,
     required this.onChange,
     required this.inputController,
+    required this.fieldOption,
   });
 
   selectStuff(FormChoice? formChoice) {
@@ -40,11 +42,11 @@ class MultiSelectView extends StatelessWidget {
           children: <Widget>[
             TextFormField(
               controller: inputController.searchController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 // icon: Icon(Icons.person),
                 suffixIcon: Icon(Icons.search),
-                hintText: 'Search for name?',
-                labelText: 'Search ',
+                hintText: fieldOption?.placeholder ?? "",
+                labelText: fieldOption.label,
               ),
               onChanged: inputController.onSearchChanged,
               onSaved: (String? value) {
@@ -146,6 +148,7 @@ class MultiSelectCustomField extends ReactiveFormField<String?, String?> {
                 if (filt!.isNotEmpty) {
                   valueChoice = filt.first;
                 } else {
+                  /// Maintain state when resizing
                   valueChoice = controller.selected.value;
                 }
               }
@@ -160,11 +163,12 @@ class MultiSelectCustomField extends ReactiveFormField<String?, String?> {
                     MultiSelectView(
                       value: valueChoice,
                       inputController: controller,
+                      fieldOption: fildOption,
                       onChange: (value) {
                         if (value == null) {
                           field.didChange("$value");
                         } else {
-                          // controller.selected.value = valueChoice;
+                          // controller.selected.value = valueChoice;a
                           field.didChange("${value?.value}");
                         }
                       },

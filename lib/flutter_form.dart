@@ -256,12 +256,20 @@ getInputBasedOnType(FormItemField field) {
         lastDate: DateTime.now(),
       );
       break;
-    // case FieldType.multifield:
-    //   // reactiveInput=MultiSelectCustomField(
-    //   //   formControlName:field.name ,
-    //   // )
+    case FieldType.multifield:
+      var inputCont = Get.put(
+          InputController(
+            field: field,
+            fetchFirst: false,
+          ),
+          tag: field.name);
 
-    //   break;
+      reactiveInput = MultiSelectCustomField(
+        formControlName: field.name,
+        fildOption: field,
+      );
+
+      break;
     case FieldType.field:
       var inputCont = Get.put(InputController(field: field), tag: field.name);
 
@@ -280,7 +288,7 @@ getInputBasedOnType(FormItemField field) {
                 items: inputCont.choices?.value ?? [],
               ),
             ),
-          ], 
+          ],
         ),
       );
       break;

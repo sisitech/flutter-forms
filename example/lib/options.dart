@@ -43,6 +43,17 @@ const options = {
         "max_length": 45,
         "placeholder": "The name of the customer to deliver to"
       },
+      "contact_email": {
+        "type": "multifield",
+        "required": false,
+        "read_only": false,
+        "label": "Contact name",
+        "url": "api/v1/users",
+        "display_name": "username",
+        "max_length": 45,
+        "value_field": "email",
+        "placeholder": "Search by username ..."
+      },
       "contact_phone": {
         "type": "string",
         "required": false,
@@ -50,13 +61,6 @@ const options = {
         "label": "Contact phone",
         "obscure": true,
         "max_length": 25
-      },
-      "contact_email": {
-        "type": "email",
-        "required": false,
-        "read_only": false,
-        "label": "Contact email",
-        "max_length": 100
       },
       "name": {
         "type": "string",

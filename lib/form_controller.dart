@@ -127,6 +127,9 @@ class FormController extends GetxController {
       case FieldType.field:
         formControl = FormControl<Object>(validators: validators);
         break;
+      case FieldType.multifield:
+        formControl = FormControl<String?>(validators: validators);
+        break;
       case FieldType.date:
         formControl = FormControl<DateTime>(validators: validators);
         break;
