@@ -3,6 +3,7 @@ library flutter_form;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
@@ -12,11 +13,18 @@ import 'form_connect.dart';
 
 class InputController extends GetxController {
   late FormItemField field;
+
+  final FormController? formController;
+
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
   RxList<FormChoice> formChoices = RxList.empty();
 
-  InputController({required this.field, this.fetchFirst = true});
+  InputController({
+    this.formController,
+    required this.field,
+    this.fetchFirst = true,
+  });
   Rx<FormChoice?> selected = Rx(null);
 
   var searchController = TextEditingController();
@@ -66,7 +74,7 @@ class InputController extends GetxController {
   }
 
   resetOptions() {
-    dprint("resetting options");
+    // dprint("resetting options");
     formChoices.value = [];
     choices.value = [];
     noResults.value = "";
@@ -90,14 +98,16 @@ class InputController extends GetxController {
         var choices = await formProvider.formGet(field.url, query: queryParams);
         isLoading.value = false;
         var urlChoices = [];
-        dprint(choices);
+        // dprint(choices);
+        dprint("Getting status codfe ");
         dprint(choices.statusCode);
+        // dprint(choices.body);
         if (choices.statusCode == null) {
           dprint("NO internet conncetion");
           noResults.value = "No internet connection! Try again later!";
           return;
         }
-
+        dprint("Getting the options");
         if (choices.statusCode == 200) {
           if (choices.body.containsKey("results")) {
             urlChoices = choices.body["results"];
@@ -116,10 +126,13 @@ class InputController extends GetxController {
                     value: choice[field.value_field]),
               )
               .toList();
+        } else {
+          dprint("ad");
         }
         noResults.value =
             rawChoices != null && rawChoices!.isEmpty ? "No results." : "";
-        dprint(choices.body);
+        // dprint(choices.body);
+
       } catch (e) {
         noResults.value = "Failed, Try again later!.";
         dprint(e);
@@ -136,6 +149,26 @@ class InputController extends GetxController {
             ))
         .toList();
 
+    // Seclt first woeks for FieldTye.field only
+    dprint("Checking to select first");
+    dprint(field.type);
+    dprint(field.select_first);
+    if (field.type == FieldType.field && field.select_first) {
+      dprint(formChoices.value.length);
+      if (formChoices.value.isNotEmpty) {
+        dprint("Selecting first");
+        var first = choices.value.last;
+        dprint(first);
+        dprint(field.name);
+
+        if (formController != null) {
+          dprint("Form controller found");
+          formController?.form.control(field.name).patchValue(first.value);
+        } else {
+          dprint("Form controller not found");
+        }
+      }
+    }
     // dprint(choices.value);
   }
 }

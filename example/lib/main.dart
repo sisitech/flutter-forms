@@ -136,6 +136,50 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Hello Forms"),
+            MyCustomForm(
+              formItems: options,
+              instance: {
+                "contact_email": "michameiu@gmail.com",
+                "multifield": {
+                  "contact_email": FormChoice(
+                    display_name: "myadmin2",
+                    value: "michameiu@gmail.com",
+                  )
+                }
+              },
+              contentType: ContentType.json,
+              formHeader: Text("Welcome home"),
+              onSuccess: (value) {
+                dprint(value);
+              },
+              isValidateOnly: true,
+              formGroupOrder: const [
+                [
+                  "name",
+                ],
+                [
+                  'role',
+                ],
+                ["active"],
+                ["modified"],
+                [
+                  "contact_name",
+                ],
+                [
+                  "contact_phone",
+                ],
+                [
+                  "contact_email",
+                  // "image",
+                ],
+                ["location"]
+              ],
+              formTitle: "Login",
+              formFooter: Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text("Sign Up"),
+              ),
+            ),
             CustomFieldForm(),
             const SizedBox(
               height: 20,
@@ -174,41 +218,6 @@ class MyHomePage extends StatelessWidget {
             ),
             const SizedBox(
               height: 20,
-            ),
-            MyCustomForm(
-              formItems: options,
-              contentType: ContentType.json,
-              formHeader: Text("Welcome home"),
-              onSuccess: (value) {
-                dprint(value);
-              },
-              isValidateOnly: true,
-              formGroupOrder: const [
-                [
-                  "name",
-                ],
-                [
-                  'role',
-                ],
-                ["active"],
-                ["modified"],
-                [
-                  "contact_name",
-                ],
-                [
-                  "contact_phone",
-                ],
-                [
-                  "contact_email",
-                  // "image",
-                ],
-                ["location"]
-              ],
-              formTitle: "Login",
-              formFooter: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Text("Sign Up"),
-              ),
             ),
           ],
         ),

@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'form_connect.dart';
+import 'input_controller.dart';
 import 'models.dart';
 
 class FormController extends GetxController {
@@ -22,6 +23,8 @@ class FormController extends GetxController {
   final Function? handleErrors;
   final String loadingMessage;
   final Function? onSuccess;
+  final Function? getDynamicUrl;
+
   final Map<String, dynamic>? instance;
   FormStatus status;
   final Function? onStatus;
@@ -40,6 +43,7 @@ class FormController extends GetxController {
       this.extraFields,
       this.onSuccess,
       this.handleErrors,
+      this.getDynamicUrl,
       this.instance,
       this.onStatus,
       this.instanceUrl,
@@ -100,6 +104,29 @@ class FormController extends GetxController {
     if (this.instance != null) {
       this.instance?.forEach((key, value) {
         if (possibleFields.contains(key)) {
+          // Updating a multified of an instance
+          /**  instance{
+             field type 'multified'
+             ...
+             multified: {
+              "field":FormChoice(..)
+             }
+          
+           }
+          */
+          var field = fields.firstWhere((field) => field.name == key);
+          if (field != null && field.type == FieldType.multifield) {
+            if (this.instance!.containsKey("multifield")) {
+              var allMultiFields = this.instance!["multifield"];
+              if (allMultiFields?.containsKey(key)) {
+                // dprint("GEttitng Input controller with tag: ${key}");
+                // dprint("FOund");
+                // dprint(allMultiFields[key]);
+                var controller = Get.find<InputController>(tag: key);
+                controller.selected.value = allMultiFields[key];
+              }
+            }
+          }
           form.control(key).patchValue(value);
         }
         // this.form.updateValue(this.instance);
@@ -114,6 +141,8 @@ class FormController extends GetxController {
     update();
   }
 
+  updateMultified(key, value) {}
+
   getFormControl(FormItemField field) {
     var validators = getFieldValidators(field);
     var formControl;
@@ -125,9 +154,27 @@ class FormController extends GetxController {
         formControl = FormControl<bool>(value: false, validators: validators);
         break;
       case FieldType.field:
+        var inputCont = Get.put(
+          InputController(
+            field: field,
+            formController: this,
+          ),
+          tag: field.name,
+        );
+
         formControl = FormControl<Object>(validators: validators);
         break;
       case FieldType.multifield:
+        var inputCont = Get.put(
+            InputController(
+              field: field,
+              fetchFirst: false,
+              formController: this,
+            ),
+            tag: field.name);
+        // var inputContq =
+        //     Get.put(InputController(field: field), tag: field.name);
+
         formControl = FormControl<String?>(validators: validators);
         break;
       case FieldType.date:
@@ -159,6 +206,13 @@ class FormController extends GetxController {
     return value;
   }
 
+  resolveRequestUrl(formData) {
+    if (getDynamicUrl != null) {
+      return getDynamicUrl!(formData);
+    }
+    return url;
+  }
+
   submit() async {
     if (!form.valid) {
       // dprint("Not valied");
@@ -170,7 +224,9 @@ class FormController extends GetxController {
     // dprint(extraFields);
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
+    // Pre Save Data
     var data = preparePostData();
+    var requrl = resolveRequestUrl(data);
     dprint(isValidateOnly);
     if (isValidateOnly) {
       if (onSuccess != null) {
@@ -186,14 +242,14 @@ class FormController extends GetxController {
       Response res;
       if (contentType == ContentType.form_url_encoded) {
         // dprint("Url encoded");
-        res = await serv.formPostUrlEncoded(url, data);
+        res = await serv.formPostUrlEncoded(requrl, data);
       } else {
         // dprint("None url encoded");
         if (status == FormStatus.Update) {
           var updateUrl = "${getInstanceUrl()}/${instanceId}/";
           res = await serv.formPatch(updateUrl, data);
         } else {
-          res = await serv.formPost(url, data);
+          res = await serv.formPost(requrl, data);
         }
       }
       dprint(res.statusCode);

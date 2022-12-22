@@ -125,23 +125,23 @@ class MultiSelectView extends StatelessWidget {
   }
 }
 
-class MultiSelectCustomField extends ReactiveFormField<String?, String?> {
+class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
   MultiSelectCustomField({
     required String formControlName,
     required FormItemField fildOption,
   }) : super(
             formControlName: formControlName,
-            builder: (ReactiveFormFieldState<String?, String?> field) {
+            builder: (ReactiveFormFieldState<dynamic?, dynamic?> field) {
               // dprint(field.valueAccessor.runtimeType);
-              dprint(field);
+              // dprint(field);
               // var tag = "${formControlName}${formName}";
               var controller = Get.find<InputController>(tag: fildOption.name);
 
               // make sure never to pass null value to the Counter widget.
               final fieldValue = field.value;
               FormChoice? valueChoice;
-              dprint("Field Value");
-              dprint(fieldValue);
+              // dprint("Field Value");
+              // dprint(fieldValue);
 
               if (fieldValue == null) {
                 valueChoice = null;
@@ -191,8 +191,8 @@ class MultiSelectCustomField extends ReactiveFormField<String?, String?> {
             });
 
   @override
-  ReactiveFormFieldState<String?, String?> createState() =>
-      ReactiveFormFieldState<String?, String?>();
+  ReactiveFormFieldState<dynamic?, dynamic?> createState() =>
+      ReactiveFormFieldState<dynamic?, dynamic?>();
 }
 
 Widget _buildChip(String label, field) {
@@ -211,7 +211,7 @@ Widget _buildChip(String label, field) {
             field.didChange(null);
           },
           icon: Icon(Icons.cancel),
-          color: Get.theme.errorColor,
+          // color: Get.theme.errorColor,
         )
       ],
     ),

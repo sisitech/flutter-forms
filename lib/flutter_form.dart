@@ -53,6 +53,8 @@ class MyCustomForm extends StatelessWidget {
 
   final String? instanceUrl;
 
+  final Function? getDynamicUrl;
+
   MyCustomForm({
     super.key,
     required this.formTitle,
@@ -66,6 +68,7 @@ class MyCustomForm extends StatelessWidget {
     this.PreSaveData,
     this.onStatus,
     this.instanceUrl,
+    this.getDynamicUrl,
     this.status = FormStatus.Add,
     this.loadingMessage = "Loading ...",
     this.handleErrors,
@@ -86,6 +89,7 @@ class MyCustomForm extends StatelessWidget {
           instance: instance,
           instanceUrl: instanceUrl,
           url: url,
+          getDynamicUrl: getDynamicUrl,
           status: status,
           onSuccess: onSuccess,
           contentType: contentType,
@@ -188,6 +192,13 @@ inputDecoration(field) => InputDecoration(
       // helperStyle: TextStyle(height: 0.7),
       // errorStyle: TextStyle(height: 0.7),
     );
+Widget LabelWidget(FormItemField field) {
+  return Text(
+    labelName(field),
+    style: Get.theme.textTheme.bodyText1,
+  );
+}
+
 getInputBasedOnType(FormItemField field) {
   // dprint("Getting the labelStyle");
   // dprint(Get.theme.textTheme.bodyText1);
@@ -195,12 +206,6 @@ getInputBasedOnType(FormItemField field) {
   var defaultValidationMessage = {
     'required': (error) => 'This field must not be empty'
   };
-  Widget LabelWidget(FormItemField field) {
-    return Text(
-      labelName(field),
-      style: Get.theme.textTheme.bodyText1,
-    );
-  }
 
   Widget reactiveInput;
   switch (field.type) {

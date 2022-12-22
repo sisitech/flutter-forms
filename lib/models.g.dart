@@ -31,6 +31,7 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       display_name: json['display_name'] as String? ?? "name",
       search_field: json['search_field'] as String? ?? "name",
       value_field: json['value_field'] as String? ?? "id",
+      select_first: json['select_first'] as bool? ?? false,
       multiple: json['multiple'] as bool? ?? false,
     )..choices = (json['choices'] as List<dynamic>?)
         ?.map((e) => FormChoice.fromJson(e as Map<String, dynamic>))
@@ -44,6 +45,7 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
       'search_field': instance.search_field,
       'value_field': instance.value_field,
       'choices': instance.choices,
+      'select_first': instance.select_first,
       'name': instance.name,
       'label': instance.label,
       'placeholder': instance.placeholder,

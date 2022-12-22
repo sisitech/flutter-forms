@@ -80,11 +80,14 @@ class FormUrlChoices {
   late String search_field;
   late String value_field;
   late List<FormChoice>? choices;
+  late bool select_first;
+
   FormUrlChoices(
       {this.url,
       this.display_name = "name",
       this.value_field = "id",
       this.search_field = "",
+      this.select_first = false,
       this.multiple = false});
 }
 
@@ -112,6 +115,7 @@ class FormItemField extends FormUrlChoices {
       super.display_name = "name",
       super.search_field = "name",
       super.value_field = "id",
+      super.select_first = false,
       super.multiple = false});
 
   // this.url,
