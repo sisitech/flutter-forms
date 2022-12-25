@@ -139,19 +139,23 @@ class MyHomePage extends StatelessWidget {
             MyCustomForm(
               formItems: options,
               instance: {
-                "contact_email": "michameiu@gmail.com",
-                "multifield": {
-                  "contact_email": FormChoice(
-                    display_name: "myadmin2",
-                    value: "michameiu@gmail.com",
-                  )
-                }
+                // "contact_email": "michameiu@gmail.com",
+                // "multifield": {
+                //   // "contact_email": FormChoice(
+                //   //   display_name: "myadmin2",
+                //   //   value: "michameiu@gmail.com",
+                //   // )
+                // }
               },
               contentType: ContentType.json,
               formHeader: Text("Welcome home"),
               onSuccess: (value) {
                 dprint(value);
+                dprint(value["modified"].runtimeType);
               },
+              // handleErrors: (value) {
+              //   return "Textsitn new validation";
+              // },
               isValidateOnly: true,
               formGroupOrder: const [
                 [

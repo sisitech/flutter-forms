@@ -8,6 +8,7 @@ import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
+import 'package:reactive_forms/reactive_forms.dart';
 
 import 'form_connect.dart';
 
@@ -15,6 +16,9 @@ class InputController extends GetxController {
   late FormItemField field;
 
   final FormController? formController;
+  final Function? onSelectFirst;
+
+  final FormGroup? form;
 
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
@@ -23,6 +27,8 @@ class InputController extends GetxController {
   InputController({
     this.formController,
     required this.field,
+    this.form,
+    this.onSelectFirst,
     this.fetchFirst = true,
   });
   Rx<FormChoice?> selected = Rx(null);
@@ -150,20 +156,23 @@ class InputController extends GetxController {
         .toList();
 
     // Seclt first woeks for FieldTye.field only
-    dprint("Checking to select first");
-    dprint(field.type);
-    dprint(field.select_first);
+    // dprint("Checking to select first");
+    // dprint(field.type);
+    // dprint(field.select_first);
     if (field.type == FieldType.field && field.select_first) {
-      dprint(formChoices.value.length);
+      // dprint(formChoices.value.length);
       if (formChoices.value.isNotEmpty) {
-        dprint("Selecting first");
-        var first = choices.value.last;
-        dprint(first);
-        dprint(field.name);
+        // dprint("Selecting first");
+        var first = formChoices.value.first;
+        // dprint(first);
+        // dprint(field.name);
 
-        if (formController != null) {
-          dprint("Form controller found");
-          formController?.form.control(field.name).patchValue(first.value);
+        if (form != null) {
+          // dprint("Form controller found");
+          form?.control(field.name).patchValue(first.value);
+          if (onSelectFirst != null) {
+            onSelectFirst!(first);
+          }
         } else {
           dprint("Form controller not found");
         }

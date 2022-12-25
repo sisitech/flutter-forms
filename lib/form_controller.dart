@@ -157,7 +157,8 @@ class FormController extends GetxController {
         var inputCont = Get.put(
           InputController(
             field: field,
-            formController: this,
+            // formController: this,
+            form: form,
           ),
           tag: field.name,
         );
@@ -166,11 +167,9 @@ class FormController extends GetxController {
         break;
       case FieldType.multifield:
         var inputCont = Get.put(
-            InputController(
-              field: field,
-              fetchFirst: false,
-              formController: this,
-            ),
+            InputController(field: field, fetchFirst: false, form: form
+                // formController: this,
+                ),
             tag: field.name);
         // var inputContq =
         //     Get.put(InputController(field: field), tag: field.name);

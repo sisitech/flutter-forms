@@ -15,16 +15,17 @@ class MultiSelectView extends StatelessWidget {
   final Function onChange;
   final InputController inputController;
   final FormItemField fieldOption;
+  ReactiveFormFieldState<dynamic?, dynamic?> reactiveField;
 
   /// Creates a [Counter] instance.
   /// The [value] of the counter is required and must not by null.
-  MultiSelectView({
-    super.key,
-    this.value,
-    required this.onChange,
-    required this.inputController,
-    required this.fieldOption,
-  });
+  MultiSelectView(
+      {super.key,
+      this.value,
+      required this.onChange,
+      required this.inputController,
+      required this.fieldOption,
+      required this.reactiveField});
 
   selectStuff(FormChoice? formChoice) {
     onChange(formChoice);
@@ -33,6 +34,8 @@ class MultiSelectView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // dprint(context);
+    dprint("Reveived erros");
+    dprint(reactiveField.errorText);
     return Container(
       constraints: BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
@@ -47,6 +50,7 @@ class MultiSelectView extends StatelessWidget {
                 suffixIcon: Icon(Icons.search),
                 hintText: fieldOption?.placeholder ?? "",
                 labelText: fieldOption.label,
+                errorText: reactiveField.errorText,
               ),
               onChanged: inputController.onSearchChanged,
               onSaved: (String? value) {
@@ -54,9 +58,8 @@ class MultiSelectView extends StatelessWidget {
                 // code when the user saves the form.
               },
               validator: (String? value) {
-                return (value != null && value.contains('@'))
-                    ? 'Do not use the @ char.'
-                    : null;
+                dprint("Valiadtin");
+                return reactiveField.errorText;
               },
             ),
             if (inputController.isLoading.value)
@@ -132,6 +135,9 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
   }) : super(
             formControlName: formControlName,
             builder: (ReactiveFormFieldState<dynamic?, dynamic?> field) {
+              dprint("Errors are");
+              dprint(field.errorText);
+              dprint("Reactive forms event");
               // dprint(field.valueAccessor.runtimeType);
               // dprint(field);
               // var tag = "${formControlName}${formName}";
@@ -167,6 +173,7 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                       value: valueChoice,
                       inputController: controller,
                       fieldOption: fildOption,
+                      reactiveField: field,
                       onChange: (value) {
                         if (value == null) {
                           field.didChange("$value");
