@@ -40,6 +40,7 @@ class MyCustomForm extends StatelessWidget {
   final ContentType contentType;
   final Function? handleErrors;
   final Function? onSuccess;
+  final Function? onControllerSetup;
   final String loadingMessage;
   FormStatus status;
   final Function? onStatus;
@@ -69,6 +70,7 @@ class MyCustomForm extends StatelessWidget {
     this.onStatus,
     this.instanceUrl,
     this.getDynamicUrl,
+    this.onControllerSetup,
     this.status = FormStatus.Add,
     this.loadingMessage = "Loading ...",
     this.handleErrors,
@@ -91,11 +93,16 @@ class MyCustomForm extends StatelessWidget {
           url: url,
           getDynamicUrl: getDynamicUrl,
           status: status,
+          onControllerSetup: onControllerSetup,
           onSuccess: onSuccess,
           contentType: contentType,
           handleErrors: handleErrors,
         ),
         tag: formTitle);
+
+    if (onControllerSetup != null) {
+      onControllerSetup!(controller);
+    }
   }
 
   @override
@@ -195,7 +202,7 @@ inputDecoration(field) => InputDecoration(
 Widget LabelWidget(FormItemField field) {
   return Text(
     labelName(field),
-    style: Get.theme.textTheme.bodyText1,
+    style: Get.theme.inputDecorationTheme.labelStyle,
   );
 }
 
@@ -240,19 +247,40 @@ getInputBasedOnType(FormItemField field) {
         formControlName: field.name,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
-          dprint(picker.control.value);
+          dprint("Picker errprs");
+          String? errorText;
+          if (picker.control.errors != null) {
+            errorText = picker.control?.errors.keys.join("\n");
+          }
+          bool hasError =
+              (errorText?.isNotEmpty ?? false) && picker.control.touched;
+          dprint(hasError);
           return GestureDetector(
             onTap: picker.showPicker,
             child: Container(
-              child: Row(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  LabelWidget(field),
-                  IconButton(
-                    onPressed: picker.showPicker,
-                    icon: Icon(Icons.date_range),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      LabelWidget(field),
+                      IconButton(
+                        onPressed: picker.showPicker,
+                        icon: Icon(
+                          Icons.date_range_outlined,
+                          color: hasError ? Get.theme.errorColor : null,
+                        ),
+                      ),
+                      Text(dateToCustomString(picker.control.value))
+                    ],
                   ),
-                  Text(dateToCustomString(picker.control.value))
+                  if (hasError)
+                    Text(
+                      errorText ?? "",
+                      style: TextStyle(color: Get.theme.errorColor),
+                    )
                 ],
               ),
             ),

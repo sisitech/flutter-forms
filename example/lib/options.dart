@@ -23,13 +23,13 @@ const options = {
       },
       "modified": {
         "type": "date",
-        "required": true,
+        "required": false,
         "read_only": false,
         "label": "Modified"
       },
       "active": {
         "type": "boolean",
-        "required": false,
+        "required": true,
         "read_only": false,
         "label": "Active"
       },
@@ -67,7 +67,7 @@ const options = {
       },
       "name": {
         "type": "string",
-        "required": true,
+        "required": false,
         "read_only": false,
         "label": "Name",
         "max_length": 45

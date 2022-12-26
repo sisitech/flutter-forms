@@ -25,6 +25,8 @@ class FormController extends GetxController {
   final Function? onSuccess;
   final Function? getDynamicUrl;
 
+  final Function? onControllerSetup;
+
   final Map<String, dynamic>? instance;
   FormStatus status;
   final Function? onStatus;
@@ -47,6 +49,7 @@ class FormController extends GetxController {
       this.instance,
       this.onStatus,
       this.instanceUrl,
+      this.onControllerSetup,
       this.status = FormStatus.Add,
       this.PreSaveData,
       required this.loadingMessage,

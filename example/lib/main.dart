@@ -3,6 +3,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form/custom_input.dart';
 import 'package:flutter_form/flutter_form.dart';
+import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:form_example/options.dart';
@@ -126,6 +127,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     APIConfig config = Get.find<APIConfig>();
     dprint(context.width);
+    FormController? controller;
 
     return Scaffold(
       appBar: AppBar(
@@ -138,6 +140,7 @@ class MyHomePage extends StatelessWidget {
             const Text("Hello Forms"),
             MyCustomForm(
               formItems: options,
+              onControllerSetup: (contr) => controller = contr,
               instance: {
                 // "contact_email": "michameiu@gmail.com",
                 // "multifield": {
@@ -152,6 +155,13 @@ class MyHomePage extends StatelessWidget {
               onSuccess: (value) {
                 dprint(value);
                 dprint(value["modified"].runtimeType);
+                if (controller != null) {
+                  var controlName = "modified";
+                  controller?.form
+                      .control(controlName)
+                      .setErrors({"Faield..": ""});
+                  controller?.form.control(controlName).markAsTouched();
+                }
               },
               // handleErrors: (value) {
               //   return "Textsitn new validation";

@@ -34,8 +34,8 @@ class MultiSelectView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // dprint(context);
-    dprint("Reveived erros");
-    dprint(reactiveField.errorText);
+    // dprint("Reveived erros");
+    // dprint(reactiveField.errorText);
     return Container(
       constraints: BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
@@ -135,9 +135,9 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
   }) : super(
             formControlName: formControlName,
             builder: (ReactiveFormFieldState<dynamic?, dynamic?> field) {
-              dprint("Errors are");
-              dprint(field.errorText);
-              dprint("Reactive forms event");
+              // dprint("Errors are");
+              // dprint(field.errorText);
+              // dprint("Reactive forms event");
               // dprint(field.valueAccessor.runtimeType);
               // dprint(field);
               // var tag = "${formControlName}${formName}";
