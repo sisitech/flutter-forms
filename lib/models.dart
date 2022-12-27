@@ -27,7 +27,9 @@ enum FieldType {
   multifield,
   boolean,
   email,
-  file
+  file,
+  choice,
+  float
 }
 
 class APIConfig {

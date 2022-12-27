@@ -310,6 +310,7 @@ getInputBasedOnType(FormItemField field) {
 
       break;
     case FieldType.field:
+    case FieldType.choice:
       var inputCont = Get.put(InputController(field: field), tag: field.name);
 
       reactiveInput = Obx(
