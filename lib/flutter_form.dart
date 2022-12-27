@@ -41,6 +41,8 @@ class MyCustomForm extends StatelessWidget {
   final Function? handleErrors;
   final Function? onSuccess;
   final Function? onControllerSetup;
+  final Function? onFormItemTranform;
+
   final String loadingMessage;
   FormStatus status;
   final Function? onStatus;
@@ -70,6 +72,7 @@ class MyCustomForm extends StatelessWidget {
     this.onStatus,
     this.instanceUrl,
     this.getDynamicUrl,
+    this.onFormItemTranform,
     this.onControllerSetup,
     this.status = FormStatus.Add,
     this.loadingMessage = "Loading ...",
@@ -91,6 +94,7 @@ class MyCustomForm extends StatelessWidget {
           instance: instance,
           instanceUrl: instanceUrl,
           url: url,
+          onFormItemTranform: onFormItemTranform,
           getDynamicUrl: getDynamicUrl,
           status: status,
           onControllerSetup: onControllerSetup,

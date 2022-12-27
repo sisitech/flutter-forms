@@ -140,6 +140,12 @@ class MyHomePage extends StatelessWidget {
             const Text("Hello Forms"),
             MyCustomForm(
               formItems: options,
+              // onFormItemTranform: (FormItemField field) {
+              //   if (field.name == "contact_name") {
+              //     field.label = "${field.label} Transformed";
+              //   }
+              //   return field;
+              // },
               onControllerSetup: (contr) => controller = contr,
               instance: {
                 // "contact_email": "michameiu@gmail.com",

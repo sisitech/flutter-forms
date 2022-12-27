@@ -55,7 +55,10 @@ const options = {
         "search_field": "username",
         "max_length": 45,
         "value_field": "email",
-        "placeholder": "Search by username ..."
+        "placeholder": "Search by username ...",
+        "show_only": true,
+        "show_only_field": "require_serial_number",
+        "show_reset_value": false
       },
       "contact_phone": {
         "type": "string",

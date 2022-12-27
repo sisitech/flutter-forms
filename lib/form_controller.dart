@@ -18,13 +18,13 @@ class FormController extends GetxController {
   final bool isValidateOnly;
   final String? url;
   final String? instanceUrl;
-  final Function? PreSaveData;
   final ContentType contentType;
   final Function? handleErrors;
   final String loadingMessage;
   final Function? onSuccess;
+  final Function? PreSaveData;
   final Function? getDynamicUrl;
-
+  final Function? onFormItemTranform;
   final Function? onControllerSetup;
 
   final Map<String, dynamic>? instance;
@@ -47,6 +47,7 @@ class FormController extends GetxController {
       this.handleErrors,
       this.getDynamicUrl,
       this.instance,
+      this.onFormItemTranform,
       this.onStatus,
       this.instanceUrl,
       this.onControllerSetup,
@@ -98,6 +99,11 @@ class FormController extends GetxController {
           type: FieldType.string,
         );
       }
+      // If any Form Items transformations required
+      if (onFormItemTranform != null) {
+        field = onFormItemTranform!(field);
+      }
+
       fields.add(field);
       form.addAll({
         value: getFormControl(field),

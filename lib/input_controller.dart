@@ -1,6 +1,7 @@
 library flutter_form;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
@@ -115,6 +116,10 @@ class InputController extends GetxController {
         }
         dprint("Getting the options");
         if (choices.statusCode == 200) {
+          if (choices?.body.runtimeType == String) {
+            dprint("FOnd strineg instrad");
+            return;
+          }
           if (choices.body.containsKey("results")) {
             urlChoices = choices.body["results"];
           } else if (choices.body.runtimeType == List) {
@@ -140,6 +145,11 @@ class InputController extends GetxController {
         // dprint(choices.body);
 
       } catch (e) {
+        if (e.runtimeType is HttpResponse) {
+          dprint("Error a http response");
+          var resp = e as HttpResponse;
+          dprint(resp.statusCode);
+        }
         noResults.value = "Failed, Try again later!.";
         dprint(e);
         isLoading.value = false;
