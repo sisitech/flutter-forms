@@ -57,7 +57,7 @@ class FormController extends GetxController {
       required this.contentType,
       this.formGroupOrder = const []}) {
     // dprint(formItems);
-    dprint("Initialized this controller for me..");
+    // dprint("Initialized this controller for me..");
   }
 
   @override
@@ -108,6 +108,7 @@ class FormController extends GetxController {
       form.addAll({
         value: getFormControl(field),
       });
+      setupInputController(field);
     });
 
     if (this.instance != null) {
@@ -152,58 +153,25 @@ class FormController extends GetxController {
 
   updateMultified(key, value) {}
 
-  getFormControl(FormItemField field) {
-    var validators = getFieldValidators(field);
-    var formControl;
-    switch (field.type) {
-      case FieldType.string:
-        formControl = FormControl<String>(validators: validators);
-        break;
-      case FieldType.boolean:
-        formControl = FormControl<bool>(value: false, validators: validators);
-        break;
-      case FieldType.field:
-        var inputCont = Get.put(
-          InputController(
+  setupInputController(FormItemField field) {
+    var requireControllerTypes = [
+      FieldType.choice,
+      FieldType.field,
+      FieldType.multifield,
+    ];
+
+    if (requireControllerTypes.contains(field.type) ||
+        field.from_field != null) {
+      field.hasController = true;
+      var inputCont = Get.put(
+        InputController(
             field: field,
             // formController: this,
             form: form,
-          ),
-          tag: field.name,
-        );
-
-        formControl = FormControl<Object>(validators: validators);
-        break;
-      case FieldType.multifield:
-        var inputCont = Get.put(
-            InputController(field: field, fetchFirst: false, form: form
-                // formController: this,
-                ),
-            tag: field.name);
-        // var inputContq =
-        //     Get.put(InputController(field: field), tag: field.name);
-
-        formControl = FormControl<String?>(validators: validators);
-        break;
-      case FieldType.date:
-        formControl = FormControl<DateTime>(validators: validators);
-        break;
-      case FieldType.datetime:
-        formControl = FormControl<DateTime>(validators: validators);
-        break;
-      default:
-        formControl = FormControl(validators: validators);
+            fetchFirst: field.type == FieldType.multifield ? false : true),
+        tag: field.name,
+      );
     }
-    return formControl;
-  }
-
-  getFieldValidators(FormItemField field) {
-    List<Map<String, dynamic>? Function(AbstractControl<dynamic>)> validators =
-        [];
-    if (field.required) {
-      validators.add(Validators.required);
-    }
-    return validators;
   }
 
   preparePostData() {

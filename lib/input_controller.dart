@@ -21,6 +21,8 @@ class InputController extends GetxController {
 
   final FormGroup? form;
 
+  var visible = true.obs;
+
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
   RxList<FormChoice> formChoices = RxList.empty();
@@ -49,6 +51,39 @@ class InputController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    setUpInputOptions();
+  }
+
+  handleFromField() {
+    dprint("Got a first from_field");
+    form?.control(field.from_field!).valueChanges.listen((event) {
+      dprint("Lister ${field.name} notified of ${field.from_field} changes");
+      dprint(event);
+      handleShowOnly(event);
+    });
+    handleShowOnly(form?.control(field.from_field!).value);
+  }
+
+  handleShowOnly(dynamic value) {
+    if (field.show_only == null) return;
+    var showOnlyValue = field.show_only;
+    var show = value == showOnlyValue;
+    dprint("SHowing $show");
+    if (!show) {
+      if (form?.controls.containsKey(field.name) ?? false) {
+        form?.removeControl(field.name);
+      }
+    } else {
+      form?.addAll({field.name: getFormControl(field)});
+    }
+
+    visible.value = show;
+  }
+
+  setUpInputOptions() {
+    if (field.from_field != null) {
+      handleFromField();
+    }
     if (this.fetchFirst) {
       this.getOptions();
     }

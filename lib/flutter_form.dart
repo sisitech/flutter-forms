@@ -188,6 +188,24 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
 }
 
 Widget getInput(FormItemField field) {
+  dprint(field.name);
+  dprint(field.hasController);
+
+  if (field.hasController) {
+    var inputCont = Get.find<InputController>(tag: field.name);
+
+    return Obx(() {
+      return !inputCont.visible.value
+          ? SizedBox(width: 0, height: 0)
+          : Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: getInputBasedOnType(field),
+              ),
+            );
+    });
+  }
+
   return Expanded(
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -291,7 +309,7 @@ getInputBasedOnType(FormItemField field) {
           );
           ;
         },
-        firstDate: DateTime.now(),
+        firstDate: DateTime.now().add(const Duration(days: -10000)),
         lastDate: DateTime.now(),
       );
       break;

@@ -103,6 +103,9 @@ class FormItemField extends FormUrlChoices {
   late bool read_only;
   late int? max_length;
   late bool? obscure;
+  late String? from_field;
+  late dynamic? show_only;
+  bool hasController;
 
   FormItemField(
       {required this.name,
@@ -113,6 +116,9 @@ class FormItemField extends FormUrlChoices {
       this.required = false,
       this.read_only = false,
       this.max_length,
+      this.show_only,
+      this.from_field,
+      this.hasController = false,
       super.url,
       super.display_name = "name",
       super.search_field = "name",

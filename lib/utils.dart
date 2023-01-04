@@ -2,6 +2,9 @@ library flutter_form;
 
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:reactive_forms/reactive_forms.dart';
+
+import 'models.dart';
 
 dprint(dynamic value) {
   if (kDebugMode) {
@@ -35,4 +38,49 @@ String dateToCustomString(DateTime? date) {
   }
   var format = DateFormat('EEE, MMM d, ' 'yyyy');
   return format.format(date);
+}
+
+getFieldValidators(FormItemField field) {
+  List<Map<String, dynamic>? Function(AbstractControl<dynamic>)> validators =
+      [];
+  if (field.required) {
+    validators.add(Validators.required);
+  }
+  return validators;
+}
+
+getFormControl(FormItemField field) {
+  var validators = getFieldValidators(field);
+  // Setup INput COntroller base on
+
+  var formControl;
+  switch (field.type) {
+    case FieldType.string:
+      formControl = FormControl<String>(validators: validators);
+      break;
+    case FieldType.boolean:
+      formControl = FormControl<bool>(value: false, validators: validators);
+      break;
+    case FieldType.field:
+      formControl = FormControl<Object>(validators: validators);
+      break;
+    case FieldType.multifield:
+      // var inputCont = Get.put(
+      //     InputController(field: field, fetchFirst: false, form: form),
+      //     tag: field.name);
+      // var inputContq =
+      //     Get.put(InputController(field: field), tag: field.name);
+
+      formControl = FormControl<String?>(validators: validators);
+      break;
+    case FieldType.date:
+      formControl = FormControl<DateTime>(validators: validators);
+      break;
+    case FieldType.datetime:
+      formControl = FormControl<DateTime>(validators: validators);
+      break;
+    default:
+      formControl = FormControl(validators: validators);
+  }
+  return formControl;
 }

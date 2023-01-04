@@ -8,6 +8,7 @@ import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:form_example/options.dart';
 import 'package:form_example/options_login.dart';
+import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
 
 import 'custom_field.dart';
@@ -139,7 +140,7 @@ class MyHomePage extends StatelessWidget {
           children: [
             const Text("Hello Forms"),
             MyCustomForm(
-              formItems: options,
+              formItems: teacherOptions,
               // onFormItemTranform: (FormItemField field) {
               //   if (field.name == "contact_name") {
               //     field.label = "${field.label} Transformed";
@@ -147,7 +148,7 @@ class MyHomePage extends StatelessWidget {
               //   return field;
               // },
               onControllerSetup: (contr) => controller = contr,
-              instance: {
+              instance: const {
                 // "contact_email": "michameiu@gmail.com",
                 // "multifield": {
                 //   // "contact_email": FormChoice(
@@ -157,7 +158,7 @@ class MyHomePage extends StatelessWidget {
                 // }
               },
               contentType: ContentType.json,
-              formHeader: Text("Welcome home"),
+              formHeader: const Text("Welcome home"),
               onSuccess: (value) {
                 dprint(value);
                 dprint(value["modified"].runtimeType);
@@ -174,22 +175,15 @@ class MyHomePage extends StatelessWidget {
               // },
               isValidateOnly: true,
               formGroupOrder: const [
-                [
-                  "name",
-                ],
-                [
-                  'role',
-                ],
+                ["name"],
+                ['role'],
                 ["active"],
                 ["modified"],
+                ["contact_name"],
+                ["contact_phone"],
+                ["tsc_no"],
                 [
-                  "contact_name",
-                ],
-                [
-                  "contact_phone",
-                ],
-                [
-                  "contact_email",
+                  "contact_email"
                   // "image",
                 ],
                 ["location"]
