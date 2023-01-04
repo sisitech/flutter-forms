@@ -76,7 +76,8 @@ class FormChoice {
 }
 
 class FormUrlChoices {
-  late String? url;
+  String? url;
+  late String? instance_url;
   late bool? multiple;
   late String display_name;
   late String search_field;
@@ -84,11 +85,17 @@ class FormUrlChoices {
   late List<FormChoice>? choices;
   late bool select_first;
 
+  getInstanceUrl() {
+    if (instance_url != null) return instance_url;
+    return url;
+  }
+
   FormUrlChoices(
       {this.url,
       this.display_name = "name",
       this.value_field = "id",
       this.search_field = "",
+      this.instance_url,
       this.select_first = false,
       this.multiple = false});
 }
@@ -105,6 +112,8 @@ class FormItemField extends FormUrlChoices {
   late bool? obscure;
   late String? from_field;
   late dynamic? show_only;
+  late String? show_only_field;
+  late bool? show_reset_value;
   bool hasController;
 
   FormItemField(
@@ -119,6 +128,9 @@ class FormItemField extends FormUrlChoices {
       this.show_only,
       this.from_field,
       this.hasController = false,
+      this.show_only_field,
+      this.show_reset_value,
+      super.instance_url,
       super.url,
       super.display_name = "name",
       super.search_field = "name",

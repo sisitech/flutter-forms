@@ -25,6 +25,10 @@ extension MyStringExt on String {
   }
 }
 
+getFullInstanceUrl(String url, instanceId) {
+  return "${url.toUrlNoSlash()}/$instanceId/";
+}
+
 extension MyDateExtenson on DateTime {
   String toCustomString() {
     var format = DateFormat.yMd();

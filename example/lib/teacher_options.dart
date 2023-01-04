@@ -93,7 +93,8 @@ const teacherOptions = {
         "required": false,
         "read_only": false,
         "label": "Contact name",
-        "url": "api/v1/users",
+        "url": "api/v1/shops",
+        "instance_url": "api/v1/shops/",
         "display_name": "username",
         "search_field": "username",
         "max_length": 45,
@@ -111,9 +112,10 @@ const teacherOptions = {
         "max_length": 45,
         "value_field": "email",
         "placeholder": "Search by username ...",
-        "show_only": true,
-        "show_only_field": "require_serial_number",
-        "show_reset_value": false
+        "show_only": "myadmin",
+        "show_only_field": "name",
+        "show_reset_value": false,
+        "from_field": "contact_name"
       },
       "active": {
         "type": "boolean",

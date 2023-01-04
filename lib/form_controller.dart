@@ -166,7 +166,7 @@ class FormController extends GetxController {
       var inputCont = Get.put(
         InputController(
             field: field,
-            // formController: this,
+            formController: this,
             form: form,
             fetchFirst: field.type == FieldType.multifield ? false : true),
         tag: field.name,

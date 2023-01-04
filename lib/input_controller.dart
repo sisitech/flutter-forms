@@ -46,6 +46,7 @@ class InputController extends GetxController {
 
   bool showOptions = false;
   Timer? _debounce;
+  StreamSubscription? fromFieldSubscription;
 
   @override
   void onInit() {
@@ -54,20 +55,55 @@ class InputController extends GetxController {
     setUpInputOptions();
   }
 
+  @override
+  void onClose() {
+    super.onClose();
+    fromFieldSubscription?.cancel();
+  }
+
   handleFromField() {
     dprint("Got a first from_field");
-    form?.control(field.from_field!).valueChanges.listen((event) {
+    fromFieldSubscription =
+        form?.control(field.from_field!).valueChanges.listen((event) async {
       dprint("Lister ${field.name} notified of ${field.from_field} changes");
       dprint(event);
-      handleShowOnly(event);
+      await handleShowOnly(event);
     });
     handleShowOnly(form?.control(field.from_field!).value);
   }
 
-  handleShowOnly(dynamic value) {
+  getFromFieldValue(dynamic fromFieldValue) async {
+    dprint("Getting field value");
+    if (field.show_only_field == null) {
+      return fromFieldValue;
+    }
+    var jsonForm =
+        formController?.formItems["actions"]["POST"] as Map<String, dynamic>;
+    var fromField = FormItemField.fromJson(
+        {"name": field.from_field, ...jsonForm[field.from_field]});
+    var fullUrl =
+        getFullInstanceUrl(fromField?.getInstanceUrl(), fromFieldValue);
+    dprint(fullUrl);
+    try {
+      var instanceRes = await formProvider.formGet(fullUrl);
+      dprint(instanceRes.body);
+      dprint(instanceRes.statusCode);
+      return instanceRes.body?[field.show_only_field];
+    } catch (e) {
+      dprint(e);
+      return fromFieldValue;
+    }
+
+    return fromFieldValue;
+  }
+
+  handleShowOnly(dynamic value) async {
     if (field.show_only == null) return;
+    visible.value = false;
+    var fromFieldValue = await getFromFieldValue(value);
     var showOnlyValue = field.show_only;
-    var show = value == showOnlyValue;
+    dprint("Got $fromFieldValue making sure is $showOnlyValue");
+    var show = showOnlyValue == fromFieldValue;
     dprint("SHowing $show");
     if (!show) {
       if (form?.controls.containsKey(field.name) ?? false) {

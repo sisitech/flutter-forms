@@ -1,6 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth/flutter_auth_controller.dart';
+import 'package:flutter_auth/login.dart';
 import 'package:flutter_form/custom_input.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/form_controller.dart';
@@ -21,6 +23,8 @@ void main() {
       tokenUrl: 'o/token/',
       grantType: "password",
       revokeTokenUrl: 'o/revoke_token/'));
+  Get.lazyPut(() => AuthController());
+
   runApp(const MyApp());
 }
 
@@ -213,6 +217,7 @@ class MyHomePage extends StatelessWidget {
               onSuccess: (res) async {
                 dprint("Success login.");
                 dprint(res);
+
                 await Future.delayed(const Duration(milliseconds: 1000));
                 dprint("Done");
               },
@@ -228,11 +233,12 @@ class MyHomePage extends StatelessWidget {
                 ["username"],
                 ["password"]
               ],
-              formTitle: "Signup",
+              formTitle: "Signupdada",
             ),
             const SizedBox(
               height: 20,
             ),
+            LoginWidget(),
           ],
         ),
       ),
