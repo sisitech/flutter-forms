@@ -12,7 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_auth:
-    path: /Users/mac/MyProjects/Flutter/flutter_auth
+     git:
+      url: git@github.com:sisitech/flutter_auth.git
   get: ^4.6.5
   http: ^0.13.5
   intl: ^0.17.0
