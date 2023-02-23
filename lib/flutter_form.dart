@@ -215,11 +215,11 @@ Widget getInput(FormItemField field) {
   );
 }
 
-labelName(field) => "${field.label}".tr + "${field.required ? '*' : ''}";
+labelName(field) => "${field.label}".tr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
-      helperText: "${field.placeholder ?? ''}"?.tr,
+      helperText: "${field.placeholder ?? ''}".tr,
       // helperStyle: TextStyle(height: 0.7),
       // errorStyle: TextStyle(height: 0.7),
     );
