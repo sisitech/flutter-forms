@@ -104,7 +104,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "1d3dfe2a3465ae80371d12f259febf1ae1f2e367"
+      resolved-ref: "6adfa05e7ee26b1c663b7a741f49bc64d6a541c1"
       url: "git@github.com:sisitech/flutter-forms.git"
     source: git
     version: "0.0.2"
@@ -115,13 +115,22 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  flutter_login:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "553997d3daa878351885173ef565f968fc674e8f"
+      url: "git@github.com:sisitech/flutter_login.git"
+    source: git
+    version: "0.0.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_utils:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
       ref: HEAD
