@@ -6,12 +6,6 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import 'models.dart';
 
-dprint(dynamic value) {
-  if (kDebugMode) {
-    print(value);
-  }
-}
-
 extension MyStringExt on String {
   String toUrlNoSlash() {
     if (this.endsWith("/")) {

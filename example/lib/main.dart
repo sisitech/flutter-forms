@@ -14,6 +14,7 @@ import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
 
 import 'custom_field.dart';
+import 'internalization/translate.dart';
 
 void main() {
   Get.put<APIConfig>(APIConfig(
@@ -55,6 +56,8 @@ class MyApp extends StatelessWidget {
 
       return GetMaterialApp(
         title: 'Flutter Demo',
+        translations: AppTranslations(),
+        locale: const Locale('swa', 'KE'),
         themeMode: ThemeMode.system,
         theme: FlexThemeData.light(
           colorScheme: lightScheme,
@@ -144,6 +147,38 @@ class MyHomePage extends StatelessWidget {
           children: [
             const Text("Hello Forms"),
             MyCustomForm(
+              formItems: loginOptions,
+              url: "o/token/",
+              submitButtonText: "Login",
+              // submitButtonPreText: "",
+              loadingMessage: "Signing in...",
+              instance: {
+                // "id": 12,
+                "username": "myadm1in",
+                "password": "#myadmin",
+              },
+              onSuccess: (res) async {
+                dprint("Success login.");
+                dprint(res);
+
+                await Future.delayed(const Duration(milliseconds: 1000));
+                dprint("Done");
+              },
+              handleErrors: (value) {
+                return "Your password might be wrong";
+              },
+              contentType: ContentType.form_url_encoded,
+              extraFields: {
+                "client_id": config.clientId,
+                "grant_type": config.grantType,
+              },
+              formGroupOrder: const [
+                ["username"],
+                ["password"]
+              ],
+              formTitle: "Signupdada",
+            ),
+            MyCustomForm(
               formItems: teacherOptions,
               // onFormItemTranform: (FormItemField field) {
               //   if (field.name == "contact_name") {
@@ -203,38 +238,6 @@ class MyHomePage extends StatelessWidget {
               height: 20,
             ),
             Text(Calculator().showSomething()),
-            MyCustomForm(
-              formItems: loginOptions,
-              url: "o/token/",
-              submitButtonText: "Login",
-              // submitButtonPreText: "",
-              loadingMessage: "Signing in...",
-              instance: {
-                // "id": 12,
-                "username": "myadm1in",
-                "password": "#myadmin",
-              },
-              onSuccess: (res) async {
-                dprint("Success login.");
-                dprint(res);
-
-                await Future.delayed(const Duration(milliseconds: 1000));
-                dprint("Done");
-              },
-              handleErrors: (value) {
-                return "Your password might be wrong";
-              },
-              contentType: ContentType.form_url_encoded,
-              extraFields: {
-                "client_id": config.clientId,
-                "grant_type": config.grantType,
-              },
-              formGroupOrder: const [
-                ["username"],
-                ["password"]
-              ],
-              formTitle: "Signupdada",
-            ),
             const SizedBox(
               height: 20,
             ),
