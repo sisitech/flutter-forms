@@ -220,6 +220,7 @@ labelName(field) => "${field.label}".tr + " ${field.required ? '*' : ''}";
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
       helperText: "${field.placeholder ?? ''}".tr,
+      counterText: "",
       // helperStyle: TextStyle(height: 0.7),
       // errorStyle: TextStyle(height: 0.7),
     );
