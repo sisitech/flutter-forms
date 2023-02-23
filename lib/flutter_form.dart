@@ -132,11 +132,8 @@ class MyCustomForm extends StatelessWidget {
                 ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
-                const SizedBox(
-                  height: 10,
-                ),
                 Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: controller.errors.length,
@@ -148,9 +145,10 @@ class MyCustomForm extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                if (controller.errors.isNotEmpty)
+                  const SizedBox(
+                    height: 10,
+                  ),
                 MySubmitButton(
                   formTitle: formTitle,
                   submitButtonPreText:
@@ -173,7 +171,7 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
   );
   dprint(rowFields);
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 5),
+    padding: const EdgeInsets.only(top: 20),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
