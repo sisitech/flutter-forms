@@ -11,6 +11,9 @@ dependencies:
   flex_color_scheme: ^6.1.1
   flutter:
     sdk: flutter
+  flutter_utils:
+    git:
+      url: git@github.com:sisitech/flutter_utils.git
   flutter_auth:
     git:
       url: git@github.com:sisitech/flutter_auth.git

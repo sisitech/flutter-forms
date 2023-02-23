@@ -77,7 +77,7 @@ packages:
       name: flex_color_scheme
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.1"
+    version: "6.1.2"
   flex_seed_scheme:
     dependency: transitive
     description:
@@ -93,17 +93,21 @@ packages:
   flutter_auth:
     dependency: "direct main"
     description:
-      path: "/Users/mac/MyProjects/Flutter/flutter_auth"
-      relative: false
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "3a4cb3b6b19ecf0d68473da6a852767a28363216"
+      url: "git@github.com:sisitech/flutter_auth.git"
+    source: git
     version: "0.0.1"
   flutter_form:
     dependency: "direct main"
     description:
-      path: ".."
-      relative: true
-    source: path
-    version: "0.0.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: "1d3dfe2a3465ae80371d12f259febf1ae1f2e367"
+      url: "git@github.com:sisitech/flutter-forms.git"
+    source: git
+    version: "0.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -116,6 +120,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_utils:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "18945ac10f99ef6cafe783fe138f3d451e98637e"
+      url: "git@github.com:sisitech/flutter_utils.git"
+    source: git
+    version: "0.0.1"
   get:
     dependency: "direct main"
     description:
@@ -157,7 +170,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.7.0"
+    version: "4.8.0"
   lints:
     dependency: transitive
     description:
@@ -199,49 +212,42 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.11"
+    version: "2.0.13"
   path_provider_android:
     dependency: transitive
     description:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.22"
-  path_provider_ios:
+    version: "2.0.23"
+  path_provider_foundation:
     dependency: transitive
     description:
-      name: path_provider_ios
+      name: path_provider_foundation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.11"
+    version: "2.1.2"
   path_provider_linux:
     dependency: transitive
     description:
       name: path_provider_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.7"
-  path_provider_macos:
-    dependency: transitive
-    description:
-      name: path_provider_macos
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.6"
+    version: "2.1.9"
   path_provider_platform_interface:
     dependency: transitive
     description:
       name: path_provider_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.5"
+    version: "2.0.6"
   path_provider_windows:
     dependency: transitive
     description:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.4"
   platform:
     dependency: transitive
     description:
@@ -255,7 +261,7 @@ packages:
       name: plugin_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.4"
   process:
     dependency: transitive
     description:
@@ -337,14 +343,14 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.2"
+    version: "3.1.3"
   xdg_directories:
     dependency: transitive
     description:
       name: xdg_directories
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0+2"
+    version: "1.0.0"
 sdks:
   dart: ">=2.18.5 <3.0.0"
   flutter: ">=3.3.0"

@@ -6,17 +6,6 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import 'models.dart';
 
-dprint(dynamic value) {
-  if (kDebugMode) {
-    if (value.runtimeType == String) {
-      // debugPrint("DebugPrint");
-      debugPrint(value, wrapWidth: 1024);
-    } else {
-      print(value);
-    }
-  }
-}
-
 extension MyStringExt on String {
   String toUrlNoSlash() {
     if (this.endsWith("/")) {
