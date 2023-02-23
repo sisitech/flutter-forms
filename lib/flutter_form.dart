@@ -153,8 +153,9 @@ class MyCustomForm extends StatelessWidget {
                 MySubmitButton(
                   formTitle: formTitle,
                   submitButtonPreText:
-                      submitButtonPreText ?? controller.status.statusDisplay(),
-                  submitButtonText: submitButtonText,
+                      (submitButtonPreText ?? controller.status.statusDisplay())
+                          .tr,
+                  submitButtonText: submitButtonText?.tr,
                 ),
                 formFooter ?? Container(),
               ],

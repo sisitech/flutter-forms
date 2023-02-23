@@ -14,6 +14,7 @@ import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
 
 import 'custom_field.dart';
+import 'internalization/translate.dart';
 
 void main() {
   Get.put<APIConfig>(APIConfig(
@@ -55,6 +56,8 @@ class MyApp extends StatelessWidget {
 
       return GetMaterialApp(
         title: 'Flutter Demo',
+        translations: AppTranslations(),
+        locale: const Locale('swa', 'KE'),
         themeMode: ThemeMode.system,
         theme: FlexThemeData.light(
           colorScheme: lightScheme,

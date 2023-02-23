@@ -8,7 +8,12 @@ import 'models.dart';
 
 dprint(dynamic value) {
   if (kDebugMode) {
-    print(value);
+    if (value.runtimeType == String) {
+      // debugPrint("DebugPrint");
+      debugPrint(value, wrapWidth: 1024);
+    } else {
+      print(value);
+    }
   }
 }
 
