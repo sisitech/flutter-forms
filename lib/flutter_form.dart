@@ -149,6 +149,9 @@ class MyCustomForm extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
+                const SizedBox(
+                  height: 10,
+                ),
                 MySubmitButton(
                   formTitle: formTitle,
                   submitButtonPreText:
