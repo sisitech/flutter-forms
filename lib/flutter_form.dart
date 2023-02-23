@@ -124,8 +124,8 @@ class MyCustomForm extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: formHeader ??
                       Text(
-                        submitButtonPreText ??
-                            "${controller.status.statusDisplay()} $submitButtonText",
+                        submitButtonPreText?.tr ??
+                            "${controller.status.statusDisplay().tr} ${submitButtonText?.tr}",
                         style: Get.theme.textTheme.titleLarge,
                       ),
                 ),
@@ -141,7 +141,7 @@ class MyCustomForm extends StatelessWidget {
                     itemCount: controller.errors.length,
                     itemBuilder: (context, index) {
                       return Text(
-                        controller.errors[index],
+                        controller.errors[index].tr,
                         style: TextStyle(color: Colors.red),
                       );
                     },
@@ -215,14 +215,16 @@ Widget getInput(FormItemField field) {
   );
 }
 
-labelName(field) => field.label + "${field.required ? '*' : ''}";
+labelName(field) => "${field.label}".tr + "${field.required ? '*' : ''}";
+
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
-      helperText: field.placeholder,
+      helperText: "${field.placeholder ?? ''}"?.tr,
       // helperStyle: TextStyle(height: 0.7),
       // errorStyle: TextStyle(height: 0.7),
     );
 Widget LabelWidget(FormItemField field) {
+  dprint(labelName(field));
   return Text(
     labelName(field),
     style: Get.theme.inputDecorationTheme.labelStyle,
@@ -233,9 +235,7 @@ getInputBasedOnType(FormItemField field) {
   // dprint("Getting the labelStyle");
   // dprint(Get.theme.textTheme.bodyText1);
   // dprint(Get.theme.inputDecorationTheme.labelStyle);
-  var defaultValidationMessage = {
-    'required': (error) => 'This field must not be empty'
-  };
+  var defaultValidationMessage = {'required': (error) => 'empty_field'.tr};
 
   Widget reactiveInput;
   switch (field.type) {
@@ -267,7 +267,7 @@ getInputBasedOnType(FormItemField field) {
       break;
     case FieldType.date:
       reactiveInput = ReactiveDatePicker(
-        formControlName: field.name,
+        formControlName: field.name.tr,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
           dprint("Picker errprs");
@@ -296,12 +296,12 @@ getInputBasedOnType(FormItemField field) {
                           color: hasError ? Get.theme.errorColor : null,
                         ),
                       ),
-                      Text(dateToCustomString(picker.control.value))
+                      Text(dateToCustomString(picker.control.value).tr)
                     ],
                   ),
                   if (hasError)
                     Text(
-                      errorText ?? "",
+                      (errorText ?? "").tr,
                       style: TextStyle(color: Get.theme.errorColor),
                     )
                 ],
