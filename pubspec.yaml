@@ -1,6 +1,6 @@
 name: flutter_form
 description: A new Flutter package project.
-version: 0.0.1
+version: 0.0.2
 homepage: https://sisitech.github.io/SisitechDocs/
 
 environment:
@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_auth:
-     git:
+    git:
       url: git@github.com:sisitech/flutter_auth.git
   get: ^4.6.5
   http: ^0.13.5

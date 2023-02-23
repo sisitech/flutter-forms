@@ -78,7 +78,7 @@ class _CustomFieldFormState extends State<CustomFieldForm> {
                 onPressed: () {
                   dprint(this.form.value);
                 },
-                child: Text("Submit"))
+                child: Text("Submit".tr))
           ],
         ),
       ),
