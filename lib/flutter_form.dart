@@ -384,7 +384,7 @@ class MySubmitButton extends StatelessWidget {
       () => ElevatedButton(
           onPressed: controller!.isLoading == true ? null : _onPressed,
           child: Text(controller!.isLoading == true
-              ? controller!.loadingMessage
+              ? controller!.loadingMessage.tr
               : submitText)),
     );
   }
