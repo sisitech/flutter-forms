@@ -19,6 +19,8 @@ class AppTranslations extends Translations {
           'Username': 'Kitambulisho',
           'Active': 'Inatumika',
           "TSC": "tsc",
+          "empty_field": "Linahitajika",
+          "Faield..": "Imefeli..",
           'Modified': 'Ilibadilishwa Lini',
           'Password': 'Neno Siri',
           'School emis Code / Phone number': 'Kodi ya Shule / Nambari ya simu',

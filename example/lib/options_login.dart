@@ -19,7 +19,7 @@ const loginOptions = {
       },
       "password": {
         "type": "string",
-        "required": false,
+        "required": true,
         "read_only": false,
         "label": "Password",
         "obscure": true,
