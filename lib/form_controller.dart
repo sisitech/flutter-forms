@@ -38,6 +38,7 @@ class FormController extends GetxController {
   List<FormItemField> fields = [];
   List<String> errors = [];
   int? instanceId;
+  late String storageContainer;
 
   FormController(
       {required this.formItems,
@@ -51,6 +52,7 @@ class FormController extends GetxController {
       this.onFormItemTranform,
       this.onStatus,
       this.instanceUrl,
+      this.storageContainer = "GetStorage",
       this.onControllerSetup,
       this.status = FormStatus.Add,
       this.PreSaveData,
@@ -168,6 +170,7 @@ class FormController extends GetxController {
         InputController(
             field: field,
             formController: this,
+            storageContainer: storageContainer,
             form: form,
             fetchFirst: field.type == FieldType.multifield ? false : true),
         tag: field.name,

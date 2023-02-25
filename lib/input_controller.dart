@@ -10,6 +10,7 @@ import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'form_connect.dart';
@@ -27,9 +28,11 @@ class InputController extends GetxController {
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
   RxList<FormChoice> formChoices = RxList.empty();
+  late String storageContainer;
 
   InputController({
     this.formController,
+    this.storageContainer = "GetStorage",
     required this.field,
     this.form,
     this.onSelectFirst,
@@ -171,6 +174,22 @@ class InputController extends GetxController {
 
     if (field.choices != null) {
       rawChoices = field.choices;
+    } else if (field.storage != null) {
+      final box = GetStorage(storageContainer);
+      List<dynamic> items = await box.read(field.storage ?? "") ?? [];
+      // new Map<String, dynamic>.from(overview)
+
+      rawChoices = items
+          .map((element) => new Map<dynamic, dynamic>.from(element))
+          .map((choice) {
+        var display_name =
+            choice[field.display_name] ?? "${field.display_name} 404";
+        var value_field =
+            choice[field.value_field] ?? "${field.value_field} 404";
+        return FormChoice(display_name: display_name, value: value_field);
+      }).toList();
+
+      dprint(rawChoices);
     } else if (field.url != null) {
       try {
         isLoading.value = true;

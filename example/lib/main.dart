@@ -10,11 +10,13 @@ import 'package:flutter_utils/models.dart';
 import 'package:form_example/options_login.dart';
 import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'custom_field.dart';
 import 'internalization/translate.dart';
+import 'storageTest/storage.dart';
 
-void main() {
+void main() async {
   Get.put<APIConfig>(APIConfig(
       apiEndpoint: "https://dukapi.roometo.com",
       version: "api/v1",
@@ -24,7 +26,30 @@ void main() {
       revokeTokenUrl: 'o/revoke_token/'));
   Get.lazyPut(() => AuthController());
 
+  await GetStorage.init('school');
+  await createSchools();
   runApp(const MyApp());
+}
+
+createSchools() async {
+  final box = GetStorage("school");
+  await box.erase();
+  var classes = await box.read("classes");
+  if (classes == null) {
+    var classes = [];
+    for (int i = 0; i < 8; i++) {
+      var stream = {
+        "class_name": "Class $i",
+        "base_class": "$i",
+        "id": i,
+        "students": []
+      };
+      classes.add(stream);
+    }
+
+    await box.write("classes", classes);
+  }
+  dprint(await box.read("classes"));
 }
 
 const Color PRIMARY_COLOR = Color(0xff7240FF);
@@ -118,7 +143,9 @@ class MyApp extends StatelessWidget {
           // To use the Playground font, add GoogleFonts package and uncomment
           // fontFamily: GoogleFonts.notoSans().fontFamily,
         ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home:
+            StorageTestForm(), //const MyHomePage(title: 'Flutter Demo Home Page'),
       );
     });
   }

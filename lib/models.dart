@@ -51,6 +51,7 @@ class FormChoice {
 
 class FormUrlChoices {
   String? url;
+  String? storage;
   late String? instance_url;
   late bool? multiple;
   late String display_name;
@@ -70,6 +71,7 @@ class FormUrlChoices {
       this.value_field = "id",
       this.search_field = "",
       this.instance_url,
+      this.storage,
       this.select_first = false,
       this.multiple = false});
 }
@@ -104,6 +106,7 @@ class FormItemField extends FormUrlChoices {
       this.hasController = false,
       this.show_only_field,
       this.show_reset_value,
+      super.storage,
       super.instance_url,
       super.url,
       super.display_name = "name",
