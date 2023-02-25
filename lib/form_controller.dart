@@ -153,7 +153,9 @@ class FormController extends GetxController {
 
       if (this.instance!.containsKey("id")) {
         this.instanceId = instance?["id"];
-        updateStatus(FormStatus.Update);
+        if (status == FormStatus.Add) {
+          updateStatus(FormStatus.Update);
+        }
       }
     }
 
