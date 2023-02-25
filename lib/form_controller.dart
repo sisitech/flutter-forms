@@ -231,11 +231,11 @@ class FormController extends GetxController {
         res = await serv.formPostUrlEncoded(requrl, data);
       } else {
         // dprint("None url encoded");
-        if (status == FormStatus.Update) {
+        if (status == FormStatus.Delete) {
+          res = await serv.formDelete(requrl, query: data);
+        } else if (status == FormStatus.Update) {
           var updateUrl = "${getInstanceUrl()}/${instanceId}/";
           res = await serv.formPatch(updateUrl, data);
-        } else if (status == FormStatus.Delete) {
-          res = await serv.formDelete(requrl, query: data);
         } else {
           res = await serv.formPost(requrl, data);
         }
