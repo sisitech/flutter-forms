@@ -8,7 +8,7 @@ enum ContentType {
   form_url_encoded,
 }
 
-enum FormStatus { Add, Update }
+enum FormStatus { Add, Update, Delete }
 
 extension FormStatusDefinti on FormStatus {
   String statusDisplay() {

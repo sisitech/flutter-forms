@@ -95,7 +95,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "3a4cb3b6b19ecf0d68473da6a852767a28363216"
+      resolved-ref: "40bfbc7cd0c297be5ac46c1d85c69a539cdc6474"
       url: "git@github.com:sisitech/flutter_auth.git"
     source: git
     version: "0.0.1"
@@ -123,7 +123,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "18945ac10f99ef6cafe783fe138f3d451e98637e"
+      resolved-ref: "075d15dbe12d5fb10a3e31d34618a659cf1f6494"
       url: "git@github.com:sisitech/flutter_utils.git"
     source: git
     version: "0.0.1"
