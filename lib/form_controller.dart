@@ -140,7 +140,13 @@ class FormController extends GetxController {
               }
             }
           }
-          form.control(key).patchValue(value);
+          if (field.type == FieldType.date ||
+              field.type == FieldType.datetime) {
+            dprint(value);
+            form.control(key).patchValue(DateTime.parse(value));
+          } else {
+            form.control(key).patchValue(value);
+          }
         }
         // this.form.updateValue(this.instance);
       });

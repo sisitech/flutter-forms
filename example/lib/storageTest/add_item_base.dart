@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:form_example/storageTest/options.dart';
 import 'package:get/get.dart';
 
 class AddItemBase extends StatelessWidget {
@@ -31,7 +32,7 @@ class AddItemBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var instance = Get.arguments?["instance"];
+    var instance = studInstance; // Get.arguments?["instance"];
     dprint(instance);
     return Scaffold(
       appBar: AppBar(title: title),
