@@ -102,7 +102,12 @@ class InputController extends GetxController {
   }
 
   handleShowOnly(dynamic value) async {
-    if (field.show_only == null) return;
+    // Handle getting the information
+    if (field.show_only == null) {
+      getOptions(search: value);
+      return;
+    }
+
     visible.value = false;
     var fromFieldValue = await getFromFieldValue(value);
     var showOnlyValue = field.show_only;
@@ -116,15 +121,17 @@ class InputController extends GetxController {
     } else {
       form?.addAll({field.name: getFormControl(field)});
     }
-
     visible.value = show;
+    // Update options if show
+    if (show) {
+      getOptions(search: value);
+    }
   }
 
   setUpInputOptions() {
     if (field.from_field != null) {
       handleFromField();
-    }
-    if (this.fetchFirst) {
+    } else if (this.fetchFirst) {
       this.getOptions();
     }
   }
@@ -162,7 +169,7 @@ class InputController extends GetxController {
     noResults.value = "";
   }
 
-  getOptions({String? search}) async {
+  getOptions({dynamic? search = null}) async {
     List<FormChoice>? rawChoices = [];
     Map<String, dynamic> queryParams = {};
     formChoices.value = [];
@@ -171,14 +178,50 @@ class InputController extends GetxController {
       queryParams[field.search_field] = search;
     }
     // dprint(queryParams);
-
     if (field.choices != null) {
       rawChoices = field.choices;
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
-      List<dynamic> items = await box.read(field.storage ?? "") ?? [];
+      List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
       // new Map<String, dynamic>.from(overview)
+      List<dynamic> items = [];
+      // queryParams[field.search_field] = search;
+      if (search != null) {
+        dprint(search);
+        if (field.from_field_source != null) {
+          if (field.search_field == "") {
+            throw ("field.search_field not set");
+          }
+          if (rawItems.length > 0) {
+            dprint(rawItems);
+            dprint("${field.search_field} $search");
+            var sourceitem = rawItems.firstWhere((element) =>
+                element[field.search_field].toString().toLowerCase() ==
+                search.toString().toLowerCase());
+            if (sourceitem != null) {
+              items = sourceitem[field.from_field_source];
+            }
+          }
+        } else if (field.search_field != "") {
+          if (rawItems.length > 0) {
+            items = rawItems
+                .where((element) =>
+                    element[field.search_field].toString().toLowerCase() ==
+                    search.toString().toLowerCase())
+                .toList();
+          }
+        } else {
+          items = rawItems;
+        }
+      } else {
+        if (field.from_field == null) {
+          items = rawItems;
+        }
+      }
+      dprint(field.storage);
 
+      dprint(field.name);
+      dprint(items);
       rawChoices = items
           .map((element) => new Map<dynamic, dynamic>.from(element))
           .map((choice) {

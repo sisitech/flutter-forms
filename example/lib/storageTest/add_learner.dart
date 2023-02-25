@@ -25,22 +25,23 @@ class AddLeaner extends StatelessWidget {
       },
       formGroupOrder: const [
         ['first_name'],
-        ['middle_name'],
-        ['last_name'],
-        ['admission_no'],
-        ['status'],
-        ['gender'],
-        ['date_of_birth'],
-        ['date_enrolled'],
-        ['stream'],
-        ['has_special_needs'],
-        ['special_needs'],
-        ['has_attended_pre_primary'],
+        // ['stream'],
         ['region'],
         ['district'],
         ['shehiya'],
-        ['street_name'],
-        ['house_number']
+        // ['middle_name'],
+        // ['last_name'],
+        // ['admission_no'],
+        // ['status'],
+        // ['gender'],
+        // ['date_of_birth'],
+        // ['date_enrolled'],
+        // ['has_special_needs'],
+        // ['special_needs'],
+        // ['has_attended_pre_primary'],
+
+        // ['street_name'],
+        // ['house_number']
       ],
     );
   }

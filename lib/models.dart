@@ -38,6 +38,7 @@ class FormChoice {
   late dynamic value;
 
   FormChoice({required this.display_name, this.value});
+
   factory FormChoice.fromJson(Map<String, dynamic> json) =>
       _$FormChoiceFromJson(json);
   Map<String, dynamic> toJson() => _$FormChoiceToJson(this);
@@ -52,6 +53,7 @@ class FormChoice {
 class FormUrlChoices {
   String? url;
   String? storage;
+  String? from_field_source;
   late String? instance_url;
   late bool? multiple;
   late String display_name;
@@ -71,6 +73,7 @@ class FormUrlChoices {
       this.value_field = "id",
       this.search_field = "",
       this.instance_url,
+      this.from_field_source,
       this.storage,
       this.select_first = false,
       this.multiple = false});
@@ -106,6 +109,7 @@ class FormItemField extends FormUrlChoices {
       this.hasController = false,
       this.show_only_field,
       this.show_reset_value,
+      super.from_field_source,
       super.storage,
       super.instance_url,
       super.url,

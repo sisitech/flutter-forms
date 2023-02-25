@@ -443,7 +443,7 @@ const studentsOptions = {
         "display_name": "name",
         "storage": "regions",
         "from_field": "region",
-        "from_field_source": "districts_details",
+        "search_field": "id"
       },
       "shehiya": {
         "type": "field",
@@ -453,6 +453,7 @@ const studentsOptions = {
         "display_name": "name",
         "storage": "districts",
         "from_field": "district",
+        "search_field": "id",
         "from_field_source": "shehiyas_details",
       },
       "street_name": {

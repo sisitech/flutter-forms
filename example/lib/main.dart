@@ -38,18 +38,52 @@ createSchools() async {
   if (classes == null) {
     var classes = [];
     for (int i = 0; i < 8; i++) {
+      var students = [i, i + 10, i + 20].map((e) {
+        return {
+          "name": "Ler $i",
+          "stream": i,
+        };
+      });
       var stream = {
         "class_name": "Class $i",
         "base_class": "$i",
         "id": i,
-        "students": []
+        // "students": students
       };
       classes.add(stream);
     }
 
+    var counties = classes
+        .map((e) => ({
+              "name": "County ${e['id']}",
+              "id": e["id"],
+              "districts_details": []
+            }))
+        .toList();
+
+    var districts = counties.map((e) {
+      var districts = [1, 2 + 10, 3 + 20].map((e) {
+        return {
+          "id": e,
+          "name": "Ler $e",
+          "district": "$e",
+        };
+      });
+      return {
+        "name": "District ${e['id']}",
+        "id": e["id"],
+        "county": e["id"],
+        "shehiyas_details": districts.toList()
+      };
+    }).toList();
+
     await box.write("classes", classes);
+    await box.write("regions", counties);
+    await box.write("districts", districts);
   }
-  dprint(await box.read("classes"));
+  // dprint(value)
+  dprint(await box.read("districts"));
+  // dprint(await box.read("classes"));
 }
 
 const Color PRIMARY_COLOR = Color(0xff7240FF);
