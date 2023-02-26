@@ -224,7 +224,7 @@ class FormController extends GetxController {
     }
     try {
       isLoading.value = true;
-      // dprint("Making api vcall");
+      dprint("Making api vcall");
       errors = [];
       update();
       Response res;
@@ -232,8 +232,9 @@ class FormController extends GetxController {
         // dprint("Url encoded");
         res = await serv.formPostUrlEncoded(requrl, data);
       } else {
-        // dprint("None url encoded");
+        dprint("None url encoded");
         if (status == FormStatus.Delete) {
+          dprint(data);
           res = await serv.formDelete(requrl, query: data);
         } else if (status == FormStatus.Update) {
           var updateUrl = "${getInstanceUrl()}/${instanceId}/";
