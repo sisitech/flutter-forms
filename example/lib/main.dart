@@ -177,9 +177,8 @@ class MyApp extends StatelessWidget {
           // To use the Playground font, add GoogleFonts package and uncomment
           // fontFamily: GoogleFonts.notoSans().fontFamily,
         ),
-        // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        home:
-            StorageTestForm(), //const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        // home:StorageTestForm(), //const MyHomePage(title: 'Flutter Demo Home Page'),
       );
     });
   }
@@ -245,9 +244,12 @@ class MyHomePage extends StatelessWidget {
               //   }
               //   return field;
               // },
+
+              url: "api/v1/teachers",
               onControllerSetup: (contr) => controller = contr,
               instance: const {
-                // "contact_email": "michameiu@gmail.com",
+                "contact_email": "michameiu@gmail.com",
+                "id": 34
                 // "multifield": {
                 //   // "contact_email": FormChoice(
                 //   //   display_name: "myadmin2",
@@ -255,6 +257,7 @@ class MyHomePage extends StatelessWidget {
                 //   // )
                 // }
               },
+              status: FormStatus.Update,
               contentType: ContentType.json,
               formHeader: const Text("Welcome home"),
               onSuccess: (value) {
@@ -271,7 +274,7 @@ class MyHomePage extends StatelessWidget {
               // handleErrors: (value) {
               //   return "Textsitn new validation";
               // },
-              isValidateOnly: true,
+              // isValidateOnly: true,
               formGroupOrder: const [
                 ["name"],
                 ['role'],
