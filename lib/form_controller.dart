@@ -1,10 +1,12 @@
 library flutter_form;
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -28,37 +30,48 @@ class FormController extends GetxController {
   final Function? onFormItemTranform;
   final Function? onControllerSetup;
 
+  late bool enableOfflineSave;
+  late bool? showOfflineMessage;
+  final Function(Map<String, dynamic>)? validateOfflineData;
+
   final Map<String, dynamic>? instance;
   FormStatus status;
   final Function? onStatus;
 
   var isLoading = false.obs;
+  var isInternetConnected = false.obs;
   FormProvider serv = Get.put<FormProvider>(FormProvider());
+  NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
   List<FormItemField> fields = [];
   List<String> errors = [];
   int? instanceId;
   late String storageContainer;
+  StreamSubscription? subscription;
 
-  FormController(
-      {required this.formItems,
-      this.isValidateOnly = false,
-      this.url,
-      this.extraFields,
-      this.onSuccess,
-      this.handleErrors,
-      this.getDynamicUrl,
-      this.instance,
-      this.onFormItemTranform,
-      this.onStatus,
-      this.instanceUrl,
-      this.storageContainer = "GetStorage",
-      this.onControllerSetup,
-      this.status = FormStatus.Add,
-      this.PreSaveData,
-      required this.loadingMessage,
-      required this.contentType,
-      this.formGroupOrder = const []}) {
+  FormController({
+    required this.formItems,
+    this.isValidateOnly = false,
+    this.url,
+    this.extraFields,
+    this.showOfflineMessage,
+    this.enableOfflineSave = false,
+    this.validateOfflineData,
+    this.onSuccess,
+    this.handleErrors,
+    this.getDynamicUrl,
+    this.instance,
+    this.onFormItemTranform,
+    this.onStatus,
+    this.instanceUrl,
+    this.storageContainer = "GetStorage",
+    this.onControllerSetup,
+    this.status = FormStatus.Add,
+    this.PreSaveData,
+    required this.loadingMessage,
+    required this.contentType,
+    this.formGroupOrder = const [],
+  }) {
     // dprint(formItems);
     // dprint("Initialized this controller for me..");
   }
@@ -67,6 +80,22 @@ class FormController extends GetxController {
   void onInit() {
     super.onInit();
     setUpForm();
+    internretStatusCheck();
+  }
+
+  @override
+  void onClose() {
+    subscription?.cancel();
+    super.onClose();
+  }
+
+  internretStatusCheck() async {
+    dprint("Network connection is ${netCont.isDeviceConnected}");
+    subscription = netCont.isDeviceConnected.listen((value) {
+      dprint("\n\n********\n\nInternet status $value");
+    });
+    dprint(
+        "Network chckin.. connection is ${await netCont.checkIntenetConnection()}");
   }
 
   var form = FormGroup({});
@@ -186,12 +215,42 @@ class FormController extends GetxController {
     }
   }
 
+  getCurrentFormFields() {
+    return {...form.value, ...extraFields ?? {}};
+  }
+
   preparePostData() {
-    var value = {...form.value, ...extraFields ?? {}};
+    var value = getCurrentFormFields();
     if (PreSaveData != null) {
       value = PreSaveData!(value);
     }
     return value;
+  }
+
+  validateDataOfflineMode() async {
+    var value = getCurrentFormFields();
+    if (validateOfflineData != null) {
+      return await validateOfflineData!(value);
+    }
+    return null;
+  }
+
+  updateFormErrors(Map<String, dynamic> formErrors) {
+    formErrors.forEach((key, value) {
+      if (fields.map((e) => e.name).contains(key)) {
+        String display = getErrorDisplay(value);
+        form.control(key).setErrors({display: "dada"});
+      } else {
+        String display = getErrorDisplay(value);
+        if (handleErrors == null) {
+          errors.add(display);
+        }
+      }
+    });
+    if (handleErrors != null) {
+      String display = handleErrors!(formErrors);
+      errors.add(display);
+    }
   }
 
   resolveRequestUrl(formData) {
@@ -204,26 +263,35 @@ class FormController extends GetxController {
   submit() async {
     if (!form.valid) {
       // dprint("Not valied");
-      dprint(form.errors);
+      // dprint(form.errors);
       form.markAllAsTouched();
       return;
     }
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
+    isLoading.value = true;
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
+    // Offline mode support
+    if (enableOfflineSave) {
+      var res = await validateDataOfflineMode();
+      if (res != null) {
+        updateFormErrors(res);
+      }
+    }
+
     // Pre Save Data
     var data = preparePostData();
     var requrl = resolveRequestUrl(data);
     dprint(isValidateOnly);
     if (isValidateOnly) {
       if (onSuccess != null) {
-        onSuccess!(data);
+        await onSuccess!(data);
       }
+      isLoading.value = false;
       return;
     }
     try {
-      isLoading.value = true;
       dprint("Making api vcall");
       errors = [];
       update();
@@ -254,21 +322,7 @@ class FormController extends GetxController {
           // dprint("Done with call");
           var formErrors = res.body as Map<String, dynamic>;
           // dprint(formErrors);
-          formErrors.forEach((key, value) {
-            if (fields.map((e) => e.name).contains(key)) {
-              String display = getErrorDisplay(value);
-              form.control(key).setErrors({display: "dada"});
-            } else {
-              String display = getErrorDisplay(value);
-              if (handleErrors == null) {
-                errors.add(display);
-              }
-            }
-          });
-          if (handleErrors != null) {
-            String display = handleErrors!(formErrors);
-            errors.add(display);
-          }
+          updateFormErrors(formErrors);
         } catch (e) {
           dprint(e);
         }
@@ -280,8 +334,6 @@ class FormController extends GetxController {
       dprint(e);
     }
 
-    // dprint(data);
-    // dprint('Hello Reactive Forms!!!');
     update();
   }
 

@@ -69,8 +69,8 @@ class InputController extends GetxController {
     dprint("Got a first from_field");
     fromFieldSubscription =
         form?.control(field.from_field!).valueChanges.listen((event) async {
-      dprint("Lister ${field.name} notified of ${field.from_field} changes");
-      dprint(event);
+      // dprint("Lister ${field.name} notified of ${field.from_field} changes");
+      // dprint(event);
       await handleShowOnly(event);
     });
     handleShowOnly(form?.control(field.from_field!).value);
@@ -90,8 +90,8 @@ class InputController extends GetxController {
     dprint(fullUrl);
     try {
       var instanceRes = await formProvider.formGet(fullUrl);
-      dprint(instanceRes.body);
-      dprint(instanceRes.statusCode);
+      // dprint(instanceRes.body);
+      // dprint(instanceRes.statusCode);
       return instanceRes.body?[field.show_only_field];
     } catch (e) {
       dprint(e);
@@ -111,9 +111,9 @@ class InputController extends GetxController {
     visible.value = false;
     var fromFieldValue = await getFromFieldValue(value);
     var showOnlyValue = field.show_only;
-    dprint("Got $fromFieldValue making sure is $showOnlyValue");
+    // dprint("Got $fromFieldValue making sure is $showOnlyValue");
     var show = showOnlyValue == fromFieldValue;
-    dprint("SHowing $show");
+    // dprint("SHowing $show");
     if (!show) {
       if (form?.controls.containsKey(field.name) ?? false) {
         form?.removeControl(field.name);
@@ -140,8 +140,8 @@ class InputController extends GetxController {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       // do something  with query
-      dprint("Searching for the stuff");
-      dprint(query);
+      // dprint("Searching for the stuff");
+      // dprint(query);
       resetOptions();
 
       if (query != "") {
@@ -187,14 +187,14 @@ class InputController extends GetxController {
       List<dynamic> items = [];
       // queryParams[field.search_field] = search;
       if (search != null) {
-        dprint(search);
+        // dprint(search);
         if (field.from_field_source != null) {
           if (field.search_field == "") {
             throw ("field.search_field not set");
           }
           if (rawItems.length > 0) {
-            dprint(rawItems);
-            dprint("${field.search_field} $search");
+            // dprint(rawItems);
+            // dprint("${field.search_field} $search");
             var sourceitem = rawItems.firstWhere((element) =>
                 element[field.search_field].toString().toLowerCase() ==
                 search.toString().toLowerCase());
@@ -218,10 +218,10 @@ class InputController extends GetxController {
           items = rawItems;
         }
       }
-      dprint(field.storage);
+      // dprint(field.storage);
 
-      dprint(field.name);
-      dprint(items);
+      // dprint(field.name);
+      // dprint(items);
       rawChoices = items
           .map((element) => new Map<dynamic, dynamic>.from(element))
           .map((choice) {
@@ -232,7 +232,7 @@ class InputController extends GetxController {
         return FormChoice(display_name: display_name, value: value_field);
       }).toList();
 
-      dprint(rawChoices);
+      // dprint(rawChoices);
     } else if (field.url != null) {
       try {
         isLoading.value = true;

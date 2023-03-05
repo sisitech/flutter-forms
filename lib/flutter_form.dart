@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -44,6 +46,9 @@ class MyCustomForm extends StatelessWidget {
   final Function? onControllerSetup;
   final Function? onFormItemTranform;
   late String storageContainer;
+  late bool enableOfflineSave;
+  late bool? showOfflineMessage;
+  final Function(Map<String, dynamic>)? validateOfflineData;
 
   final String loadingMessage;
   FormStatus status;
@@ -66,6 +71,9 @@ class MyCustomForm extends StatelessWidget {
     this.formItems = defaultOptions,
     required this.formGroupOrder,
     this.formHeader,
+    this.showOfflineMessage = true,
+    this.enableOfflineSave = false,
+    this.validateOfflineData,
     this.formFooter,
     this.extraFields,
     this.isValidateOnly = false,
@@ -93,6 +101,9 @@ class MyCustomForm extends StatelessWidget {
           formGroupOrder: formGroupOrder,
           extraFields: extraFields,
           PreSaveData: PreSaveData,
+          showOfflineMessage: showOfflineMessage,
+          enableOfflineSave: enableOfflineSave,
+          validateOfflineData: validateOfflineData,
           loadingMessage: loadingMessage,
           isValidateOnly: isValidateOnly,
           instance: instance,
@@ -119,7 +130,7 @@ class MyCustomForm extends StatelessWidget {
     return GetBuilder(
         init: controller,
         builder: (_) {
-          dprint("Rebuilding");
+          // dprint("Rebuilding");
           return ReactiveForm(
             formGroup: controller.form,
             child: Column(
@@ -157,6 +168,7 @@ class MyCustomForm extends StatelessWidget {
                 ),
                 MySubmitButton(
                   formTitle: formTitle,
+                  enableOfflineSave: enableOfflineSave,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
                           .tr,
@@ -373,24 +385,40 @@ class MySubmitButton extends StatelessWidget {
   final String? submitButtonText;
   final String? submitButtonPreText;
   final String formTitle;
+  late bool enableOfflineSave;
   MySubmitButton({
     super.key,
     required this.formTitle,
     this.submitButtonText,
     this.submitButtonPreText,
+    this.enableOfflineSave = false,
   }) {
     controller = Get.find<FormController>(tag: formTitle);
   }
 
   @override
   Widget build(BuildContext context) {
+    NetworkStatusController netCont = Get.find<NetworkStatusController>();
+
     var submitText = "${submitButtonPreText} ${submitButtonText}";
     return Obx(
-      () => ElevatedButton(
-          onPressed: controller!.isLoading == true ? null : _onPressed,
-          child: Text(controller!.isLoading == true
-              ? controller!.loadingMessage.tr
-              : submitText)),
+      () => Column(
+        children: [
+          if (!netCont.isDeviceConnected.value)
+            Text(
+              "No internet connection".interpolate({}).tr,
+              style: Get.theme.textTheme.titleSmall
+                  ?.copyWith(color: Get.theme.errorColor),
+            ),
+          if (netCont.isDeviceConnected.value || enableOfflineSave)
+            ElevatedButton(
+              onPressed: controller!.isLoading == true ? null : _onPressed,
+              child: Text(controller!.isLoading == true
+                  ? controller!.loadingMessage.tr
+                  : submitText),
+            ),
+        ],
+      ),
     );
   }
 

@@ -5,8 +5,13 @@ import 'package:flutter_auth/flutter_auth_controller.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/models.dart';
+
 import 'package:flutter_utils/flutter_utils.dart';
+
 import 'package:flutter_utils/models.dart';
+import 'package:flutter_utils/network_status/network_status.dart';
+import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:form_example/options_login.dart';
 import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
@@ -17,15 +22,17 @@ import 'internalization/translate.dart';
 import 'storageTest/storage.dart';
 
 void main() async {
-  Get.put<APIConfig>(APIConfig(
-      apiEndpoint: "https://dukapi.roometo.com",
-      version: "api/v1",
-      clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
-      tokenUrl: 'o/token/',
-      grantType: "password",
-      revokeTokenUrl: 'o/revoke_token/'));
+  Get.put<APIConfig>(
+    APIConfig(
+        apiEndpoint: "https://dukapi.roometo.com",
+        version: "api/v1",
+        clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+        tokenUrl: 'o/token/',
+        grantType: "password",
+        revokeTokenUrl: 'o/revoke_token/'),
+  );
+  Get.put(NetworkStatusController());
   Get.lazyPut(() => AuthController());
-
   await GetStorage.init('school');
   await createSchools();
   runApp(const MyApp());
@@ -204,8 +211,10 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Hello Forms"),
+            NetworkStatusWidget(),
             MyCustomForm(
               formItems: loginOptions,
+              enableOfflineSave: false,
               url: "o/token/",
               submitButtonText: "Login",
               // submitButtonPreText: "",
