@@ -318,7 +318,7 @@ class FormController extends GetxController {
         if (enableOfflineSave) {
           if (status == FormStatus.Update) {
             if (instanceId != null) {
-              requrl = "$requrl/${instanceId}/";
+              requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
             }
           }
           OfflineHttpCall offlineHttpCall = OfflineHttpCall(
