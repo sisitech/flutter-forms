@@ -42,10 +42,12 @@ class MyCustomForm extends StatelessWidget {
   final String? submitButtonPreText;
   final ContentType contentType;
   final Function? handleErrors;
-  final Function? onSuccess;
+  final Function(dynamic data)? onSuccess;
+  final Function(dynamic data)? onOfflineSuccess;
   final Function? onControllerSetup;
   final Function? onFormItemTranform;
   late String storageContainer;
+  late bool enableOfflineMode;
   late bool enableOfflineSave;
   late bool? showOfflineMessage;
   final Function(Map<String, dynamic>)? validateOfflineData;
@@ -72,12 +74,14 @@ class MyCustomForm extends StatelessWidget {
     required this.formGroupOrder,
     this.formHeader,
     this.showOfflineMessage = true,
+    this.enableOfflineMode = false,
     this.enableOfflineSave = false,
     this.validateOfflineData,
     this.formFooter,
     this.extraFields,
     this.isValidateOnly = false,
     this.url,
+    this.onOfflineSuccess,
     this.PreSaveData,
     this.storageContainer = "GetStorage",
     this.onStatus,
@@ -97,18 +101,21 @@ class MyCustomForm extends StatelessWidget {
     final controller = Get.put(
         FormController(
           formItems: formItems,
+          formTitle: formTitle,
           storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,
+          enableOfflineSave: enableOfflineSave,
           extraFields: extraFields,
           PreSaveData: PreSaveData,
           showOfflineMessage: showOfflineMessage,
-          enableOfflineSave: enableOfflineSave,
+          enableOfflineMode: enableOfflineMode,
           validateOfflineData: validateOfflineData,
           loadingMessage: loadingMessage,
           isValidateOnly: isValidateOnly,
           instance: instance,
           instanceUrl: instanceUrl,
           url: url,
+          onOfflineSuccess: onOfflineSuccess,
           onFormItemTranform: onFormItemTranform,
           getDynamicUrl: getDynamicUrl,
           status: status,
@@ -168,7 +175,7 @@ class MyCustomForm extends StatelessWidget {
                 ),
                 MySubmitButton(
                   formTitle: formTitle,
-                  enableOfflineSave: enableOfflineSave,
+                  enableOfflineSave: enableOfflineMode,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
                           .tr,
@@ -187,7 +194,7 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
   var rowFields = controller.fields.where(
     (field) => fieldNames.contains(field.name),
   );
-  dprint(rowFields);
+  // dprint(rowFields);
   return Padding(
     padding: const EdgeInsets.only(top: 20),
     child: Row(
@@ -206,8 +213,8 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
 }
 
 Widget getInput(FormItemField field) {
-  dprint(field.name);
-  dprint(field.hasController);
+  // dprint(field.name);
+  // dprint(field.hasController);
 
   if (field.hasController) {
     var inputCont = Get.find<InputController>(tag: field.name);
@@ -242,7 +249,7 @@ inputDecoration(field) => InputDecoration(
       // errorStyle: TextStyle(height: 0.7),
     );
 Widget LabelWidget(FormItemField field) {
-  dprint(labelName(field));
+  // dprint(labelName(field));
   return Text(
     labelName(field),
     style: Get.theme.inputDecorationTheme.labelStyle,
@@ -288,7 +295,7 @@ getInputBasedOnType(FormItemField field) {
         formControlName: field.name.tr,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
-          dprint("Picker errprs");
+          // dprint("Picker errprs");
           String? errorText;
           if (picker.control.errors != null) {
             errorText = picker.control?.errors.keys.join("\n");

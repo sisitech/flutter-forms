@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth_controller.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/form_controller.dart';
+import 'package:flutter_form/handle_offline_records.dart';
 import 'package:flutter_form/models.dart';
 
 import 'package:flutter_utils/flutter_utils.dart';
@@ -11,17 +12,46 @@ import 'package:flutter_utils/flutter_utils.dart';
 import 'package:flutter_utils/models.dart';
 import 'package:flutter_utils/network_status/network_status.dart';
 import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
+import 'package:flutter_utils/text_view/text_view.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:form_example/options_login.dart';
 import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'custom_field.dart';
 import 'internalization/translate.dart';
-import 'storageTest/storage.dart';
+import 'main_controller.dart';
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  dprint("Dispatcher called ");
+  Workmanager().executeTask((task, inputData) async {
+    dprint("Starting work for $task");
+    Get.put<APIConfig>(
+      APIConfig(
+          apiEndpoint: "https://dukapi.roometo.com",
+          version: "api/v1",
+          clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+          tokenUrl: 'o/token/',
+          grantType: "password",
+          revokeTokenUrl: 'o/revoke_token/'),
+    );
+    if (task.startsWith(myform_work_manager_tasks_prefix)) {
+      dprint("Handing over work to myform handler $task");
+      var res = await handleOfflineRecords(task);
+      return Future.value(res);
+    } else {
+      return Future.value(true);
+    }
+  });
+}
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   Get.put<APIConfig>(
     APIConfig(
         apiEndpoint: "https://dukapi.roometo.com",
@@ -32,15 +62,26 @@ void main() async {
         revokeTokenUrl: 'o/revoke_token/'),
   );
   Get.put(NetworkStatusController());
-  Get.lazyPut(() => AuthController());
+  Get.put(AuthController());
+  Get.put(OfflineHttpCacheController());
+
   await GetStorage.init('school');
-  await createSchools();
+
+  Get.put(MyMainController());
+
+  Workmanager().initialize(
+      callbackDispatcher, // The top level function, aka callbackDispatcher
+      isInDebugMode:
+          true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+      );
+
+  // await createSchools();
   runApp(const MyApp());
 }
 
 createSchools() async {
   final box = GetStorage("school");
-  await box.erase();
+  // await box.erase();
   var classes = await box.read("classes");
   if (classes == null) {
     var classes = [];
@@ -199,6 +240,11 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     APIConfig config = Get.find<APIConfig>();
+    OfflineHttpCacheController offlnCont =
+        Get.find<OfflineHttpCacheController>();
+
+    MyMainController mainCont = Get.find<MyMainController>();
+
     dprint(context.width);
     FormController? controller;
 
@@ -214,17 +260,34 @@ class MyHomePage extends StatelessWidget {
             NetworkStatusWidget(),
             MyCustomForm(
               formItems: loginOptions,
-              enableOfflineSave: false,
+              enableOfflineMode: true,
+              storageContainer: "school",
               url: "o/token/",
               submitButtonText: "Login",
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
               instance: {
                 // "id": 12,
-                "username": "myadm1in",
+                "username": "myadmin",
                 "password": "#myadmin",
               },
-              onSuccess: (res) async {
+              onSuccess: (data) {
+                var data = {
+                  "name": "Signupdada1",
+                  "urlPath": "o/token/",
+                  "storageContainer": "school",
+                  "formData": {
+                    "username": "myadmin",
+                    "password": "#myadmin",
+                  },
+                  "httpMethod": "POST",
+                  "status": "",
+                  "tries": 0,
+                };
+                offlnCont.saveOfflineCache(OfflineHttpCall.fromJson(data),
+                    taskPrefix: "MYFORM");
+              },
+              onOfflineSuccess: (res) async {
                 dprint("Success login.");
                 dprint(res);
 
@@ -245,6 +308,51 @@ class MyHomePage extends StatelessWidget {
               ],
               formTitle: "Signupdada",
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: mainCont.getAllOfflineData,
+                  child: Text("Refresh"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    var box = GetStorage("school");
+                    await box.erase();
+                    dprint("Cleared storage");
+                  },
+                  child: Text("Clear Storage"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await Workmanager().cancelAll();
+                    dprint("Cleared work manager tasks");
+                  },
+                  child: Text("Clear Tasks"),
+                ),
+              ],
+            ),
+            Obx(() {
+              return ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  OfflineHttpCall item = mainCont.ofllineData.value[index];
+                  // item.name
+                  // item.formData
+                  // item.tries
+                  return ListTile(
+                    title: Text(item.name),
+                    subtitle: TextView(
+                      display_message: "@urlPath#",
+                      data: item.toJson(),
+                    ),
+                    trailing: Text(item.tries.toString()),
+                  );
+                },
+                itemCount: mainCont.ofllineData.value.length,
+              );
+            }),
             MyCustomForm(
               formItems: teacherOptions,
               // onFormItemTranform: (FormItemField field) {

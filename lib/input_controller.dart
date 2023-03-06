@@ -66,7 +66,7 @@ class InputController extends GetxController {
   }
 
   handleFromField() {
-    dprint("Got a first from_field");
+    // dprint("Got a first from_field");
     fromFieldSubscription =
         form?.control(field.from_field!).valueChanges.listen((event) async {
       // dprint("Lister ${field.name} notified of ${field.from_field} changes");
@@ -240,18 +240,18 @@ class InputController extends GetxController {
         isLoading.value = false;
         var urlChoices = [];
         // dprint(choices);
-        dprint("Getting status codfe ");
-        dprint(choices.statusCode);
+        // dprint("Getting status codfe ");
+        // dprint(choices.statusCode);
         // dprint(choices.body);
         if (choices.statusCode == null) {
           dprint("NO internet conncetion");
           noResults.value = "No internet connection! Try again later!";
           return;
         }
-        dprint("Getting the options");
+        // dprint("Getting the options");
         if (choices.statusCode == 200) {
           if (choices?.body.runtimeType == String) {
-            dprint("FOnd strineg instrad");
+            // dprint("FOnd strineg instrad");
             return;
           }
           if (choices.body.containsKey("results")) {

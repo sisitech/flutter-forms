@@ -3,6 +3,8 @@ library flutter_form;
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
+const myform_work_manager_tasks_prefix = "MYFORM";
+
 enum ContentType {
   json,
   form_url_encoded,

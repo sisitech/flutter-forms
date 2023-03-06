@@ -6,7 +6,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/models.dart';
 import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -20,18 +22,27 @@ class FormController extends GetxController {
   final Map<String, dynamic>? extraFields;
   final bool isValidateOnly;
   final String? url;
+  final String formTitle;
   final String? instanceUrl;
   final ContentType contentType;
   final Function? handleErrors;
   final String loadingMessage;
-  final Function? onSuccess;
+  final Function(dynamic data)? onSuccess;
+  final Function(dynamic data)? onOfflineSuccess;
   final Function? PreSaveData;
   final Function? getDynamicUrl;
   final Function? onFormItemTranform;
   final Function? onControllerSetup;
+  var httpMethoFromStatus = {
+    FormStatus.Add: "POST",
+    FormStatus.Update: "PATCH",
+    FormStatus.Delete: "DELETE",
+  };
 
-  late bool enableOfflineSave;
+  late bool enableOfflineMode;
   late bool? showOfflineMessage;
+  late bool enableOfflineSave;
+
   final Function(Map<String, dynamic>)? validateOfflineData;
 
   final Map<String, dynamic>? instance;
@@ -54,11 +65,14 @@ class FormController extends GetxController {
     this.isValidateOnly = false,
     this.url,
     this.extraFields,
+    required this.formTitle,
     this.showOfflineMessage,
-    this.enableOfflineSave = false,
+    this.enableOfflineMode = false,
     this.validateOfflineData,
     this.onSuccess,
     this.handleErrors,
+    this.enableOfflineSave = false,
+    this.onOfflineSuccess,
     this.getDynamicUrl,
     this.instance,
     this.onFormItemTranform,
@@ -272,8 +286,9 @@ class FormController extends GetxController {
     isLoading.value = true;
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
+
     // Offline mode support
-    if (enableOfflineSave) {
+    if (enableOfflineMode) {
       var res = await validateDataOfflineMode();
       if (res != null) {
         updateFormErrors(res);
@@ -283,10 +298,42 @@ class FormController extends GetxController {
     // Pre Save Data
     var data = preparePostData();
     var requrl = resolveRequestUrl(data);
+
     dprint(isValidateOnly);
     if (isValidateOnly) {
       if (onSuccess != null) {
         await onSuccess!(data);
+      }
+      isLoading.value = false;
+      return;
+    }
+
+    // Confirm Internet connection before submitting
+    if (!netCont.isDeviceConnected.value) {
+      try {
+        var offlineCont = Get.find<OfflineHttpCacheController>();
+
+        if (enableOfflineSave) {
+          OfflineHttpCall offlineHttpCall = OfflineHttpCall(
+              name: formTitle,
+              httpMethod: httpMethoFromStatus[status] ?? "POST",
+              urlPath: requrl,
+              formData: data,
+              storageContainer: storageContainer);
+          offlineCont.saveOfflineCache(offlineHttpCall,
+              taskPrefix: myform_work_manager_tasks_prefix);
+          dprint("Saved offfline succeffully $storageContainer");
+        } else {
+          dprint("Offline save skipped `enableOfflineSave` DISABLED");
+        }
+
+        if (onOfflineSuccess != null) {
+          await onOfflineSuccess!(data);
+        }
+      } catch (e) {
+        isLoading.value = false;
+        dprint("Failed to save offline");
+        dprint(e);
       }
       isLoading.value = false;
       return;
