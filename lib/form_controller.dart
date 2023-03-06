@@ -288,7 +288,7 @@ class FormController extends GetxController {
     const errorStatusCodes = [400, 401, 403];
 
     // Offline mode support
-    if (enableOfflineMode) {
+    if (enableOfflineMode && !netCont.isDeviceConnected.value) {
       var res = await validateDataOfflineMode();
       if (res != null) {
         updateFormErrors(res);
