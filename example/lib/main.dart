@@ -51,7 +51,8 @@ void callbackDispatcher() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await GetStorage.init('school');
+  await GetStorage.init();
   Get.put<APIConfig>(
     APIConfig(
         apiEndpoint: "https://dukapi.roometo.com",
@@ -64,8 +65,6 @@ void main() async {
   Get.put(NetworkStatusController());
   Get.put(AuthController());
   Get.put(OfflineHttpCacheController());
-
-  await GetStorage.init('school');
 
   Get.put(MyMainController());
 
@@ -243,6 +242,8 @@ class MyHomePage extends StatelessWidget {
     OfflineHttpCacheController offlnCont =
         Get.find<OfflineHttpCacheController>();
 
+    AuthController authCont = Get.find<AuthController>();
+
     MyMainController mainCont = Get.find<MyMainController>();
 
     dprint(context.width);
@@ -260,27 +261,30 @@ class MyHomePage extends StatelessWidget {
             NetworkStatusWidget(),
             MyCustomForm(
               formItems: loginOptions,
-              enableOfflineMode: true,
+              enableOfflineMode: false,
+              // isValidateOnly: true,
               storageContainer: "school",
               url: "o/token/",
               submitButtonText: "Login",
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
-              instance: {
+              instance: const {
                 // "id": 12,
                 "username": "myadmin",
                 "password": "#myadmin",
+                "client_d": "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+                "grant_type": "password",
               },
-              onSuccess: (data) {
+              onSuccess: (res) async {
+                dprint("Received");
+                dprint(res);
+                await authCont.saveToken(res as Map<String, dynamic>);
+
                 var data = {
-                  "name": "Signupdada1",
-                  "urlPath": "o/token/",
+                  "name": "Get Shops",
+                  "urlPath": "api/v1/shops",
                   "storageContainer": "school",
-                  "formData": {
-                    "username": "myadmin",
-                    "password": "#myadmin",
-                  },
-                  "httpMethod": "POST",
+                  "httpMethod": "GET",
                   "status": "",
                   "tries": 0,
                 };

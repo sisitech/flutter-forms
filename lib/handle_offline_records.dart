@@ -87,7 +87,11 @@ Future<bool> makeHttpCall(
     if (body_str.runtimeType == String) {
       body = json.decode(body_str);
     } else {
-      body = body_str;
+      if (body_str != null) {
+        body = body_str;
+      } else {
+        body = {"da": ""};
+      }
     }
     dprint("Amb acking.. ${offlineData.httpMethod}");
 
