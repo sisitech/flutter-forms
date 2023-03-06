@@ -317,6 +317,8 @@ class FormController extends GetxController {
       return;
     }
 
+    errors = [];
+    update();
     // Confirm Internet connection before submitting
     if (!netCont.isDeviceConnected.value) {
       try {
@@ -357,8 +359,7 @@ class FormController extends GetxController {
     }
     try {
       dprint("Making api vcall");
-      errors = [];
-      update();
+
       Response res;
       if (contentType == ContentType.form_url_encoded) {
         // dprint("Url encoded");
