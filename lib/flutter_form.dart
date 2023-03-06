@@ -47,6 +47,7 @@ class MyCustomForm extends StatelessWidget {
   final Function? onControllerSetup;
   final Function? onFormItemTranform;
   late String storageContainer;
+  late String offlineStorageContainer;
   late bool enableOfflineMode;
   late bool enableOfflineSave;
   late bool? showOfflineMessage;
@@ -84,6 +85,7 @@ class MyCustomForm extends StatelessWidget {
     this.onOfflineSuccess,
     this.PreSaveData,
     this.storageContainer = "GetStorage",
+    this.offlineStorageContainer = "GetStorage",
     this.onStatus,
     this.instanceUrl,
     this.getDynamicUrl,
@@ -111,6 +113,7 @@ class MyCustomForm extends StatelessWidget {
           enableOfflineMode: enableOfflineMode,
           validateOfflineData: validateOfflineData,
           loadingMessage: loadingMessage,
+          offlineStorageContainer: offlineStorageContainer,
           isValidateOnly: isValidateOnly,
           instance: instance,
           instanceUrl: instanceUrl,

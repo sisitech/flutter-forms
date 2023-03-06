@@ -58,6 +58,7 @@ class FormController extends GetxController {
   List<String> errors = [];
   int? instanceId;
   late String storageContainer;
+  late String offlineStorageContainer;
   StreamSubscription? subscription;
 
   FormController({
@@ -79,6 +80,7 @@ class FormController extends GetxController {
     this.onStatus,
     this.instanceUrl,
     this.storageContainer = "GetStorage",
+    this.offlineStorageContainer = "GetStorage",
     this.onControllerSetup,
     this.status = FormStatus.Add,
     this.PreSaveData,
@@ -324,7 +326,7 @@ class FormController extends GetxController {
               httpMethod: httpMethoFromStatus[status] ?? "POST",
               urlPath: requrl,
               formData: data,
-              storageContainer: storageContainer);
+              storageContainer: offlineStorageContainer);
           offlineCont.saveOfflineCache(offlineHttpCall,
               taskPrefix: myform_work_manager_tasks_prefix);
           dprint("Saved offfline succeffully $storageContainer");
