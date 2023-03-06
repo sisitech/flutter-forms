@@ -315,9 +315,8 @@ class FormController extends GetxController {
     // Confirm Internet connection before submitting
     if (!netCont.isDeviceConnected.value) {
       try {
-        var offlineCont = Get.find<OfflineHttpCacheController>();
-
         if (enableOfflineSave) {
+          var offlineCont = Get.find<OfflineHttpCacheController>();
           if (status == FormStatus.Update) {
             if (instanceId != null) {
               requrl = "$requrl/${instanceId}/".replaceAll("//", "/");

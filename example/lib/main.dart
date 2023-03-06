@@ -261,7 +261,7 @@ class MyHomePage extends StatelessWidget {
             NetworkStatusWidget(),
             MyCustomForm(
               formItems: loginOptions,
-              enableOfflineMode: false,
+              enableOfflineMode: true,
               // isValidateOnly: true,
               storageContainer: "school",
               url: "o/token/",
