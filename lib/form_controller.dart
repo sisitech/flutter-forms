@@ -314,6 +314,11 @@ class FormController extends GetxController {
         var offlineCont = Get.find<OfflineHttpCacheController>();
 
         if (enableOfflineSave) {
+          if (status == FormStatus.Update) {
+            if (instanceId != null) {
+              requrl = "$requrl/${instanceId}/";
+            }
+          }
           OfflineHttpCall offlineHttpCall = OfflineHttpCall(
               name: formTitle,
               httpMethod: httpMethoFromStatus[status] ?? "POST",
