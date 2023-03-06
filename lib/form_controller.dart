@@ -248,7 +248,9 @@ class FormController extends GetxController {
   validateDataOfflineMode() async {
     var value = getCurrentFormFields();
     if (validateOfflineData != null) {
-      return await validateOfflineData!(value);
+      var res = validateOfflineData!(value);
+      dprint("Validation is $res");
+      return res;
     }
     return null;
   }
@@ -257,7 +259,7 @@ class FormController extends GetxController {
     formErrors.forEach((key, value) {
       if (fields.map((e) => e.name).contains(key)) {
         String display = getErrorDisplay(value);
-        form.control(key).setErrors({display: "dada"});
+        form.control(key).setErrors({display: "error"});
       } else {
         String display = getErrorDisplay(value);
         if (handleErrors == null) {
@@ -269,6 +271,7 @@ class FormController extends GetxController {
       String display = handleErrors!(formErrors);
       errors.add(display);
     }
+    form.markAllAsTouched();
   }
 
   resolveRequestUrl(formData) {
@@ -294,6 +297,8 @@ class FormController extends GetxController {
     // Offline mode support
     if (enableOfflineMode && !netCont.isDeviceConnected.value) {
       var res = await validateDataOfflineMode();
+      dprint("Gto from offline validate");
+      dprint(res);
       if (res != null) {
         updateFormErrors(res);
       }

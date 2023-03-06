@@ -268,6 +268,9 @@ class MyHomePage extends StatelessWidget {
               submitButtonText: "Login",
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
+              validateOfflineData: (res) {
+                return {"username": "Hahaha not this"};
+              },
               instance: const {
                 // "id": 12,
                 "username": "myadmin",
