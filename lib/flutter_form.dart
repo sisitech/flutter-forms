@@ -67,6 +67,7 @@ class MyCustomForm extends StatelessWidget {
   final String? instanceUrl;
 
   final Function? getDynamicUrl;
+  final Function? getOfflineName;
 
   MyCustomForm({
     super.key,
@@ -82,6 +83,7 @@ class MyCustomForm extends StatelessWidget {
     this.extraFields,
     this.isValidateOnly = false,
     this.url,
+    this.getOfflineName,
     this.onOfflineSuccess,
     this.PreSaveData,
     this.storageContainer = "GetStorage",
@@ -104,6 +106,7 @@ class MyCustomForm extends StatelessWidget {
         FormController(
           formItems: formItems,
           formTitle: formTitle,
+          getOfflineName: getOfflineName,
           storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,
           enableOfflineSave: enableOfflineSave,

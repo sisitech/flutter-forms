@@ -33,6 +33,7 @@ class FormController extends GetxController {
   final Function? getDynamicUrl;
   final Function? onFormItemTranform;
   final Function? onControllerSetup;
+  final Function? getOfflineName;
   var httpMethoFromStatus = {
     FormStatus.Add: "POST",
     FormStatus.Update: "PATCH",
@@ -71,6 +72,7 @@ class FormController extends GetxController {
     this.enableOfflineMode = false,
     this.validateOfflineData,
     this.onSuccess,
+    this.getOfflineName,
     this.handleErrors,
     this.enableOfflineSave = false,
     this.onOfflineSuccess,
@@ -321,8 +323,12 @@ class FormController extends GetxController {
               requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
             }
           }
+          String offlineName = formTitle;
+          if (getOfflineName != null) {
+            offlineName = await getOfflineName!();
+          }
           OfflineHttpCall offlineHttpCall = OfflineHttpCall(
-              name: formTitle,
+              name: offlineName,
               httpMethod: httpMethoFromStatus[status] ?? "POST",
               urlPath: requrl,
               formData: data,
