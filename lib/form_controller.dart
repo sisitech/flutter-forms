@@ -296,6 +296,9 @@ class FormController extends GetxController {
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
 
+    // Pre Save Data
+    var data = preparePostData();
+
     // Offline mode support
     if (enableOfflineMode && !netCont.isDeviceConnected.value) {
       var res = await validateDataOfflineMode();
@@ -310,8 +313,6 @@ class FormController extends GetxController {
 
     isLoading.value = true;
 
-    // Pre Save Data
-    var data = preparePostData();
     var requrl = resolveRequestUrl(data);
 
     dprint(isValidateOnly);
