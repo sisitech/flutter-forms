@@ -269,7 +269,7 @@ class MyHomePage extends StatelessWidget {
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
               validateOfflineData: (res) {
-                return {"username": "Hahaha not this"};
+                return {"detail": "Hahaha not this"};
               },
               instance: const {
                 // "id": 12,
@@ -301,9 +301,9 @@ class MyHomePage extends StatelessWidget {
                 await Future.delayed(const Duration(milliseconds: 1000));
                 dprint("Done");
               },
-              handleErrors: (value) {
-                return "Your password might be wrong";
-              },
+              // handleErrors: (value) {
+              //   return "Your password might be wrong";
+              // },
               contentType: ContentType.form_url_encoded,
               extraFields: {
                 "client_id": config.clientId,

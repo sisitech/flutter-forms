@@ -290,7 +290,7 @@ class FormController extends GetxController {
     }
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
-    isLoading.value = true;
+
     errors = [];
     update();
     const successStatusCodes = [200, 201, 204];
@@ -307,6 +307,8 @@ class FormController extends GetxController {
         return;
       }
     }
+
+    isLoading.value = true;
 
     // Pre Save Data
     var data = preparePostData();
