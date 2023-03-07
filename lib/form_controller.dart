@@ -291,6 +291,8 @@ class FormController extends GetxController {
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
     isLoading.value = true;
+    errors = [];
+    update();
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
 
@@ -301,7 +303,7 @@ class FormController extends GetxController {
       dprint(res);
       if (res != null) {
         updateFormErrors(res);
-
+        isLoading.value = false;
         return;
       }
     }
@@ -319,8 +321,6 @@ class FormController extends GetxController {
       return;
     }
 
-    errors = [];
-    update();
     // Confirm Internet connection before submitting
     if (!netCont.isDeviceConnected.value) {
       try {
