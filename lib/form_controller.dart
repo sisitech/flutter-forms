@@ -301,6 +301,8 @@ class FormController extends GetxController {
       dprint(res);
       if (res != null) {
         updateFormErrors(res);
+
+        return;
       }
     }
 
