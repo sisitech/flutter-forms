@@ -198,7 +198,7 @@ class InputController extends GetxController {
       queryParams[field.from_field_value_field] = "$fromFieldValue";
     }
     if (field.type == FieldType.multifield) {
-      queryParams["page_size"] = "5";
+      queryParams["page_size"] = "4";
     }
 
     // dprint(queryParams);
