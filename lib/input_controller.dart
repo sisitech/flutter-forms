@@ -25,6 +25,8 @@ class InputController extends GetxController {
 
   var visible = true.obs;
 
+  dynamic fromFieldValue = null;
+
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
   RxList<FormChoice> formChoices = RxList.empty();
@@ -103,13 +105,16 @@ class InputController extends GetxController {
 
   handleShowOnly(dynamic value) async {
     // Handle getting the information
+    fromFieldValue = await getFromFieldValue(value);
+
     if (field.show_only == null) {
-      getOptions(search: value);
+      if (field.type != FieldType.multifield) {
+        await getOptions();
+      }
       return;
     }
 
     visible.value = false;
-    var fromFieldValue = await getFromFieldValue(value);
     var showOnlyValue = field.show_only;
     // dprint("Got $fromFieldValue making sure is $showOnlyValue");
     var show = showOnlyValue == fromFieldValue;
@@ -124,7 +129,9 @@ class InputController extends GetxController {
     visible.value = show;
     // Update options if show
     if (show) {
-      getOptions(search: value);
+      if (field.type != FieldType.multifield) {
+        await getOptions();
+      }
     }
   }
 
@@ -177,44 +184,59 @@ class InputController extends GetxController {
     if (search != null) {
       queryParams[field.search_field] = search;
     }
+
+    if (fromFieldValue != null) {
+      queryParams[field.from_field_value_field] = fromFieldValue;
+    }
+
     // dprint(queryParams);
     if (field.choices != null) {
       dprint("GOt to the field choices");
-      // Filter based on the inpu
-      dprint(search);
-      rawChoices = field.choices
-          ?.where(
-              (FormChoice e) => e.display_name.toLowerCase().contains(search))
-          .toList();
+
+      rawChoices = field.choices;
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
       List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
       // new Map<String, dynamic>.from(overview)
       List<dynamic> items = [];
       // queryParams[field.search_field] = search;
-      if (search != null) {
-        // dprint(search);
+
+      if (fromFieldValue != null) {
+        dprint(fromFieldValue);
+        dprint(field.from_field_value_field);
         if (field.from_field_source != null) {
           if (field.search_field == "") {
             throw ("field.search_field not set");
           }
           if (rawItems.length > 0) {
             // dprint(rawItems);
-            // dprint("${field.search_field} $search");
+            dprint("${field.from_field_source} $fromFieldValue");
             var sourceitem = rawItems.firstWhere((element) =>
-                element[field.search_field].toString().toLowerCase() ==
-                search.toString().toLowerCase());
+                element[field.from_field_value_field]
+                    .toString()
+                    .toLowerCase() ==
+                fromFieldValue.toString().toLowerCase());
+            dprint(sourceitem);
             if (sourceitem != null) {
               items = sourceitem[field.from_field_source];
             }
           }
-        } else if (field.search_field != "") {
+        } else if (field.from_field_value_field != null) {
           if (rawItems.length > 0) {
+            dprint("DOing from field filterrin");
+            dprint(rawItems.first);
             items = rawItems
                 .where((element) =>
-                    element[field.search_field].toString().toLowerCase() ==
-                    search.toString().toLowerCase())
+                    element[field.from_field_value_field]
+                        .toString()
+                        .toLowerCase() ==
+                    fromFieldValue.toString().toLowerCase())
                 .toList();
+
+            dprint(field.name);
+            dprint(items);
+          } else {
+            dprint("No raw items");
           }
         } else {
           items = rawItems;
@@ -228,6 +250,9 @@ class InputController extends GetxController {
 
       // dprint(field.name);
       // dprint(items);
+
+      /// Perform search
+
       rawChoices = items
           .map((element) => new Map<dynamic, dynamic>.from(element))
           .map((choice) {
@@ -293,6 +318,16 @@ class InputController extends GetxController {
         dprint(e);
         isLoading.value = false;
       }
+    }
+
+    //Search
+    dprint("Search $search ${field.url}");
+    if (search != null && field.url == null) {
+      rawChoices = rawChoices
+          ?.where((FormChoice e) => e.display_name
+              .toLowerCase()
+              .contains(search.toString().toLowerCase()))
+          .toList();
     }
 
     noResults.value =

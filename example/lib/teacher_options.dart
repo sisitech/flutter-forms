@@ -156,21 +156,33 @@ const teacherOptions = {
         "label": "Is non delete"
       },
       "role": {
-        "type": "multifield",
+        "type": "field",
         "required": false,
         "read_only": false,
         "label": "Teacher Type",
-        "choices": [
-          {"value": "TSC", "display_name": "TSC"},
-          {"value": "BRD", "display_name": "BOM"}
-        ]
+        "storage": "districts",
+        "display_name": "name",
+        // "choices": [
+        //   {"value": "TSC", "display_name": "TSC"},
+        //   {"value": "BRD", "display_name": "BOM"}
+        // ]
       },
       "phone": {
-        "type": "string",
+        "type": "multifield",
         "required": true,
         "read_only": false,
         "label": "Phone Number",
-        "max_length": 20
+        "max_length": 20,
+        "display_name": "name",
+        "from_field": "role",
+        "from_field_value_field": "district",
+        // "from_field_source": "shehiyas_details",
+        "storage": "shehiyas",
+
+        // "choices": [
+        //   {"value": "TSC", "display_name": "TSC"},
+        //   {"value": "BRD", "display_name": "BOM"}
+        // ]
       },
       "qualifications": {
         "type": "choice",

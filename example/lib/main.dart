@@ -80,8 +80,9 @@ void main() async {
 
 createSchools() async {
   final box = GetStorage("school");
-  // await box.erase();
+  await box.erase();
   var classes = await box.read("classes");
+  var allShehiyas = [];
   if (classes == null) {
     var classes = [];
     for (int i = 0; i < 8; i++) {
@@ -109,24 +110,34 @@ createSchools() async {
         .toList();
 
     var districts = counties.map((e) {
-      var districts = [1, 2 + 10, 3 + 20].map((e) {
+      var innerdistricts = [1, 2 + 10, 3 + 20].map((e) {
         return {
           "id": e,
           "name": "Ler $e",
           "district": "$e",
         };
       });
+      Function shehiyas = (e) => innerdistricts.map((Map<String, dynamic> f) {
+            // dprint(e["id"]);
+            f['name'] = "${f?['name']} - District ${e['id']}";
+            f["id"] = "${f['id']}${e['id']}";
+            f["district"] = e['id'];
+            return f;
+          }).toList();
+
+      allShehiyas.addAll(shehiyas(e));
       return {
         "name": "District ${e['id']}",
         "id": e["id"],
         "county": e["id"],
-        "shehiyas_details": districts.toList()
+        "shehiyas_details": shehiyas(e)
       };
     }).toList();
 
     await box.write("classes", classes);
     await box.write("regions", counties);
     await box.write("districts", districts);
+    await box.write("shehiyas", allShehiyas);
   }
   // dprint(value)
   dprint(await box.read("districts"));
@@ -381,6 +392,7 @@ class MyHomePage extends StatelessWidget {
                 //   // )
                 // }
               },
+              storageContainer: "school",
               status: FormStatus.Update,
               contentType: ContentType.json,
               formHeader: const Text("Welcome home"),
@@ -400,8 +412,8 @@ class MyHomePage extends StatelessWidget {
               // },
               // isValidateOnly: true,
               formGroupOrder: const [
-                ["name"],
                 ['role'],
+                ["phone"],
                 ["active"],
                 ["modified"],
                 ["contact_name"],
