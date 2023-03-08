@@ -69,7 +69,12 @@ getFormControl(FormItemField field) {
       // var inputContq =
       //     Get.put(InputController(field: field), tag: field.name);
 
-      formControl = FormControl<String?>(validators: validators);
+      if (field.multiple) {
+        formControl = FormControl<List<String>?>(validators: validators);
+      } else {
+        formControl = FormControl<String?>(validators: validators);
+      }
+
       break;
     case FieldType.date:
       formControl = FormControl<DateTime>(validators: validators);

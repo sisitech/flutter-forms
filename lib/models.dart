@@ -57,7 +57,7 @@ class FormUrlChoices {
   String? storage;
   String? from_field_source;
   late String? instance_url;
-  late bool? multiple;
+  late bool multiple;
   late String display_name;
   late String search_field;
   late String value_field;

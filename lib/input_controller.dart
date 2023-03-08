@@ -40,7 +40,7 @@ class InputController extends GetxController {
     this.onSelectFirst,
     this.fetchFirst = true,
   });
-  Rx<FormChoice?> selected = Rx(null);
+  RxList<FormChoice> selectedItems = RxList.empty();
 
   var searchController = TextEditingController();
 
@@ -160,8 +160,9 @@ class InputController extends GetxController {
     });
   }
 
-  selectValue(FormChoice? choice) {
-    selected.value = choice;
+  selectValue(List<FormChoice> choices) {
+    dprint("Selecting Value");
+    selectedItems.value = choices;
 
     ///NOTE! Reset the controller before the options
     resetSearchController();
@@ -194,7 +195,7 @@ class InputController extends GetxController {
 
     // dprint(queryParams);
     if (field.choices != null) {
-      dprint("GOt to the field choices");
+      // dprint("GOt to the field choices");
 
       rawChoices = field.choices;
     } else if (field.storage != null) {
@@ -205,29 +206,29 @@ class InputController extends GetxController {
       // queryParams[field.search_field] = search;
 
       if (fromFieldValue != null) {
-        dprint(fromFieldValue);
-        dprint(field.from_field_value_field);
+        // dprint(fromFieldValue);
+        // dprint(field.from_field_value_field);
         if (field.from_field_source != null) {
           if (field.search_field == "") {
             throw ("field.search_field not set");
           }
           if (rawItems.length > 0) {
             // dprint(rawItems);
-            dprint("${field.from_field_source} $fromFieldValue");
+            // dprint("${field.from_field_source} $fromFieldValue");
             var sourceitem = rawItems.firstWhere((element) =>
                 element[field.from_field_value_field]
                     .toString()
                     .toLowerCase() ==
                 fromFieldValue.toString().toLowerCase());
-            dprint(sourceitem);
+            // dprint(sourceitem);
             if (sourceitem != null) {
               items = sourceitem[field.from_field_source];
             }
           }
         } else if (field.from_field_value_field != null) {
           if (rawItems.length > 0) {
-            dprint("DOing from field filterrin");
-            dprint(rawItems.first);
+            // dprint("DOing from field filterrin");
+            // dprint(rawItems.first);
             items = rawItems
                 .where((element) =>
                     element[field.from_field_value_field]
@@ -236,8 +237,8 @@ class InputController extends GetxController {
                     fromFieldValue.toString().toLowerCase())
                 .toList();
 
-            dprint(field.name);
-            dprint(items);
+            // dprint(field.name);
+            // dprint(items);
           } else {
             dprint("No raw items");
           }
@@ -324,7 +325,7 @@ class InputController extends GetxController {
     }
 
     //Search
-    dprint("Search $search ${field.url}");
+    // dprint("Search $search ${field.url}");
     if (search != null && field.url == null) {
       rawChoices = rawChoices
           ?.where((FormChoice e) => e.display_name

@@ -10,23 +10,21 @@ import '../models.dart';
 
 class MultiSelectView extends StatelessWidget {
   /// The value of the Counter
-  final FormChoice? value;
+  final List<FormChoice>? value;
 
-  /// The callback to notify that the user has pressed the increment button.
   final Function onChange;
   final InputController inputController;
   final FormItemField fieldOption;
   ReactiveFormFieldState<dynamic?, dynamic?> reactiveField;
 
-  /// Creates a [Counter] instance.
-  /// The [value] of the counter is required and must not by null.
-  MultiSelectView(
-      {super.key,
-      this.value,
-      required this.onChange,
-      required this.inputController,
-      required this.fieldOption,
-      required this.reactiveField});
+  MultiSelectView({
+    super.key,
+    this.value,
+    required this.onChange,
+    required this.inputController,
+    required this.fieldOption,
+    required this.reactiveField,
+  });
 
   selectStuff(FormChoice? formChoice) {
     onChange(formChoice);
@@ -34,11 +32,8 @@ class MultiSelectView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // dprint(context);
-    // dprint("Reveived erros");
-    // dprint(reactiveField.errorText);
     return Container(
-      constraints: BoxConstraints(maxHeight: 500, minHeight: 50),
+      constraints: const BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -108,9 +103,11 @@ class MultiSelectView extends StatelessWidget {
                       },
                       child: ListTile(
                         title: Text("${choice.display_name}"),
-                        trailing: inputController.selected?.value?.value ==
-                                choice.value
-                            ? Icon(
+                        trailing: inputController.selectedItems?.value
+                                    ?.map((e) => e.value)
+                                    .contains(choice.value) ??
+                                false
+                            ? const Icon(
                                 Icons.check_circle,
                               )
                             : null,
@@ -130,6 +127,45 @@ class MultiSelectView extends StatelessWidget {
   }
 }
 
+updateFieldValue(InputController controller, FormChoice? formChoice,
+    ReactiveFormFieldState<dynamic?, dynamic?> field) {
+  if (formChoice?.value == null) {
+    dprint("Muliselect value null. Ignored");
+    return;
+  }
+  // dprint(formChoice?.display_name);
+  // dprint(formChoice?.value);
+  if (controller.field.multiple) {
+    var value = formChoice?.value;
+    List<String> values = field.value ?? [];
+
+    if (!values.contains(value)) {
+      values.add("$value");
+    }
+    // dprint("Updating $values");
+    field.didChange(values);
+  } else {
+    field.didChange("${formChoice?.value}");
+  }
+  field.setState(() {});
+}
+
+removeFieldValue(InputController controller, FormChoice choice,
+    ReactiveFormFieldState<dynamic?, dynamic?> field) {
+  dprint("Removing ${choice.value}");
+  if (controller.field.multiple) {
+    List<String> values = field.value;
+    if (values.contains("${choice.value}")) {
+      values.remove("${choice.value}");
+    }
+    dprint("$values");
+    field.didChange(values);
+  } else {
+    field.didChange(null);
+  }
+  field.setState(() {});
+}
+
 class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
   MultiSelectCustomField({
     required String formControlName,
@@ -141,30 +177,54 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               // dprint(field.errorText);
               // dprint("Reactive forms event");
               // dprint(field.valueAccessor.runtimeType);
-              // dprint(field);
+              // dprint(field).na;
               // var tag = "${formControlName}${formName}";
               var controller = Get.find<InputController>(tag: fildOption.name);
 
               // make sure never to pass null value to the Counter widget.
               final fieldValue = field.value;
-              FormChoice? valueChoice;
-              // dprint("Field Value");
-              // dprint(fieldValue);
+              List<FormChoice> valueChoice = [];
+
+              bool isMultiple = controller.field.multiple;
+              dprint(fieldValue);
 
               if (fieldValue == null) {
-                valueChoice = null;
+                valueChoice = [];
               } else {
-                var filt = controller.formChoices.value
-                    ?.where((element) => "${element.value}" == fieldValue);
-                if (filt!.isNotEmpty) {
-                  valueChoice = filt.first;
-                } else {
-                  /// Maintain state when resizing
-                  valueChoice = controller.selected.value;
-                }
-              }
-              controller.selectValue(valueChoice);
+                dprint("Updaint choicess");
+                var currentChoices = [];
+                List<FormChoice> filt = [];
+                if (isMultiple) {
+                  filt = controller.formChoices.value
+                          ?.where((element) =>
+                              (fieldValue as List<String>).any((ele) {
+                                return ele.toString() ==
+                                    element.value.toString();
+                              }))
+                          .toList() ??
+                      [];
 
+                  if (filt.isEmpty) {
+                    filt = controller.selectedItems.value
+                        .where((element) =>
+                            (fieldValue as List<String>).any((ele) {
+                              return ele.toString() == element.value.toString();
+                            }))
+                        .toList();
+                  }
+                } else {
+                  filt = controller.formChoices.value
+                          ?.where((element) =>
+                              fieldValue == element.value.toString())
+                          .toList() ??
+                      [];
+                }
+                valueChoice = filt;
+              }
+              dprint("Updapint choicess");
+              dprint(valueChoice);
+              controller.selectValue(valueChoice);
+              dprint(fieldValue);
               return Container(
                 constraints:
                     BoxConstraints(maxHeight: Get.height, minHeight: 50),
@@ -177,19 +237,16 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                       fieldOption: fildOption,
                       reactiveField: field,
                       onChange: (value) {
-                        if (value == null) {
-                          field.didChange("$value");
-                        } else {
-                          // controller.selected.value = valueChoice;a
-                          field.didChange("${value?.value}");
-                        }
+                        dprint("Select vlaihdi $value");
+                        updateFieldValue(controller, value, field);
                       },
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (fieldValue != null)
-                          _buildChip(valueChoice?.display_name ?? "O", field)
+                          ...valueChoice.map((fm) => _buildChip(
+                              controller, fm?.display_name ?? "O", fm, field))
                         // Text(
                         //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
                       ],
@@ -204,7 +261,8 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
       ReactiveFormFieldState<dynamic?, dynamic?>();
 }
 
-Widget _buildChip(String label, field) {
+Widget _buildChip(InputController controller, String label, FormChoice choice,
+    ReactiveFormFieldState<dynamic, dynamic> field) {
   return Card(
     child: Row(
       mainAxisSize: MainAxisSize.min,
@@ -217,7 +275,7 @@ Widget _buildChip(String label, field) {
         ),
         IconButton(
           onPressed: () {
-            field.didChange(null);
+            removeFieldValue(controller, choice, field);
           },
           icon: Icon(Icons.cancel),
           // color: Get.theme.errorColor,

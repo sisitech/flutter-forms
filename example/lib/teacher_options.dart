@@ -171,7 +171,7 @@ const teacherOptions = {
         "type": "multifield",
         "required": false,
         "read_only": false,
-        "multiple": true,
+        "multiple": false,
         "label": "Phone Number",
         "max_length": 20,
         "display_name": "name",

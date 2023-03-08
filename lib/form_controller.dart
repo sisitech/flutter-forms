@@ -179,11 +179,8 @@ class FormController extends GetxController {
             if (this.instance!.containsKey("multifield")) {
               var allMultiFields = this.instance!["multifield"];
               if (allMultiFields?.containsKey(key)) {
-                // dprint("GEttitng Input controller with tag: ${key}");
-                // dprint("FOund");
-                // dprint(allMultiFields[key]);
                 var controller = Get.find<InputController>(tag: key);
-                controller.selected.value = allMultiFields[key];
+                controller.selectedItems.value = allMultiFields[key];
               }
             }
           }
