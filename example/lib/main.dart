@@ -382,15 +382,25 @@ class MyHomePage extends StatelessWidget {
 
               url: "api/v1/teachers",
               onControllerSetup: (contr) => controller = contr,
-              instance: const {
+              instance: {
                 "contact_email": "michameiu@gmail.com",
-                "id": 34
-                // "multifield": {
-                //   // "contact_email": FormChoice(
-                //   //   display_name: "myadmin2",
-                //   //   value: "michameiu@gmail.com",
-                //   // )
-                // }
+                "id": 34,
+                "role": "1",
+                "phone": ["121"],
+                "multifield": {
+                  "phone": [
+                    FormChoice(
+                      display_name: "Ler 12 -District 1",
+                      value: "121",
+                    ),
+                  ],
+                  "role": [
+                    FormChoice(
+                      display_name: "District 11",
+                      value: "1",
+                    ),
+                  ],
+                }
               },
               storageContainer: "school",
               status: FormStatus.Update,

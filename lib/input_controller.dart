@@ -73,9 +73,9 @@ class InputController extends GetxController {
         form?.control(field.from_field!).valueChanges.listen((event) async {
       // dprint("Lister ${field.name} notified of ${field.from_field} changes");
       // dprint(event);
-      try {
-        form?.control(field.name).reset();
-      } catch (e) {}
+      // try {
+      //   form?.control(field.name).reset();
+      // } catch (e) {}
       await handleShowOnly(event);
     });
     handleShowOnly(form?.control(field.from_field!).value);
@@ -171,6 +171,11 @@ class InputController extends GetxController {
 
   resetSearchController() {
     searchController.text = "";
+  }
+
+  cancelNoResults() {
+    noResults.value = "";
+    resetSearchController();
   }
 
   resetOptions() {

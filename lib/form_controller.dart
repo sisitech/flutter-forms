@@ -163,6 +163,7 @@ class FormController extends GetxController {
 
     if (this.instance != null) {
       this.instance?.forEach((key, value) {
+        dprint("Instance found ");
         if (possibleFields.contains(key)) {
           // Updating a multified of an instance
           /**  instance{
@@ -180,7 +181,10 @@ class FormController extends GetxController {
               var allMultiFields = this.instance!["multifield"];
               if (allMultiFields?.containsKey(key)) {
                 var controller = Get.find<InputController>(tag: key);
-                controller.selectedItems.value = allMultiFields[key];
+                dprint("Updaint fields $key");
+                dprint(allMultiFields[key]);
+                // controller.selectedItems.value = allMultiFields[key];
+                controller.formChoices.value = allMultiFields[key];
               }
             }
           }

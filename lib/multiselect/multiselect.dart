@@ -78,7 +78,7 @@ class MultiSelectView extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       // dprint("${inputController.noResults.value}");
-                      inputController.noResults.value = "";
+                      inputController.cancelNoResults();
                     },
                     icon: const Icon(Icons.cancel),
                   )
@@ -241,8 +241,14 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                         updateFieldValue(controller, value, field);
                       },
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
+                    GridView(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisExtent: 50,
+                      ),
                       children: [
                         if (fieldValue != null)
                           ...valueChoice.map((fm) => _buildChip(
@@ -269,8 +275,10 @@ Widget _buildChip(InputController controller, String label, FormChoice choice,
       children: [
         Chip(
           labelPadding: EdgeInsets.all(2.0),
-          label: Text(
-            label,
+          label: FittedBox(
+            child: Text(
+              label,
+            ),
           ),
         ),
         IconButton(

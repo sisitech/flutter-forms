@@ -156,7 +156,7 @@ const teacherOptions = {
         "label": "Is non delete"
       },
       "role": {
-        "type": "field",
+        "type": "multifield",
         "required": false,
         "read_only": false,
         "label": "Teacher Type",
@@ -171,7 +171,7 @@ const teacherOptions = {
         "type": "multifield",
         "required": false,
         "read_only": false,
-        "multiple": false,
+        "multiple": true,
         "label": "Phone Number",
         "max_length": 20,
         "display_name": "name",
