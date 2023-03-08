@@ -73,6 +73,9 @@ class InputController extends GetxController {
         form?.control(field.from_field!).valueChanges.listen((event) async {
       // dprint("Lister ${field.name} notified of ${field.from_field} changes");
       // dprint(event);
+      try {
+        form?.control(field.name).reset();
+      } catch (e) {}
       await handleShowOnly(event);
     });
     handleShowOnly(form?.control(field.from_field!).value);
@@ -341,6 +344,9 @@ class InputController extends GetxController {
               child: Text(e.display_name),
             ))
         .toList();
+
+    // selected.value = null;
+    // selected.value = null;
 
     // Seclt first woeks for FieldTye.field only
     // dprint("Checking to select first");

@@ -99,7 +99,8 @@ class MultiSelectView extends StatelessWidget {
                     var choice = inputController.formChoices.value[index];
                     // dprint(
                     //     "Changing... ${choice.value} ${inputController.formChoices.value}");
-                    // dprint(inputController.selected?.value);
+                    // dprint(inputController.selected?.value)
+                    dprint("Changin values");
 
                     return GestureDetector(
                       onTap: () {
