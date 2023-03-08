@@ -191,11 +191,11 @@ class InputController extends GetxController {
     formChoices.value = [];
 
     if (search != null) {
-      queryParams[field.search_field] = search;
+      queryParams[field.search_field] = search.toString();
     }
 
     if (fromFieldValue != null) {
-      queryParams[field.from_field_value_field] = fromFieldValue;
+      queryParams[field.from_field_value_field] = "$fromFieldValue";
     }
 
     // dprint(queryParams);
