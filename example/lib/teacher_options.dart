@@ -156,7 +156,7 @@ const teacherOptions = {
         "label": "Is non delete"
       },
       "role": {
-        "type": "choice",
+        "type": "multifield",
         "required": false,
         "read_only": false,
         "label": "Teacher Type",

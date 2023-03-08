@@ -179,7 +179,13 @@ class InputController extends GetxController {
     }
     // dprint(queryParams);
     if (field.choices != null) {
-      rawChoices = field.choices;
+      dprint("GOt to the field choices");
+      // Filter based on the inpu
+      dprint(search);
+      rawChoices = field.choices
+          ?.where(
+              (FormChoice e) => e.display_name.toLowerCase().contains(search))
+          .toList();
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
       List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
@@ -274,8 +280,7 @@ class InputController extends GetxController {
         } else {
           dprint("ad");
         }
-        noResults.value =
-            rawChoices != null && rawChoices!.isEmpty ? "No results." : "";
+
         // dprint(choices.body);
 
       } catch (e) {
@@ -289,6 +294,9 @@ class InputController extends GetxController {
         isLoading.value = false;
       }
     }
+
+    noResults.value =
+        rawChoices != null && rawChoices!.isEmpty ? "No results." : "";
 
     // dprint(rawChoices!.map((e) => {e.display_name, e.value}));
     formChoices.value = rawChoices ?? [];
