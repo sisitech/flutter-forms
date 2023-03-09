@@ -160,9 +160,8 @@ const teacherOptions = {
         "required": false,
         "read_only": false,
         "label": "Teacher Type",
-        // "storage": "districts",
-        "url": "api/v1/shops",
-
+        "storage": "districts",
+        // "url": "api/v1/shops",
         "display_name": "name",
         // "choices": [
         //   {"value": "TSC", "display_name": "TSC"},
@@ -182,6 +181,7 @@ const teacherOptions = {
         "from_field_value_field": "district",
         // "from_field_source": "shehiyas_details",
         "storage": "shehiyas",
+        "show_only": "1"
 
         // "choices": [
         //   {"value": "TSC", "display_name": "TSC"},

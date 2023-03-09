@@ -72,16 +72,18 @@ class InputController extends GetxController {
     fromFieldSubscription =
         form?.control(field.from_field!).valueChanges.listen((event) async {
       // dprint("Lister ${field.name} notified of ${field.from_field} changes");
-      // dprint(event);
+      dprint("From field changed to $event");
+      fromFieldValue = event;
       // try {
       //   form?.control(field.name).reset();
       // } catch (e) {}
-      await handleShowOnly(event);
+      await handleShowOnly();
     });
-    handleShowOnly(form?.control(field.from_field!).value);
+    fromFieldValue = form?.control(field.from_field!).value;
+    handleShowOnly();
   }
 
-  getFromFieldValue(dynamic fromFieldValue) async {
+  getFromFieldValue() async {
     dprint("Getting field value");
     if (field.show_only_field == null) {
       return fromFieldValue;
@@ -95,20 +97,16 @@ class InputController extends GetxController {
     dprint(fullUrl);
     try {
       var instanceRes = await formProvider.formGet(fullUrl);
-      // dprint(instanceRes.body);
-      // dprint(instanceRes.statusCode);
       return instanceRes.body?[field.show_only_field];
     } catch (e) {
       dprint(e);
       return fromFieldValue;
     }
-
-    return fromFieldValue;
   }
 
-  handleShowOnly(dynamic value) async {
+  handleShowOnly() async {
     // Handle getting the information
-    fromFieldValue = await getFromFieldValue(value);
+    var parsedFromFieldValue = await getFromFieldValue();
 
     if (field.show_only == null) {
       if (field.type != FieldType.multifield) {
@@ -116,11 +114,10 @@ class InputController extends GetxController {
       }
       return;
     }
-
     visible.value = false;
     var showOnlyValue = field.show_only;
     // dprint("Got $fromFieldValue making sure is $showOnlyValue");
-    var show = showOnlyValue == fromFieldValue;
+    var show = showOnlyValue == parsedFromFieldValue;
     // dprint("SHowing $show");
     if (!show) {
       if (form?.controls.containsKey(field.name) ?? false) {
