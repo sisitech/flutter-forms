@@ -35,92 +35,98 @@ class MultiSelectView extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: inputController.searchController,
-              decoration: InputDecoration(
-                // icon: Icon(Icons.person),
-                suffixIcon: Icon(Icons.search),
-                hintText: fieldOption?.placeholder ?? "",
-                labelText: fieldOption.label,
-                errorText: reactiveField.errorText,
-              ),
-              onChanged: inputController.onSearchChanged,
-              onSaved: (String? value) {
-                // This optional block of code can be used to run
-                // code when the user saves the form.
-              },
-              validator: (String? value) {
-                // dprint("Valiadtin");
-                return reactiveField.errorText;
-              },
-            ),
-            if (inputController.isLoading.value)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: LinearProgressIndicator(),
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              TextFormField(
+                controller: inputController.searchController,
+                decoration: InputDecoration(
+                  // icon: Icon(Icons.person),
+                  suffixIcon: Icon(Icons.search),
+                  hintText: fieldOption?.placeholder ?? "",
+                  labelText: fieldOption.label,
+                  errorText: reactiveField.errorText,
                 ),
+                onChanged: inputController.onSearchChanged,
+                onSaved: (String? value) {
+                  // This optional block of code can be used to run
+                  // code when the user saves the form.
+                },
+                validator: (String? value) {
+                  // dprint("Valiadtin");
+                  return reactiveField.errorText;
+                },
               ),
-            if (inputController.noResults.value != "")
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "${inputController.noResults.value}",
-                    style: Get.theme.textTheme.caption,
+              if (inputController.isLoading.value)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 13),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: LinearProgressIndicator(),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      // dprint("${inputController.noResults.value}");
-                      inputController.cancelNoResults();
-                    },
-                    icon: const Icon(Icons.cancel),
-                  )
-                ],
-              ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(0),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    var choice = inputController.formChoices.value[index];
-                    // dprint(
-                    //     "Changing... ${choice.value} ${inputController.formChoices.value}");
-                    // dprint(inputController.selected?.value)
-                    dprint("Changin values");
-
-                    return GestureDetector(
-                      onTap: () {
-                        onChange(choice);
-                      },
-                      child: ListTile(
-                        title: Text("${choice.display_name}"),
-                        trailing: inputController.selectedItems?.value
-                                    ?.map((e) => e.value)
-                                    .contains(choice.value) ??
-                                false
-                            ? const Icon(
-                                Icons.check_circle,
-                              )
-                            : null,
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      Divider(),
-                  itemCount: inputController.choices.length,
                 ),
-              ),
-            )
-          ],
+              if (inputController.noResults.value != "")
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${inputController.noResults.value}",
+                      style: Get.theme.textTheme.caption,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // dprint("${inputController.noResults.value}");
+                        inputController.cancelNoResults();
+                      },
+                      icon: const Icon(Icons.cancel),
+                    )
+                  ],
+                ),
+              Column(
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          var choice = inputController.formChoices.value[index];
+                          // dprint(
+                          //     "Changing... ${choice.value} ${inputController.formChoices.value}");
+                          // dprint(inputController.selected?.value)
+                          dprint("Changin values");
+
+                          return GestureDetector(
+                            onTap: () {
+                              onChange(choice);
+                            },
+                            child: ListTile(
+                              title: Text("${choice.display_name}"),
+                              trailing: inputController.selectedItems?.value
+                                          ?.map((e) => e.value)
+                                          .contains(choice.value) ??
+                                      false
+                                  ? const Icon(
+                                      Icons.check_circle,
+                                    )
+                                  : null,
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) =>
+                            Divider(),
+                        itemCount: inputController.choices.length,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         );
       }),
     );
