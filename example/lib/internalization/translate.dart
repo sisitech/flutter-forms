@@ -13,6 +13,7 @@ class AppTranslations extends Translations {
           'Add': 'Ongeze',
           'Login': 'Ingia',
           'Submit': 'Wasilisha',
+          'Signing in...': "Kuingia ndani...",
           'Contact name': 'Jina la mhusika',
           'Name': 'Jina',
           'Teacher Type': 'Cheo cha Mwalimu',

@@ -121,15 +121,15 @@ class MyCustomForm extends StatelessWidget {
             formGroup: controller.form,
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: formHeader ??
-                      Text(
-                        submitButtonPreText?.tr ??
-                            "${controller.status.statusDisplay().tr} ${submitButtonText?.tr}",
-                        style: Get.theme.textTheme.titleLarge,
-                      ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 10),
+                //   child: formHeader ??
+                //       Text(
+                //         submitButtonPreText?.tr ??
+                //             "${controller.status.statusDisplay().tr} ${submitButtonText?.tr}",
+                //         style: Get.theme.textTheme.titleLarge,
+                //       ),
+                // ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
                 const SizedBox(
