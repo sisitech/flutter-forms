@@ -241,22 +241,23 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                         updateFieldValue(controller, value, field);
                       },
                     ),
-                    GridView(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisExtent: 50,
-                      ),
-                      children: [
-                        if (fieldValue != null)
-                          ...valueChoice.map((fm) => _buildChip(
-                              controller, fm?.display_name ?? "O", fm, field))
-                        // Text(
-                        //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
-                      ],
-                    )
+                    if (valueChoice.isNotEmpty)
+                      GridView(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisExtent: 50,
+                        ),
+                        children: [
+                          if (fieldValue != null)
+                            ...valueChoice.map((fm) => _buildChip(
+                                controller, fm?.display_name ?? "O", fm, field))
+                          // Text(
+                          //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
+                        ],
+                      )
                   ],
                 ),
               );
