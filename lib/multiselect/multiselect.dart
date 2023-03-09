@@ -293,13 +293,8 @@ List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Chip(
-                      labelPadding: EdgeInsets.all(2.0),
-                      label: FittedBox(
-                        child: Text(
-                          choice.display_name,
-                        ),
-                      ),
+                    Text(
+                      choice.display_name,
                     ),
                     IconButton(
                       onPressed: () {
