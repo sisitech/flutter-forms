@@ -386,12 +386,24 @@ class MyHomePage extends StatelessWidget {
                 "contact_email": "michameiu@gmail.com",
                 "id": 34,
                 "role": "1",
-                "phone": ["121"],
+                "phone": const ["121", "12", "13", "14"],
                 "multifield": {
                   "phone": [
                     FormChoice(
+                      display_name: "Ler 11  District 1",
+                      value: "12",
+                    ),
+                    FormChoice(
                       display_name: "Ler 12 -District 1",
                       value: "121",
+                    ),
+                    FormChoice(
+                      display_name: "Ler 13  District 1",
+                      value: "13",
+                    ),
+                    FormChoice(
+                      display_name: "Ler 14  District 1",
+                      value: "14",
                     ),
                   ],
                   "role": [

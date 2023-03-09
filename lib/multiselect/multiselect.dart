@@ -248,18 +248,17 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                       },
                     ),
                     if (valueChoice.isNotEmpty)
-                      GridView(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisExtent: 50,
-                        ),
+                      Column(
+                        // physics: NeverScrollableScrollPhysics(),
+                        // shrinkWrap: true,
+                        // gridDelegate:
+                        //     const SliverGridDelegateWithFixedCrossAxisCount(
+                        //   crossAxisCount: 2,
+                        //   mainAxisExtent: 50,
+                        // ),
                         children: [
                           if (fieldValue != null)
-                            ...valueChoice.map((fm) => _buildChip(
-                                controller, fm?.display_name ?? "O", fm, field))
+                            ..._buildChip(controller, valueChoice, field)
                           // Text(
                           //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
                         ],
@@ -274,28 +273,45 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
       ReactiveFormFieldState<dynamic?, dynamic?>();
 }
 
-Widget _buildChip(InputController controller, String label, FormChoice choice,
-    ReactiveFormFieldState<dynamic, dynamic> field) {
-  return Card(
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Chip(
-          labelPadding: EdgeInsets.all(2.0),
-          label: FittedBox(
-            child: Text(
-              label,
-            ),
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            removeFieldValue(controller, choice, field);
-          },
-          icon: Icon(Icons.cancel),
-          // color: Get.theme.errorColor,
-        )
-      ],
-    ),
-  );
+List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
+    ReactiveFormFieldState<dynamic, dynamic> field,
+    {int rowCount = 2}) {
+  List<List<FormChoice>> groupedRows =
+      List.generate((choices.length / rowCount).ceil(), (index) {
+    int startIndex = index * rowCount;
+    int endIndex = (index + 1) * rowCount;
+    return choices.sublist(
+        startIndex, endIndex < choices.length ? endIndex : choices.length);
+  });
+  dprint(groupedRows);
+  return groupedRows.map((rowChoices) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: rowChoices
+            .map(
+              (choice) => Card(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Chip(
+                      labelPadding: EdgeInsets.all(2.0),
+                      label: FittedBox(
+                        child: Text(
+                          choice.display_name,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        removeFieldValue(controller, choice, field);
+                      },
+                      icon: Icon(Icons.cancel),
+                      // color: Get.theme.errorColor,
+                    )
+                  ],
+                ),
+              ),
+            )
+            .toList());
+  }).toList();
 }
