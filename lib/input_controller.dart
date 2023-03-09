@@ -238,14 +238,14 @@ class InputController extends GetxController {
             throw ("field.search_field not set");
           }
           if (rawItems.length > 0) {
-            // dprint(rawItems);
+            // dprint(rawItems.first);
             // dprint("${field.from_field_source} $fromFieldValue");
             var sourceitem = rawItems.firstWhere((element) =>
                 element[field.from_field_value_field]
                     .toString()
                     .toLowerCase() ==
                 fromFieldValue.toString().toLowerCase());
-            // dprint(sourceitem);
+            dprint(sourceitem);
             if (sourceitem != null) {
               items = sourceitem[field.from_field_source];
             }
