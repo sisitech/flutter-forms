@@ -121,10 +121,24 @@ class InputController extends GetxController {
     // dprint("SHowing $show");
     if (!show) {
       if (form?.controls.containsKey(field.name) ?? false) {
+        dprint("Removing control ${field.name}");
         form?.removeControl(field.name);
       }
     } else {
-      form?.addAll({field.name: getFormControl(field)});
+      var fieldControl = getFormControl(field);
+      form?.addAll({field.name: fieldControl});
+      dprint("Adding control ${field.name}");
+      dprint(fieldControl.value);
+      //Update if any data available
+      if (formController?.instance != null) {
+        dprint("Updaint values possible");
+        var instance = formController?.instance;
+        if (instance?.containsKey(field.name) ?? false) {
+          var value = instance?[field.name];
+          fieldControl.patchValue(value);
+        }
+      }
+      dprint("After patch ${fieldControl.value}");
     }
     visible.value = show;
     // Update options if show

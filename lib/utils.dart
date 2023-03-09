@@ -47,7 +47,7 @@ getFieldValidators(FormItemField field) {
   return validators;
 }
 
-getFormControl(FormItemField field) {
+FormControl getFormControl(FormItemField field) {
   var validators = getFieldValidators(field);
   // Setup INput COntroller base on
 
