@@ -107,6 +107,7 @@ class InputController extends GetxController {
   handleShowOnly() async {
     // Handle getting the information
     var parsedFromFieldValue = await getFromFieldValue();
+    dprint("Parsed from field $parsedFromFieldValue");
 
     if (field.show_only == null) {
       if (field.type != FieldType.multifield) {
@@ -114,11 +115,13 @@ class InputController extends GetxController {
       }
       return;
     }
+
     visible.value = false;
     var showOnlyValue = field.show_only;
-    // dprint("Got $fromFieldValue making sure is $showOnlyValue");
-    var show = showOnlyValue == parsedFromFieldValue;
-    // dprint("SHowing $show");
+
+    dprint("Got $parsedFromFieldValue making sure is $showOnlyValue");
+    var show = showOnlyValue.toString() == parsedFromFieldValue.toString();
+    dprint("SHowing $show");
     if (!show) {
       if (form?.controls.containsKey(field.name) ?? false) {
         dprint("Removing control ${field.name}");

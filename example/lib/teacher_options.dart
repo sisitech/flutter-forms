@@ -53,7 +53,7 @@ const teacherOptions = {
         "label": "Tsc Number",
         "max_length": 45,
         "show_only": "TSC",
-        "from_field": "role",
+        // "from_field": "role",
         "default": ""
       },
       "role_name": {
@@ -156,7 +156,7 @@ const teacherOptions = {
         "label": "Is non delete"
       },
       "role": {
-        "type": "multifield",
+        "type": "choice",
         "required": false,
         "read_only": false,
         "label": "Teacher Type",
@@ -169,20 +169,19 @@ const teacherOptions = {
         // ]
       },
       "phone": {
-        "type": "multifield",
+        "type": "choice",
         "required": false,
         "read_only": false,
-        "multiple": true,
+        "multiple": false,
         "label": "Phone Number",
         "max_length": 20,
         "display_name": "name",
         "from_field": "role",
         // "url": "api/v1/shehiyas",
-        // "from_field_value_field": "district",
+        "from_field_value_field": "district",
         // "from_field_source": "shehiyas_details",
         "storage": "shehiyas",
         "show_only": "1"
-
         // "choices": [
         //   {"value": "TSC", "display_name": "TSC"},
         //   {"value": "BRD", "display_name": "BOM"}
