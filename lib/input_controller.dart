@@ -205,9 +205,11 @@ class InputController extends GetxController {
       queryParams[field.search_field] = search.toString();
     }
 
-    if (fromFieldValue != null) {
-      queryParams[field.from_field_value_field] = "$fromFieldValue";
+    if (fromFieldValue != null &&
+        (field.from_field_value_field?.isNotEmpty ?? false)) {
+      queryParams[field.from_field_value_field!] = "$fromFieldValue";
     }
+
     if (field.type == FieldType.multifield) {
       queryParams["page_size"] = "4";
     }
@@ -220,14 +222,15 @@ class InputController extends GetxController {
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
       List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
+      dprint("FOind ${rawItems.length} for ${field.name}");
       // new Map<String, dynamic>.from(overview)
       List<dynamic> items = [];
       // queryParams[field.search_field] = search;
 
-      if (fromFieldValue != null) {
+      if (field.from_field != null) {
         // dprint(fromFieldValue);
         // dprint(field.from_field_value_field);
-        if (field.from_field_source != null) {
+        if (field.from_field_source?.isNotEmpty ?? false) {
           if (field.search_field == "") {
             throw ("field.search_field not set");
           }
@@ -244,9 +247,10 @@ class InputController extends GetxController {
               items = sourceitem[field.from_field_source];
             }
           }
-        } else if (field.from_field_value_field != null) {
+        } else if (field.from_field_value_field?.isNotEmpty ?? false) {
           if (rawItems.length > 0) {
-            // dprint("DOing from field filterrin");
+            dprint(
+                "DOing filtering of  from_field_value_field ${field.from_field_value_field}");
             // dprint(rawItems.first);
             items = rawItems
                 .where((element) =>
@@ -262,12 +266,13 @@ class InputController extends GetxController {
             dprint("No raw items");
           }
         } else {
+          dprint("Just a show only field");
           items = rawItems;
         }
       } else {
-        if (field.from_field == null) {
-          items = rawItems;
-        }
+        dprint("No from_field field");
+
+        items = rawItems;
       }
       // dprint(field.storage);
 

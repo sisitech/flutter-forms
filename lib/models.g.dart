@@ -36,7 +36,7 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       storage: json['storage'] as String?,
       instance_url: json['instance_url'] as String?,
       url: json['url'] as String?,
-      from_field_value_field: json['from_field_value_field'] as String? ?? "id",
+      from_field_value_field: json['from_field_value_field'] as String?,
       display_name: json['display_name'] as String? ?? "name",
       search_field: json['search_field'] as String? ?? "name",
       value_field: json['value_field'] as String? ?? "id",
