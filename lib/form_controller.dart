@@ -37,6 +37,7 @@ class FormController extends GetxController {
   var httpMethoFromStatus = {
     FormStatus.Add: "POST",
     FormStatus.Update: "PATCH",
+    FormStatus.Replace: "PUT",
     FormStatus.Delete: "DELETE",
   };
 
@@ -354,7 +355,7 @@ class FormController extends GetxController {
       try {
         if (enableOfflineSave) {
           var offlineCont = Get.find<OfflineHttpCacheController>();
-          if (status == FormStatus.Update) {
+          if (status == FormStatus.Update || status == FormStatus.Replace) {
             requrl = getInstanceUrl();
             if (instanceId != null) {
               requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
@@ -400,12 +401,17 @@ class FormController extends GetxController {
         if (status == FormStatus.Delete) {
           dprint(data);
           res = await serv.formDelete(requrl, query: data);
-        } else if (status == FormStatus.Update) {
+        } else if (status == FormStatus.Update ||
+            status == FormStatus.Replace) {
           var updateUrl = "${getInstanceUrl()}";
           if (instanceId != null) {
             updateUrl = "$updateUrl/${instanceId}/".replaceAll("//", "/");
           }
-          res = await serv.formPatch(updateUrl, data);
+          if (status == FormStatus.Replace) {
+            res = await serv.formPut(updateUrl, data);
+          } else {
+            res = await serv.formPatch(updateUrl, data);
+          }
         } else {
           res = await serv.formPost(requrl, data);
         }

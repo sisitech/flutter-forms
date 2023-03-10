@@ -10,7 +10,12 @@ enum ContentType {
   form_url_encoded,
 }
 
-enum FormStatus { Add, Update, Delete }
+enum FormStatus {
+  Add,
+  Update,
+  Delete,
+  Replace,
+}
 
 extension FormStatusDefinti on FormStatus {
   String statusDisplay() {

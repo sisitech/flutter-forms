@@ -36,8 +36,20 @@ class FormProvider extends AuthProvider {
     } else {
       dataToPatch = body;
     }
-
     return patch(url, dataToPatch, contentType: contentType);
+  }
+
+  Future<Response> formPut(String? path, dynamic body,
+      {contentType = "application/json", shouldRemoveNullFields = true}) {
+    var url = "${config!.apiEndpoint}/${path}";
+    dprint(url);
+    var dataToPatch;
+    if (shouldRemoveNullFields) {
+      dataToPatch = removeNullFields(body);
+    } else {
+      dataToPatch = body;
+    }
+    return put(url, dataToPatch, contentType: contentType);
   }
 
   removeNullFields(Map<String, dynamic> formData) {
