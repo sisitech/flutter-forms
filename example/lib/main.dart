@@ -386,7 +386,7 @@ class MyHomePage extends StatelessWidget {
                 "contact_email": "michameiu@gmail.com",
                 "id": 34,
                 "role": 1,
-                "phone": 12, // const ["121", "12", "13", "14"],
+                "phone": const ["121", "12", "13", "14"],
                 "multifield": {
                   "phone": [
                     FormChoice(

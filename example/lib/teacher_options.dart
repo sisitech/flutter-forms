@@ -169,10 +169,10 @@ const teacherOptions = {
         // ]
       },
       "phone": {
-        "type": "choice",
+        "type": "multifield",
         "required": false,
         "read_only": false,
-        "multiple": false,
+        "multiple": true,
         "label": "Phone Number",
         "max_length": 20,
         "display_name": "name",

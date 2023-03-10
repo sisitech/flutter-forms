@@ -377,6 +377,10 @@ class FormController extends GetxController {
           res = await serv.formDelete(requrl, query: data);
         } else if (status == FormStatus.Update) {
           var updateUrl = "${getInstanceUrl()}/${instanceId}/";
+
+          if (instanceId != null) {
+            updateUrl = "$updateUrl/${instanceId}/".replaceAll("//", "/");
+          }
           res = await serv.formPatch(updateUrl, data);
         } else {
           res = await serv.formPost(requrl, data);
