@@ -45,6 +45,7 @@ class FormController extends GetxController {
   late bool enableOfflineSave;
 
   final Function(Map<String, dynamic>)? validateOfflineData;
+  final Function(Map<String, dynamic>)? customDataValidation;
 
   final Map<String, dynamic>? instance;
   FormStatus status;
@@ -72,6 +73,7 @@ class FormController extends GetxController {
     this.enableOfflineMode = false,
     this.validateOfflineData,
     this.onSuccess,
+    this.customDataValidation,
     this.getOfflineName,
     this.handleErrors,
     this.enableOfflineSave = false,
@@ -256,6 +258,16 @@ class FormController extends GetxController {
     return null;
   }
 
+  validateUsingCustomValidation() async {
+    var value = getCurrentFormFields();
+    if (customDataValidation != null) {
+      var res = customDataValidation!(value);
+      dprint("Custom Validation is $res");
+      return res;
+    }
+    return null;
+  }
+
   updateFormErrors(Map<String, dynamic> formErrors) {
     formErrors.forEach((key, value) {
       if (fields.map((e) => e.name).contains(key)) {
@@ -299,6 +311,18 @@ class FormController extends GetxController {
 
     // Pre Save Data
     var data = preparePostData();
+
+    // Implement CustomVlidation
+    if (customDataValidation != null) {
+      var res = await validateUsingCustomValidation();
+      dprint("Gto from custom validate");
+      dprint(res);
+      if (res != null) {
+        updateFormErrors(res);
+        isLoading.value = false;
+        return;
+      }
+    }
 
     // Offline mode support
     if (enableOfflineMode && !netCont.isDeviceConnected.value) {

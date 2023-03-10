@@ -51,6 +51,8 @@ class MyCustomForm extends StatelessWidget {
   late bool enableOfflineMode;
   late bool enableOfflineSave;
   late bool? showOfflineMessage;
+  final Function(Map<String, dynamic>)? customDataValidation;
+
   final Function(Map<String, dynamic>)? validateOfflineData;
 
   final String loadingMessage;
@@ -79,6 +81,7 @@ class MyCustomForm extends StatelessWidget {
     this.enableOfflineMode = false,
     this.enableOfflineSave = false,
     this.validateOfflineData,
+    this.customDataValidation,
     this.formFooter,
     this.extraFields,
     this.isValidateOnly = false,
@@ -110,6 +113,7 @@ class MyCustomForm extends StatelessWidget {
           storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,
           enableOfflineSave: enableOfflineSave,
+          customDataValidation: customDataValidation,
           extraFields: extraFields,
           PreSaveData: PreSaveData,
           showOfflineMessage: showOfflineMessage,
