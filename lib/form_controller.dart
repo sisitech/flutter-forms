@@ -355,6 +355,7 @@ class FormController extends GetxController {
         if (enableOfflineSave) {
           var offlineCont = Get.find<OfflineHttpCacheController>();
           if (status == FormStatus.Update) {
+            requrl = getInstanceUrl();
             if (instanceId != null) {
               requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
             }
@@ -400,8 +401,7 @@ class FormController extends GetxController {
           dprint(data);
           res = await serv.formDelete(requrl, query: data);
         } else if (status == FormStatus.Update) {
-          var updateUrl = "${getInstanceUrl()}/${instanceId}/";
-
+          var updateUrl = "${getInstanceUrl()}";
           if (instanceId != null) {
             updateUrl = "$updateUrl/${instanceId}/".replaceAll("//", "/");
           }
