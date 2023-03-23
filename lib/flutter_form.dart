@@ -10,7 +10,7 @@ import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-
+import 'package:flutter_utils/extensions/date_extensions.dart';
 import 'input_controller.dart';
 import 'models.dart';
 import 'multiselect/multiselect.dart';
@@ -266,11 +266,26 @@ Widget LabelWidget(FormItemField field) {
   );
 }
 
+parseDateFromString(String? dateString, DateTime defaultDate) {
+  if (dateString?.isNotEmpty ?? false) {
+    DateTime? parsedDate = dateString?.toDate;
+    if (parsedDate != null) {
+      return parsedDate;
+    }
+  }
+  return defaultDate;
+}
+
 getInputBasedOnType(FormItemField field) {
   // dprint("Getting the labelStyle");
   // dprint(Get.theme.textTheme.bodyText1);
   // dprint(Get.theme.inputDecorationTheme.labelStyle);
   var defaultValidationMessage = {'required': (error) => 'empty_field'.tr};
+  dprint(field.start_value);
+  dprint(field.end_value);
+  var start_date = parseDateFromString(
+      field.start_value, DateTime.now().add(const Duration(days: -10000)));
+  var end_date = parseDateFromString(field.end_value, DateTime.now());
 
   Widget reactiveInput;
   switch (field.type) {
@@ -314,6 +329,7 @@ getInputBasedOnType(FormItemField field) {
           bool hasError =
               (errorText?.isNotEmpty ?? false) && picker.control.touched;
           dprint(hasError);
+
           return GestureDetector(
             onTap: picker.showPicker,
             child: Container(
@@ -354,8 +370,8 @@ getInputBasedOnType(FormItemField field) {
           );
           ;
         },
-        firstDate: DateTime.now().add(const Duration(days: -10000)),
-        lastDate: DateTime.now(),
+        firstDate: start_date,
+        lastDate: end_date,
       );
       break;
     case FieldType.multifield:

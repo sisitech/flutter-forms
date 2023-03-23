@@ -32,6 +32,8 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       hasController: json['hasController'] as bool? ?? false,
       show_only_field: json['show_only_field'] as String?,
       show_reset_value: json['show_reset_value'] as bool?,
+      start_value: json['start_value'] as String?,
+      end_value: json['end_value'] as String?,
       from_field_source: json['from_field_source'] as String?,
       storage: json['storage'] as String?,
       instance_url: json['instance_url'] as String?,
@@ -70,6 +72,8 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
       'from_field': instance.from_field,
       'show_only': instance.show_only,
       'show_only_field': instance.show_only_field,
+      'start_value': instance.start_value,
+      'end_value': instance.end_value,
       'show_reset_value': instance.show_reset_value,
       'hasController': instance.hasController,
     };

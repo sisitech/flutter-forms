@@ -66,7 +66,9 @@ const teacherOptions = {
         "type": "date",
         "required": false,
         "read_only": false,
-        "label": "Created"
+        "label": "Created",
+        "start_value": "1985-08-14",
+        "end_value": "today"
       },
       "modified": {
         "type": "date",
