@@ -143,8 +143,9 @@ updateFieldValue(InputController controller, FormChoice? formChoice,
   // dprint(formChoice?.value);
   if (controller.field.multiple) {
     var value = formChoice?.value;
-    List<String> values = field.value ?? [];
 
+    List<String> values = [...(field.value as List<String>)];
+    dprint(values.runtimeType);
     if (!values.contains(value)) {
       values.add("$value");
     }
@@ -160,7 +161,7 @@ removeFieldValue(InputController controller, FormChoice choice,
     ReactiveFormFieldState<dynamic?, dynamic?> field) {
   dprint("Removing ${choice.value}");
   if (controller.field.multiple) {
-    List<String> values = field.value;
+    List<String> values = [...(field.value as List<String>)];
     if (values.contains("${choice.value}")) {
       values.remove("${choice.value}");
     }
@@ -194,36 +195,21 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               bool isMultiple = controller.field.multiple;
               dprint(fieldValue);
 
+              var possibleChoices = controller.getAllPosibleOptions();
+
               if (fieldValue == null) {
                 valueChoice = [];
               } else {
                 dprint("Updaint choicess");
                 var currentChoices = [];
                 List<FormChoice> filt = [];
-                if (isMultiple) {
-                  filt = controller.formChoices.value
-                          ?.where((element) =>
-                              (fieldValue as List<String>).any((ele) {
-                                return ele.toString() ==
-                                    element.value.toString();
-                              }))
-                          .toList() ??
-                      [];
 
-                  if (filt.isEmpty) {
-                    filt = controller.selectedItems.value
-                        .where((element) =>
-                            (fieldValue as List<String>).any((ele) {
-                              return ele.toString() == element.value.toString();
-                            }))
-                        .toList();
+                if (isMultiple) {
+                  for (var item in fieldValue) {
+                    filt.add(controller.getChoice(item));
                   }
                 } else {
-                  filt = controller.formChoices.value
-                          ?.where((element) =>
-                              fieldValue == element.value.toString())
-                          .toList() ??
-                      [];
+                  filt = [controller.getChoice(fieldValue)];
                 }
                 valueChoice = filt;
               }

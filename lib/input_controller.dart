@@ -199,6 +199,21 @@ class InputController extends GetxController {
     noResults.value = "";
   }
 
+  List<FormChoice> getAllPosibleOptions() {
+    return [...formChoices.value, ...selectedItems.value];
+  }
+
+  FormChoice getChoice(dynamic id) {
+    var possibleChoices = getAllPosibleOptions();
+    var itemQuery = possibleChoices
+        .where((element) => element.value.toString() == id.toString());
+    if (itemQuery.isNotEmpty) {
+      return itemQuery.first;
+    } else {
+      return FormChoice(display_name: "Choice $id", value: id);
+    }
+  }
+
   getOptions({dynamic? search = null}) async {
     List<FormChoice>? rawChoices = [];
     Map<String, dynamic> queryParams = {};
