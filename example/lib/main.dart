@@ -256,6 +256,7 @@ class MyHomePage extends StatelessWidget {
     AuthController authCont = Get.find<AuthController>();
 
     MyMainController mainCont = Get.find<MyMainController>();
+    NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
     dprint(context.width);
     FormController? controller;
@@ -280,7 +281,15 @@ class MyHomePage extends StatelessWidget {
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
               validateOfflineData: (res) {
-                return {"detail": "Hahaha not this"};
+                return {"username": "Hahaha not this"};
+              },
+              handleErrors: (value) {
+                dprint("Error in $value");
+
+                if (value != null) {
+                  return "Your pformassword might be wrong".tr;
+                }
+                return null;
               },
               instance: const {
                 // "id": 12,

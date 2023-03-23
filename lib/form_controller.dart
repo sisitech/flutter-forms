@@ -269,7 +269,8 @@ class FormController extends GetxController {
     return null;
   }
 
-  updateFormErrors(Map<String, dynamic> formErrors) {
+  updateFormErrors(Map<String, dynamic> formErrors,
+      {handleCustomErrors = false}) {
     formErrors.forEach((key, value) {
       if (fields.map((e) => e.name).contains(key)) {
         String display = getErrorDisplay(value);
@@ -277,15 +278,27 @@ class FormController extends GetxController {
       } else {
         String display = getErrorDisplay(value);
         if (handleErrors == null) {
+          dprint("Adding error");
           errors.add(display);
         }
       }
     });
-    if (handleErrors != null) {
-      String display = handleErrors!(formErrors);
+
+    Function? handleErrorFunc = getHandleCustomErrorsFuncntcion();
+
+    if (handleErrorFunc != null) {
+      dprint("HAndi;oingg..");
+      String display = handleErrorFunc!(formErrors);
       errors.add(display);
     }
     form.markAllAsTouched();
+  }
+
+  getHandleCustomErrorsFuncntcion() {
+    if (netCont.isDeviceConnected.value) {
+      return handleErrors;
+    }
+    return null;
   }
 
   resolveRequestUrl(formData) {
@@ -319,7 +332,7 @@ class FormController extends GetxController {
       dprint("Gto from custom validate");
       dprint(res);
       if (res != null) {
-        updateFormErrors(res);
+        updateFormErrors(res, handleCustomErrors: true);
         isLoading.value = false;
         return;
       }
@@ -427,7 +440,7 @@ class FormController extends GetxController {
           // dprint("Done with call");
           var formErrors = res.body as Map<String, dynamic>;
           // dprint(formErrors);
-          updateFormErrors(formErrors);
+          updateFormErrors(formErrors, handleCustomErrors: true);
         } catch (e) {
           dprint(e);
         }
