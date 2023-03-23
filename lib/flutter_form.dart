@@ -291,6 +291,7 @@ getInputBasedOnType(FormItemField field) {
       reactiveInput = Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             LabelWidget(field),
             ReactiveCheckbox(
@@ -321,17 +322,25 @@ getInputBasedOnType(FormItemField field) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       LabelWidget(field),
                       IconButton(
                         onPressed: picker.showPicker,
-                        icon: Icon(
-                          Icons.date_range_outlined,
-                          color: hasError ? Get.theme.errorColor : null,
+                        icon: Row(
+                          children: [
+                            Icon(
+                              Icons.date_range_outlined,
+                              color: hasError ? Get.theme.errorColor : null,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(dateToCustomString(picker.control.value).tr),
+                          ],
                         ),
                       ),
-                      Text(dateToCustomString(picker.control.value).tr)
                     ],
                   ),
                   if (hasError)
@@ -368,19 +377,19 @@ getInputBasedOnType(FormItemField field) {
       var inputCont = Get.put(InputController(field: field), tag: field.name);
 
       reactiveInput = Obx(
-        () => Row(
+        () => Column(
           mainAxisSize: MainAxisSize.min,
+          // mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(left: 5),
               child: LabelWidget(field),
               // Text(inputCont.isLoading.value ? 'Loading...' : labelName(field)),
             ),
-            Expanded(
-              child: ReactiveDropdownField(
-                formControlName: field.name,
-                items: inputCont.choices?.value ?? [],
-              ),
+            ReactiveDropdownField(
+              formControlName: field.name,
+              items: inputCont.choices?.value ?? [],
             ),
           ],
         ),

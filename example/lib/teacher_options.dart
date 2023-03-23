@@ -63,9 +63,9 @@ const teacherOptions = {
         "label": "Role name"
       },
       "created": {
-        "type": "datetime",
+        "type": "date",
         "required": false,
-        "read_only": true,
+        "read_only": false,
         "label": "Created"
       },
       "modified": {

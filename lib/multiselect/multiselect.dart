@@ -286,7 +286,7 @@ List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
   dprint(groupedRows);
   return groupedRows.map((rowChoices) {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: rowChoices
             .map(
               (choice) => Card(
