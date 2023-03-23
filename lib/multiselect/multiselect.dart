@@ -147,10 +147,11 @@ updateFieldValue(InputController controller, FormChoice? formChoice,
     var currentvalues = field.value ?? [];
     List<String> values = [...currentvalues];
     dprint(values.runtimeType);
+    dprint("Current values are $values");
     if (!values.contains(value)) {
       values.add("$value");
     }
-    // dprint("Updating $values");
+    dprint("Updating $values");
     field.didChange(values);
   } else {
     field.didChange("${formChoice?.value}");
