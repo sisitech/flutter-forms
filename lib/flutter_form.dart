@@ -32,7 +32,8 @@ const Map<String, dynamic> defaultOptions = {
 };
 
 class MyCustomForm extends StatelessWidget {
-  final String formTitle;
+  final String? formTitle;
+  final String name;
   final dynamic? formItems;
   final Widget? formHeader;
   final Widget? formFooter;
@@ -70,10 +71,11 @@ class MyCustomForm extends StatelessWidget {
 
   final Function? getDynamicUrl;
   final Function? getOfflineName;
+  TextStyle? formTitleStyle;
 
   MyCustomForm({
     super.key,
-    required this.formTitle,
+    this.formTitle,
     this.formItems = defaultOptions,
     required this.formGroupOrder,
     this.formHeader,
@@ -83,9 +85,11 @@ class MyCustomForm extends StatelessWidget {
     this.validateOfflineData,
     this.customDataValidation,
     this.formFooter,
+    this.formTitleStyle,
     this.extraFields,
     this.isValidateOnly = false,
     this.url,
+    required this.name,
     this.getOfflineName,
     this.onOfflineSuccess,
     this.PreSaveData,
@@ -108,7 +112,7 @@ class MyCustomForm extends StatelessWidget {
     final controller = Get.put(
         FormController(
           formItems: formItems,
-          formTitle: formTitle,
+          formTitle: name,
           getOfflineName: getOfflineName,
           storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,
@@ -134,7 +138,7 @@ class MyCustomForm extends StatelessWidget {
           contentType: contentType,
           handleErrors: handleErrors,
         ),
-        tag: formTitle);
+        tag: name);
 
     if (onControllerSetup != null) {
       onControllerSetup!(controller);
@@ -143,7 +147,7 @@ class MyCustomForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<FormController>(tag: formTitle);
+    final controller = Get.find<FormController>(tag: name);
     return GetBuilder(
         init: controller,
         builder: (_) {
@@ -152,15 +156,15 @@ class MyCustomForm extends StatelessWidget {
             formGroup: controller.form,
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: formHeader ??
-                      Text(
-                        submitButtonPreText?.tr ??
-                            "${controller.status.statusDisplay().tr} ${submitButtonText?.tr}",
-                        style: Get.theme.textTheme.titleLarge,
-                      ),
-                ),
+                if (formTitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: formHeader ??
+                        Text(
+                          formTitle?.tr ?? "",
+                          style: formTitleStyle,
+                        ),
+                  ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
                 Padding(
@@ -180,16 +184,16 @@ class MyCustomForm extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                const SizedBox(
-                  height: 10,
-                ),
                 MySubmitButton(
-                  formTitle: formTitle,
+                  name: name,
                   enableOfflineSave: enableOfflineMode,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
                           .tr,
                   submitButtonText: submitButtonText?.tr,
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 formFooter ?? Container(),
               ],
@@ -200,7 +204,8 @@ class MyCustomForm extends StatelessWidget {
   }
 }
 
-Widget getRowInputs(FormController controller, List<String> fieldNames) {
+Widget getRowInputs(FormController controller, List<String> fieldNames,
+    {index = 1}) {
   var rowFields = controller.fields.where(
     (field) => fieldNames.contains(field.name),
   );
@@ -426,16 +431,16 @@ class MySubmitButton extends StatelessWidget {
   FormController? controller;
   final String? submitButtonText;
   final String? submitButtonPreText;
-  final String formTitle;
+  final String name;
   late bool enableOfflineSave;
   MySubmitButton({
     super.key,
-    required this.formTitle,
+    required this.name,
     this.submitButtonText,
     this.submitButtonPreText,
     this.enableOfflineSave = false,
   }) {
-    controller = Get.find<FormController>(tag: formTitle);
+    controller = Get.find<FormController>(tag: name);
   }
 
   @override
@@ -466,7 +471,7 @@ class MySubmitButton extends StatelessWidget {
 
   void _onPressed() {
     // controller.form
-    final controller = Get.find<FormController>(tag: formTitle);
+    final controller = Get.find<FormController>(tag: name);
     controller.submit();
   }
 }
