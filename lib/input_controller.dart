@@ -30,6 +30,7 @@ class InputController extends GetxController {
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
   RxList<FormChoice> formChoices = RxList.empty();
+  RxList<FormChoice> updateChoices = RxList.empty();
   late String storageContainer;
 
   InputController({
@@ -200,7 +201,11 @@ class InputController extends GetxController {
   }
 
   List<FormChoice> getAllPosibleOptions() {
-    return [...formChoices.value, ...selectedItems.value];
+    return [
+      ...formChoices.value,
+      ...selectedItems.value,
+      ...updateChoices.value
+    ];
   }
 
   FormChoice getChoice(dynamic id) {
