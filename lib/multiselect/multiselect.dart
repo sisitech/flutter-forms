@@ -144,7 +144,8 @@ updateFieldValue(InputController controller, FormChoice? formChoice,
   if (controller.field.multiple) {
     var value = formChoice?.value;
 
-    List<String> values = [...(field.value as List<String>)];
+    var currentvalues = field.value ?? [];
+    List<String> values = [...currentvalues];
     dprint(values.runtimeType);
     if (!values.contains(value)) {
       values.add("$value");
