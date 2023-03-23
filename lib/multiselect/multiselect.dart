@@ -279,6 +279,9 @@ List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    SizedBox(
+                      width: 7,
+                    ),
                     Text(
                       choice.display_name,
                     ),
