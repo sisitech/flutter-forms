@@ -194,7 +194,9 @@ class FormController extends GetxController {
           if (field.type == FieldType.date ||
               field.type == FieldType.datetime) {
             dprint(value);
-            form.control(key).patchValue(DateTime.parse(value));
+            if (value != null) {
+              form.control(key).patchValue(DateTime.parse(value));
+            }
           } else {
             form.control(key).patchValue(value);
           }
