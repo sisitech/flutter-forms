@@ -409,6 +409,8 @@ getInputBasedOnType(FormItemField field) {
               // Text(inputCont.isLoading.value ? 'Loading...' : labelName(field)),
             ),
             ReactiveDropdownField(
+              hint: Text(
+                  inputCont.isLoading.value ? "Loading...".tr : "Select".tr),
               formControlName: field.name,
               items: inputCont.choices?.value ?? [],
             ),

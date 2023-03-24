@@ -97,10 +97,10 @@ const teacherOptions = {
         "label": "Contact name",
         "url": "api/v1/shops",
         "instance_url": "api/v1/shops/",
-        "display_name": "username",
-        "search_field": "username",
+        "display_name": "name",
+        "search_field": "name",
         "max_length": 45,
-        "select_first": true,
+        "select_first": false,
         "placeholder": "The name of the customer to deliver to"
       },
       "contact_email": {
