@@ -107,9 +107,11 @@ class InputController extends GetxController {
 
   handleShowOnly() async {
     // Handle getting the information
-    var parsedFromFieldValue = await getFromFieldValue();
-    dprint("Parsed from field $parsedFromFieldValue");
+    visible.value = field.show_only == null;
 
+    var parsedFromFieldValue = await getFromFieldValue();
+
+    dprint("Parsed from field $parsedFromFieldValue");
     if (field.show_only == null) {
       if (field.type != FieldType.multifield) {
         await getOptions();
@@ -117,7 +119,6 @@ class InputController extends GetxController {
       return;
     }
 
-    visible.value = false;
     var showOnlyValue = field.show_only;
 
     dprint("Got $parsedFromFieldValue making sure is $showOnlyValue");

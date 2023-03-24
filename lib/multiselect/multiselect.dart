@@ -166,7 +166,6 @@ removeFieldValue(InputController controller, FormChoice choice,
     // List<String> values = [...(field.value as List<String>)];
 
     List<String> values = field.value ?? [];
-    ;
     if (values.contains("${choice.value}")) {
       values.remove("${choice.value}");
     }
