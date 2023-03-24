@@ -151,7 +151,7 @@ updateFieldValue(InputController controller, FormChoice? formChoice,
     if (!values.contains(value)) {
       values.add("$value");
     }
-    dprint("Updating $values");
+    dprint("New $values");
     field.didChange(values);
   } else {
     field.didChange("${formChoice?.value}");
@@ -167,7 +167,7 @@ removeFieldValue(InputController controller, FormChoice choice,
     if (values.contains("${choice.value}")) {
       values.remove("${choice.value}");
     }
-    dprint("$values");
+    dprint("Remaining values $values");
     field.didChange(values);
   } else {
     field.didChange(null);
@@ -215,7 +215,6 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                 }
                 valueChoice = filt;
               }
-              dprint("Updapint choicess");
               dprint(valueChoice);
               controller.selectValue(valueChoice);
               dprint(fieldValue);

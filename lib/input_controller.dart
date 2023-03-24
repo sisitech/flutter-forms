@@ -176,7 +176,7 @@ class InputController extends GetxController {
   }
 
   selectValue(List<FormChoice> choices) {
-    dprint("Selecting Value");
+    dprint("Selecting Value input contr");
     selectedItems.value = choices;
 
     ///NOTE! Reset the controller before the options
