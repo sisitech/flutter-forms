@@ -112,7 +112,7 @@ class MyCustomForm extends StatelessWidget {
     final controller = Get.put(
         FormController(
           formItems: formItems,
-          formTitle: name,
+          name: name,
           getOfflineName: getOfflineName,
           storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,

@@ -143,9 +143,9 @@ updateFieldValue(InputController controller, FormChoice? formChoice,
   // dprint(formChoice?.value);
   if (controller.field.multiple) {
     var value = formChoice?.value;
-
     var currentvalues = field.value ?? [];
-    List<String> values = [...currentvalues];
+    // List<String> values = [...currentvalues];
+    List<String> values = field.value ?? [];
     dprint(values.runtimeType);
     dprint("Current values are $values");
     if (!values.contains(value)) {
@@ -163,7 +163,10 @@ removeFieldValue(InputController controller, FormChoice choice,
     ReactiveFormFieldState<dynamic?, dynamic?> field) {
   dprint("Removing ${choice.value}");
   if (controller.field.multiple) {
-    List<String> values = [...(field.value as List<String>)];
+    // List<String> values = [...(field.value as List<String>)];
+
+    List<String> values = field.value ?? [];
+    ;
     if (values.contains("${choice.value}")) {
       values.remove("${choice.value}");
     }
@@ -196,7 +199,6 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
 
               bool isMultiple = controller.field.multiple;
               dprint(fieldValue);
-
               var possibleChoices = controller.getAllPosibleOptions();
 
               if (fieldValue == null) {
@@ -217,7 +219,8 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               }
               dprint(valueChoice);
               controller.selectValue(valueChoice);
-              dprint(fieldValue);
+              dprint("Field value $fieldValue");
+              dprint("Field value ${field.value}");
               return Container(
                 constraints:
                     BoxConstraints(maxHeight: Get.height, minHeight: 50),
@@ -270,7 +273,7 @@ List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
     return choices.sublist(
         startIndex, endIndex < choices.length ? endIndex : choices.length);
   });
-  dprint(groupedRows);
+  // dprint(groupedRows);
   return groupedRows.map((rowChoices) {
     return Row(
         mainAxisAlignment: MainAxisAlignment.start,

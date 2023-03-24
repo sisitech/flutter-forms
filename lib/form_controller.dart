@@ -22,7 +22,7 @@ class FormController extends GetxController {
   final Map<String, dynamic>? extraFields;
   final bool isValidateOnly;
   final String? url;
-  final String formTitle;
+  final String name;
   final String? instanceUrl;
   final ContentType contentType;
   final Function? handleErrors;
@@ -69,7 +69,7 @@ class FormController extends GetxController {
     this.isValidateOnly = false,
     this.url,
     this.extraFields,
-    required this.formTitle,
+    required this.name,
     this.showOfflineMessage,
     this.enableOfflineMode = false,
     this.validateOfflineData,
@@ -313,7 +313,7 @@ class FormController extends GetxController {
   submit() async {
     if (!form.valid) {
       // dprint("Not valied");
-      // dprint(form.errors);
+      dprint(form.errors);
       form.markAllAsTouched();
       return;
     }
@@ -376,7 +376,7 @@ class FormController extends GetxController {
               requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
             }
           }
-          String offlineName = formTitle;
+          String offlineName = name;
           if (getOfflineName != null) {
             offlineName = await getOfflineName!();
           }
