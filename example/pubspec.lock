@@ -193,7 +193,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "340f378fdd83703feec2b22ffd67677fa5e8f317"
+      resolved-ref: "09ad689ec45dc2e57e4a6ca0f5ec6c750e1ddd38"
       url: "git@github.com:sisitech/flutter_utils.git"
     source: git
     version: "0.0.1"
@@ -383,7 +383,7 @@ packages:
       name: pointycastle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.7.1"
+    version: "3.7.2"
   process:
     dependency: transitive
     description:

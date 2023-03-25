@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/internalization/extensions.dart';
 import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
@@ -161,7 +162,7 @@ class MyCustomForm extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 10),
                     child: formHeader ??
                         Text(
-                          formTitle?.tr ?? "",
+                          formTitle?.ctr ?? "",
                           style: formTitleStyle,
                         ),
                   ),
@@ -174,7 +175,7 @@ class MyCustomForm extends StatelessWidget {
                     itemCount: controller.errors.length,
                     itemBuilder: (context, index) {
                       return Text(
-                        controller.errors[index].tr,
+                        controller.errors[index].ctr,
                         style: TextStyle(color: Colors.red),
                       );
                     },
@@ -189,8 +190,8 @@ class MyCustomForm extends StatelessWidget {
                   enableOfflineSave: enableOfflineMode,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
-                          .tr,
-                  submitButtonText: submitButtonText?.tr,
+                          .ctr,
+                  submitButtonText: submitButtonText?.ctr,
                 ),
                 const SizedBox(
                   height: 10,
@@ -254,11 +255,11 @@ Widget getInput(FormItemField field) {
   );
 }
 
-labelName(field) => "${field.label}".tr + " ${field.required ? '*' : ''}";
+labelName(field) => "${field.label}".ctr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
-      helperText: "${field.placeholder ?? ''}".tr,
+      helperText: "${field.placeholder ?? ''}".ctr,
       counterText: "",
       // helperStyle: TextStyle(height: 0.7),
       // errorStyle: TextStyle(height: 0.7),
@@ -285,7 +286,7 @@ getInputBasedOnType(FormItemField field) {
   // dprint("Getting the labelStyle");
   // dprint(Get.theme.textTheme.bodyText1);
   // dprint(Get.theme.inputDecorationTheme.labelStyle);
-  var defaultValidationMessage = {'required': (error) => 'empty_field'.tr};
+  var defaultValidationMessage = {'required': (error) => 'empty_field'.ctr};
   dprint(field.start_value);
   dprint(field.end_value);
   var start_date = parseDateFromString(
@@ -323,7 +324,7 @@ getInputBasedOnType(FormItemField field) {
       break;
     case FieldType.date:
       reactiveInput = ReactiveDatePicker(
-        formControlName: field.name.tr,
+        formControlName: field.name.ctr,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
           // dprint("Picker errprs");
@@ -358,7 +359,7 @@ getInputBasedOnType(FormItemField field) {
                             SizedBox(
                               width: 10,
                             ),
-                            Text(dateToCustomString(picker.control.value).tr),
+                            Text(dateToCustomString(picker.control.value).ctr),
                           ],
                         ),
                       ),
@@ -366,7 +367,7 @@ getInputBasedOnType(FormItemField field) {
                   ),
                   if (hasError)
                     Text(
-                      (errorText ?? "").tr,
+                      (errorText ?? "").ctr,
                       style: TextStyle(color: Get.theme.errorColor),
                     )
                 ],
@@ -410,7 +411,7 @@ getInputBasedOnType(FormItemField field) {
             ),
             ReactiveDropdownField(
               hint: Text(
-                  inputCont.isLoading.value ? "Loading...".tr : "Select".tr),
+                  inputCont.isLoading.value ? "Loading...".ctr : "Select".ctr),
               formControlName: field.name,
               items: inputCont.choices?.value ?? [],
             ),
@@ -455,7 +456,7 @@ class MySubmitButton extends StatelessWidget {
         children: [
           if (!netCont.isDeviceConnected.value)
             Text(
-              "No internet connection".interpolate({}).tr,
+              "No internet connection".interpolate({}).ctr,
               style: Get.theme.textTheme.titleSmall
                   ?.copyWith(color: Get.theme.errorColor),
             ),
@@ -463,7 +464,7 @@ class MySubmitButton extends StatelessWidget {
             ElevatedButton(
               onPressed: controller!.isLoading == true ? null : _onPressed,
               child: Text(controller!.isLoading == true
-                  ? controller!.loadingMessage.tr
+                  ? controller!.loadingMessage.ctr
                   : submitText),
             ),
         ],

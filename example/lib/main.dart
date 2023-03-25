@@ -8,6 +8,7 @@ import 'package:flutter_form/handle_offline_records.dart';
 import 'package:flutter_form/models.dart';
 
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/internalization/extensions.dart';
 
 import 'package:flutter_utils/models.dart';
 import 'package:flutter_utils/network_status/network_status.dart';
@@ -290,7 +291,7 @@ class MyHomePage extends StatelessWidget {
                 dprint("Error in $value");
 
                 if (value != null) {
-                  return "Your pformassword might be wrong".tr;
+                  return "Your pformassword might be wrong".ctr;
                 }
                 return null;
               },
@@ -371,7 +372,7 @@ class MyHomePage extends StatelessWidget {
                   OfflineHttpCall item = mainCont.ofllineData.value[index];
                   // item.name
                   // item.formData
-                  // item.tries
+                  // item.ctries
                   return ListTile(
                     title: Text(item.name),
                     subtitle: TextView(
