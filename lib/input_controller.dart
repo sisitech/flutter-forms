@@ -352,7 +352,7 @@ class InputController extends GetxController {
           rawChoices = urlChoices
               .map(
                 (choice) => FormChoice(
-                    display_name: choice[field.display_name],
+                    display_name: "${choice[field.display_name]}".ctr,
                     value: choice[field.value_field]),
               )
               .toList();
