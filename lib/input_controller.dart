@@ -8,6 +8,7 @@ import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/models.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/internalization/extensions.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
 import 'package:get_storage/get_storage.dart';
@@ -312,7 +313,8 @@ class InputController extends GetxController {
             choice[field.display_name] ?? "${field.display_name} 404";
         var value_field =
             choice[field.value_field] ?? "${field.value_field} 404";
-        return FormChoice(display_name: display_name, value: value_field);
+        return FormChoice(
+            display_name: "$display_name".ctr, value: value_field);
       }).toList();
 
       // dprint(rawChoices);
