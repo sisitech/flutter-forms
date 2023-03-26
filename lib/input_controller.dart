@@ -243,7 +243,10 @@ class InputController extends GetxController {
     if (field.choices != null) {
       // dprint("GOt to the field choices");
 
-      rawChoices = field.choices;
+      rawChoices = field.choices?.map((e) {
+        e.display_name = "${e.display_name}".ctr;
+        return e;
+      }).toList();
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
       List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
