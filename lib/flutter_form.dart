@@ -3,6 +3,7 @@ library flutter_form;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
@@ -295,6 +296,18 @@ getInputBasedOnType(FormItemField field) {
 
   Widget reactiveInput;
   switch (field.type) {
+    case FieldType.float:
+    case FieldType.integer:
+      var isTextArea = field.max_length != null && field.max_length! > 300;
+      reactiveInput = ReactiveTextField(
+          formControlName: field.name,
+          validationMessages: defaultValidationMessage,
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
+          maxLines: isTextArea ? null : 1,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: inputDecoration(field));
+      break;
     case FieldType.string:
       var isTextArea = field.max_length != null && field.max_length! > 300;
       reactiveInput = ReactiveTextField(
@@ -387,7 +400,6 @@ getInputBasedOnType(FormItemField field) {
             fetchFirst: false,
           ),
           tag: field.name);
-
       reactiveInput = MultiSelectCustomField(
         formControlName: field.name,
         fildOption: field,

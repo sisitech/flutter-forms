@@ -47,7 +47,7 @@ const teacherOptions = {
         "label": "Gender"
       },
       "tsc_no": {
-        "type": "string",
+        "type": "integer",
         "required": true,
         "read_only": false,
         "label": "Tsc Number",
