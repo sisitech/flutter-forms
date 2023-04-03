@@ -63,10 +63,12 @@ const teacherOptions = {
         "label": "Role name"
       },
       "created": {
-        "type": "datetime",
+        "type": "date",
         "required": false,
-        "read_only": true,
-        "label": "Created"
+        "read_only": false,
+        "label": "Created",
+        "start_value": "1985-08-14",
+        "end_value": "today"
       },
       "modified": {
         "type": "date",
@@ -95,10 +97,10 @@ const teacherOptions = {
         "label": "Contact name",
         "url": "api/v1/shops",
         "instance_url": "api/v1/shops/",
-        "display_name": "username",
-        "search_field": "username",
+        "display_name": "name",
+        "search_field": "name",
         "max_length": 45,
-        "select_first": true,
+        "select_first": false,
         "placeholder": "The name of the customer to deliver to"
       },
       "contact_email": {
@@ -169,23 +171,23 @@ const teacherOptions = {
         // ]
       },
       "phone": {
-        "type": "choice",
+        "type": "multifield",
         "required": false,
         "read_only": false,
-        "multiple": false,
+        "multiple": true,
         "label": "Phone Number",
         "max_length": 20,
         "display_name": "name",
-        // "from_field": "role",
+        "from_field": "role",
         // "url": "api/v1/shehiyas",
-        // "from_field_value_field": "id",
+        "from_field_value_field": "id",
         // "from_field_source": "shehiyas_details",
-        "storage": "shehiyas",
-        // "show_only": "1"
-        // "choices": [
-        //   {"value": "TSC", "display_name": "TSC"},
-        //   {"value": "BRD", "display_name": "BOM"}
-        // ]
+        // "storage": "shehiyas",
+        "show_only": "2",
+        "choices": [
+          {"value": "TSC", "display_name": "TSC"},
+          {"value": "BRD", "display_name": "BOM"}
+        ]
       },
       "qualifications": {
         "type": "choice",

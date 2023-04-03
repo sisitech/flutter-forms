@@ -62,7 +62,7 @@ class AddItemBase extends StatelessWidget {
                 extraFields: extraFields,
                 isValidateOnly: isValidateOnly,
                 formGroupOrder: formGroupOrder,
-                formTitle: formTitle,
+                formTitle: formTitle, name: formTitle,
               ),
             ),
           ],

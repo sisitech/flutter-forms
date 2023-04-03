@@ -22,7 +22,7 @@ class FormController extends GetxController {
   final Map<String, dynamic>? extraFields;
   final bool isValidateOnly;
   final String? url;
-  final String formTitle;
+  final String name;
   final String? instanceUrl;
   final ContentType contentType;
   final Function? handleErrors;
@@ -37,6 +37,7 @@ class FormController extends GetxController {
   var httpMethoFromStatus = {
     FormStatus.Add: "POST",
     FormStatus.Update: "PATCH",
+    FormStatus.Replace: "PUT",
     FormStatus.Delete: "DELETE",
   };
 
@@ -45,6 +46,7 @@ class FormController extends GetxController {
   late bool enableOfflineSave;
 
   final Function(Map<String, dynamic>)? validateOfflineData;
+  final Function(Map<String, dynamic>)? customDataValidation;
 
   final Map<String, dynamic>? instance;
   FormStatus status;
@@ -67,11 +69,12 @@ class FormController extends GetxController {
     this.isValidateOnly = false,
     this.url,
     this.extraFields,
-    required this.formTitle,
+    required this.name,
     this.showOfflineMessage,
     this.enableOfflineMode = false,
     this.validateOfflineData,
     this.onSuccess,
+    this.customDataValidation,
     this.getOfflineName,
     this.handleErrors,
     this.enableOfflineSave = false,
@@ -184,14 +187,16 @@ class FormController extends GetxController {
                 dprint("Updaint fields $key");
                 dprint(allMultiFields[key]);
                 // controller.selectedItems.value = allMultiFields[key];
-                controller.formChoices.value = allMultiFields[key];
+                controller.updateChoices.value = allMultiFields[key];
               }
             }
           }
           if (field.type == FieldType.date ||
               field.type == FieldType.datetime) {
             dprint(value);
-            form.control(key).patchValue(DateTime.parse(value));
+            if (value != null) {
+              form.control(key).patchValue(DateTime.parse(value));
+            }
           } else {
             form.control(key).patchValue(value);
           }
@@ -256,7 +261,18 @@ class FormController extends GetxController {
     return null;
   }
 
-  updateFormErrors(Map<String, dynamic> formErrors) {
+  validateUsingCustomValidation() async {
+    var value = getCurrentFormFields();
+    if (customDataValidation != null) {
+      var res = customDataValidation!(value);
+      dprint("Custom Validation is $res");
+      return res;
+    }
+    return null;
+  }
+
+  updateFormErrors(Map<String, dynamic> formErrors,
+      {handleCustomErrors = false}) {
     formErrors.forEach((key, value) {
       if (fields.map((e) => e.name).contains(key)) {
         String display = getErrorDisplay(value);
@@ -264,15 +280,27 @@ class FormController extends GetxController {
       } else {
         String display = getErrorDisplay(value);
         if (handleErrors == null) {
+          dprint("Adding error");
           errors.add(display);
         }
       }
     });
-    if (handleErrors != null) {
-      String display = handleErrors!(formErrors);
+
+    Function? handleErrorFunc = getHandleCustomErrorsFuncntcion();
+
+    if (handleErrorFunc != null) {
+      dprint("HAndi;oingg..");
+      String display = handleErrorFunc!(formErrors);
       errors.add(display);
     }
     form.markAllAsTouched();
+  }
+
+  getHandleCustomErrorsFuncntcion() {
+    if (netCont.isDeviceConnected.value) {
+      return handleErrors;
+    }
+    return null;
   }
 
   resolveRequestUrl(formData) {
@@ -285,7 +313,7 @@ class FormController extends GetxController {
   submit() async {
     if (!form.valid) {
       // dprint("Not valied");
-      // dprint(form.errors);
+      dprint(form.errors);
       form.markAllAsTouched();
       return;
     }
@@ -299,6 +327,18 @@ class FormController extends GetxController {
 
     // Pre Save Data
     var data = preparePostData();
+
+    // Implement CustomVlidation
+    if (customDataValidation != null) {
+      var res = await validateUsingCustomValidation();
+      dprint("Gto from custom validate");
+      dprint(res);
+      if (res != null) {
+        updateFormErrors(res, handleCustomErrors: true);
+        isLoading.value = false;
+        return;
+      }
+    }
 
     // Offline mode support
     if (enableOfflineMode && !netCont.isDeviceConnected.value) {
@@ -330,12 +370,13 @@ class FormController extends GetxController {
       try {
         if (enableOfflineSave) {
           var offlineCont = Get.find<OfflineHttpCacheController>();
-          if (status == FormStatus.Update) {
+          if (status == FormStatus.Update || status == FormStatus.Replace) {
+            requrl = getInstanceUrl();
             if (instanceId != null) {
               requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
             }
           }
-          String offlineName = formTitle;
+          String offlineName = name;
           if (getOfflineName != null) {
             offlineName = await getOfflineName!();
           }
@@ -375,9 +416,17 @@ class FormController extends GetxController {
         if (status == FormStatus.Delete) {
           dprint(data);
           res = await serv.formDelete(requrl, query: data);
-        } else if (status == FormStatus.Update) {
-          var updateUrl = "${getInstanceUrl()}/${instanceId}/";
-          res = await serv.formPatch(updateUrl, data);
+        } else if (status == FormStatus.Update ||
+            status == FormStatus.Replace) {
+          var updateUrl = "${getInstanceUrl()}";
+          if (instanceId != null) {
+            updateUrl = "$updateUrl/${instanceId}/".replaceAll("//", "/");
+          }
+          if (status == FormStatus.Replace) {
+            res = await serv.formPut(updateUrl, data);
+          } else {
+            res = await serv.formPatch(updateUrl, data);
+          }
         } else {
           res = await serv.formPost(requrl, data);
         }
@@ -393,7 +442,7 @@ class FormController extends GetxController {
           // dprint("Done with call");
           var formErrors = res.body as Map<String, dynamic>;
           // dprint(formErrors);
-          updateFormErrors(formErrors);
+          updateFormErrors(formErrors, handleCustomErrors: true);
         } catch (e) {
           dprint(e);
         }

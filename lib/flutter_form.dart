@@ -6,11 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/internalization/extensions.dart';
 import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-
+import 'package:flutter_utils/extensions/date_extensions.dart';
 import 'input_controller.dart';
 import 'models.dart';
 import 'multiselect/multiselect.dart';
@@ -32,7 +33,8 @@ const Map<String, dynamic> defaultOptions = {
 };
 
 class MyCustomForm extends StatelessWidget {
-  final String formTitle;
+  final String? formTitle;
+  final String name;
   final dynamic? formItems;
   final Widget? formHeader;
   final Widget? formFooter;
@@ -51,6 +53,8 @@ class MyCustomForm extends StatelessWidget {
   late bool enableOfflineMode;
   late bool enableOfflineSave;
   late bool? showOfflineMessage;
+  final Function(Map<String, dynamic>)? customDataValidation;
+
   final Function(Map<String, dynamic>)? validateOfflineData;
 
   final String loadingMessage;
@@ -68,10 +72,11 @@ class MyCustomForm extends StatelessWidget {
 
   final Function? getDynamicUrl;
   final Function? getOfflineName;
+  TextStyle? formTitleStyle;
 
   MyCustomForm({
     super.key,
-    required this.formTitle,
+    this.formTitle,
     this.formItems = defaultOptions,
     required this.formGroupOrder,
     this.formHeader,
@@ -79,10 +84,13 @@ class MyCustomForm extends StatelessWidget {
     this.enableOfflineMode = false,
     this.enableOfflineSave = false,
     this.validateOfflineData,
+    this.customDataValidation,
     this.formFooter,
+    this.formTitleStyle,
     this.extraFields,
     this.isValidateOnly = false,
     this.url,
+    required this.name,
     this.getOfflineName,
     this.onOfflineSuccess,
     this.PreSaveData,
@@ -105,11 +113,12 @@ class MyCustomForm extends StatelessWidget {
     final controller = Get.put(
         FormController(
           formItems: formItems,
-          formTitle: formTitle,
+          name: name,
           getOfflineName: getOfflineName,
           storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,
           enableOfflineSave: enableOfflineSave,
+          customDataValidation: customDataValidation,
           extraFields: extraFields,
           PreSaveData: PreSaveData,
           showOfflineMessage: showOfflineMessage,
@@ -130,7 +139,7 @@ class MyCustomForm extends StatelessWidget {
           contentType: contentType,
           handleErrors: handleErrors,
         ),
-        tag: formTitle);
+        tag: name);
 
     if (onControllerSetup != null) {
       onControllerSetup!(controller);
@@ -139,7 +148,7 @@ class MyCustomForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<FormController>(tag: formTitle);
+    final controller = Get.find<FormController>(tag: name);
     return GetBuilder(
         init: controller,
         builder: (_) {
@@ -148,15 +157,15 @@ class MyCustomForm extends StatelessWidget {
             formGroup: controller.form,
             child: Column(
               children: <Widget>[
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(vertical: 10),
-                //   child: formHeader ??
-                //       Text(
-                //         submitButtonPreText?.tr ??
-                //             "${controller.status.statusDisplay().tr} ${submitButtonText?.tr}",
-                //         style: Get.theme.textTheme.titleLarge,
-                //       ),
-                // ),
+                if (formTitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: formHeader ??
+                        Text(
+                          formTitle ?? "",
+                          style: formTitleStyle,
+                        ),
+                  ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
                 Padding(
@@ -166,7 +175,7 @@ class MyCustomForm extends StatelessWidget {
                     itemCount: controller.errors.length,
                     itemBuilder: (context, index) {
                       return Text(
-                        controller.errors[index].tr,
+                        controller.errors[index].ctr,
                         style: TextStyle(color: Colors.red),
                       );
                     },
@@ -176,16 +185,16 @@ class MyCustomForm extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                const SizedBox(
-                  height: 10,
-                ),
                 MySubmitButton(
-                  formTitle: formTitle,
+                  name: name,
                   enableOfflineSave: enableOfflineMode,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
-                          .tr,
-                  submitButtonText: submitButtonText?.tr,
+                          .ctr,
+                  submitButtonText: submitButtonText?.ctr,
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 formFooter ?? Container(),
               ],
@@ -196,7 +205,8 @@ class MyCustomForm extends StatelessWidget {
   }
 }
 
-Widget getRowInputs(FormController controller, List<String> fieldNames) {
+Widget getRowInputs(FormController controller, List<String> fieldNames,
+    {index = 1}) {
   var rowFields = controller.fields.where(
     (field) => fieldNames.contains(field.name),
   );
@@ -245,11 +255,11 @@ Widget getInput(FormItemField field) {
   );
 }
 
-labelName(field) => "${field.label}".tr + " ${field.required ? '*' : ''}";
+labelName(field) => "${field.label}".ctr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
-      helperText: "${field.placeholder ?? ''}".tr,
+      helperText: "${field.placeholder ?? ''}".ctr,
       counterText: "",
       // helperStyle: TextStyle(height: 0.7),
       // errorStyle: TextStyle(height: 0.7),
@@ -262,11 +272,26 @@ Widget LabelWidget(FormItemField field) {
   );
 }
 
+parseDateFromString(String? dateString, DateTime defaultDate) {
+  if (dateString?.isNotEmpty ?? false) {
+    DateTime? parsedDate = dateString?.toDate;
+    if (parsedDate != null) {
+      return parsedDate;
+    }
+  }
+  return defaultDate;
+}
+
 getInputBasedOnType(FormItemField field) {
   // dprint("Getting the labelStyle");
   // dprint(Get.theme.textTheme.bodyText1);
   // dprint(Get.theme.inputDecorationTheme.labelStyle);
-  var defaultValidationMessage = {'required': (error) => 'empty_field'.tr};
+  var defaultValidationMessage = {'required': (error) => 'empty_field'.ctr};
+  dprint(field.start_value);
+  dprint(field.end_value);
+  var start_date = parseDateFromString(
+      field.start_value, DateTime.now().add(const Duration(days: -10000)));
+  var end_date = parseDateFromString(field.end_value, DateTime.now());
 
   Widget reactiveInput;
   switch (field.type) {
@@ -287,10 +312,12 @@ getInputBasedOnType(FormItemField field) {
       reactiveInput = Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             LabelWidget(field),
             ReactiveCheckbox(
               formControlName: field.name,
+              activeColor: Get.theme.primaryColor,
             ),
           ],
         ),
@@ -298,7 +325,7 @@ getInputBasedOnType(FormItemField field) {
       break;
     case FieldType.date:
       reactiveInput = ReactiveDatePicker(
-        formControlName: field.name.tr,
+        formControlName: field.name.ctr,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
           // dprint("Picker errprs");
@@ -309,6 +336,7 @@ getInputBasedOnType(FormItemField field) {
           bool hasError =
               (errorText?.isNotEmpty ?? false) && picker.control.touched;
           dprint(hasError);
+
           return GestureDetector(
             onTap: picker.showPicker,
             child: Container(
@@ -317,22 +345,30 @@ getInputBasedOnType(FormItemField field) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       LabelWidget(field),
                       IconButton(
                         onPressed: picker.showPicker,
-                        icon: Icon(
-                          Icons.date_range_outlined,
-                          color: hasError ? Get.theme.errorColor : null,
+                        icon: Row(
+                          children: [
+                            Icon(
+                              Icons.date_range_outlined,
+                              color: hasError ? Get.theme.errorColor : null,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(dateToCustomString(picker.control.value).ctr),
+                          ],
                         ),
                       ),
-                      Text(dateToCustomString(picker.control.value).tr)
                     ],
                   ),
                   if (hasError)
                     Text(
-                      (errorText ?? "").tr,
+                      (errorText ?? "").ctr,
                       style: TextStyle(color: Get.theme.errorColor),
                     )
                 ],
@@ -341,8 +377,8 @@ getInputBasedOnType(FormItemField field) {
           );
           ;
         },
-        firstDate: DateTime.now().add(const Duration(days: -10000)),
-        lastDate: DateTime.now(),
+        firstDate: start_date,
+        lastDate: end_date,
       );
       break;
     case FieldType.multifield:
@@ -364,19 +400,21 @@ getInputBasedOnType(FormItemField field) {
       var inputCont = Get.put(InputController(field: field), tag: field.name);
 
       reactiveInput = Obx(
-        () => Row(
+        () => Column(
           mainAxisSize: MainAxisSize.min,
+          // mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(left: 5),
               child: LabelWidget(field),
               // Text(inputCont.isLoading.value ? 'Loading...' : labelName(field)),
             ),
-            Expanded(
-              child: ReactiveDropdownField(
-                formControlName: field.name,
-                items: inputCont.choices?.value ?? [],
-              ),
+            ReactiveDropdownField(
+              hint: Text(
+                  inputCont.isLoading.value ? "Loading...".ctr : "Select".ctr),
+              formControlName: field.name,
+              items: inputCont.choices?.value ?? [],
             ),
           ],
         ),
@@ -397,16 +435,16 @@ class MySubmitButton extends StatelessWidget {
   FormController? controller;
   final String? submitButtonText;
   final String? submitButtonPreText;
-  final String formTitle;
+  final String name;
   late bool enableOfflineSave;
   MySubmitButton({
     super.key,
-    required this.formTitle,
+    required this.name,
     this.submitButtonText,
     this.submitButtonPreText,
     this.enableOfflineSave = false,
   }) {
-    controller = Get.find<FormController>(tag: formTitle);
+    controller = Get.find<FormController>(tag: name);
   }
 
   @override
@@ -419,7 +457,7 @@ class MySubmitButton extends StatelessWidget {
         children: [
           if (!netCont.isDeviceConnected.value)
             Text(
-              "No internet connection".interpolate({}).tr,
+              "No internet connection".interpolate({}).ctr,
               style: Get.theme.textTheme.titleSmall
                   ?.copyWith(color: Get.theme.errorColor),
             ),
@@ -427,7 +465,7 @@ class MySubmitButton extends StatelessWidget {
             ElevatedButton(
               onPressed: controller!.isLoading == true ? null : _onPressed,
               child: Text(controller!.isLoading == true
-                  ? controller!.loadingMessage.tr
+                  ? controller!.loadingMessage.ctr
                   : submitText),
             ),
         ],
@@ -437,7 +475,7 @@ class MySubmitButton extends StatelessWidget {
 
   void _onPressed() {
     // controller.form
-    final controller = Get.find<FormController>(tag: formTitle);
+    final controller = Get.find<FormController>(tag: name);
     controller.submit();
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_form/handle_offline_records.dart';
 import 'package:flutter_form/models.dart';
 
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/internalization/extensions.dart';
 
 import 'package:flutter_utils/models.dart';
 import 'package:flutter_utils/network_status/network_status.dart';
@@ -256,6 +257,7 @@ class MyHomePage extends StatelessWidget {
     AuthController authCont = Get.find<AuthController>();
 
     MyMainController mainCont = Get.find<MyMainController>();
+    NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
     dprint(context.width);
     FormController? controller;
@@ -270,17 +272,28 @@ class MyHomePage extends StatelessWidget {
           children: [
             const Text("Hello Forms"),
             NetworkStatusWidget(),
+            Text("Hello"),
             MyCustomForm(
               formItems: loginOptions,
               enableOfflineMode: true,
               // isValidateOnly: true,
+              // formTitle: "Login",
               storageContainer: "school",
               url: "o/token/",
+              submitButtonPreText: "",
               submitButtonText: "Login",
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
               validateOfflineData: (res) {
-                return {"detail": "Hahaha not this"};
+                return {"username": "Hahaha not this"};
+              },
+              handleErrors: (value) {
+                dprint("Error in $value");
+
+                if (value != null) {
+                  return "Your pformassword might be wrong".ctr;
+                }
+                return null;
               },
               instance: const {
                 // "id": 12,
@@ -324,7 +337,8 @@ class MyHomePage extends StatelessWidget {
                 ["username"],
                 ["password"]
               ],
-              formTitle: "Signupdada",
+              name: "Signupdada",
+              // formTitle: ',
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -358,7 +372,7 @@ class MyHomePage extends StatelessWidget {
                   OfflineHttpCall item = mainCont.ofllineData.value[index];
                   // item.name
                   // item.formData
-                  // item.tries
+                  // item.ctries
                   return ListTile(
                     title: Text(item.name),
                     subtitle: TextView(
@@ -372,6 +386,7 @@ class MyHomePage extends StatelessWidget {
               );
             }),
             MyCustomForm(
+              name: "Hello",
               formItems: teacherOptions,
               // onFormItemTranform: (FormItemField field) {
               //   if (field.name == "contact_name") {
@@ -382,40 +397,47 @@ class MyHomePage extends StatelessWidget {
 
               url: "api/v1/teachers",
               onControllerSetup: (contr) => controller = contr,
-              instance: {
-                "contact_email": "michameiu@gmail.com",
-                "id": 34,
-                "role": 1,
-                "phone": 12, // const ["121", "12", "13", "14"],
-                "multifield": {
-                  "phone": [
-                    FormChoice(
-                      display_name: "Ler 11  District 1",
-                      value: "12",
-                    ),
-                    FormChoice(
-                      display_name: "Ler 12 -District 1",
-                      value: "121",
-                    ),
-                    FormChoice(
-                      display_name: "Ler 13  District 1",
-                      value: "13",
-                    ),
-                    FormChoice(
-                      display_name: "Ler 14  District 1",
-                      value: "14",
-                    ),
-                  ],
-                  "role": [
-                    FormChoice(
-                      display_name: "District 11",
-                      value: "1",
-                    ),
-                  ],
-                }
-              },
+              instance: false
+                  ? null
+                  : {
+                      "contact_email": "michameiu@gmail.com",
+                      "id": 34,
+                      "role": 1,
+                      "modified": "2023-03-04",
+                      "phone": const ["121", "12", "13", "14"],
+                      "multifield": {
+                        "phone": [
+                          FormChoice(
+                            display_name: "Ler 11  District 1",
+                            value: "12",
+                          ),
+                          FormChoice(
+                            display_name: "Ler 12 -District 1",
+                            value: "121",
+                          ),
+                          FormChoice(
+                            display_name: "Ler 13  District 1",
+                            value: "13",
+                          ),
+                          FormChoice(
+                            display_name: "Ler 14  District 1",
+                            value: "14",
+                          ),
+                        ],
+                        "role": [
+                          FormChoice(
+                            display_name: "District 11",
+                            value: "1",
+                          ),
+                        ],
+                      }
+                    },
               storageContainer: "school",
-              status: FormStatus.Update,
+              PreSaveData: (formData) {
+                dprint(formData);
+                return formData;
+              },
+              // status: FormStatus.Update,
               contentType: ContentType.json,
               formHeader: const Text("Welcome home"),
               onSuccess: (value) {
@@ -437,6 +459,7 @@ class MyHomePage extends StatelessWidget {
                 ['role'],
                 ["phone"],
                 ["active"],
+                ["created"],
                 ["modified"],
                 ["contact_name"],
                 ["contact_phone"],
@@ -453,7 +476,7 @@ class MyHomePage extends StatelessWidget {
                 child: Text("Sign Up"),
               ),
             ),
-            CustomFieldForm(),
+            // CustomFieldForm(),
             const SizedBox(
               height: 20,
             ),

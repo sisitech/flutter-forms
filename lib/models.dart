@@ -1,5 +1,6 @@
 library flutter_form;
 
+import 'package:flutter_utils/flutter_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
@@ -10,7 +11,12 @@ enum ContentType {
   form_url_encoded,
 }
 
-enum FormStatus { Add, Update, Delete }
+enum FormStatus {
+  Add,
+  Update,
+  Delete,
+  Replace,
+}
 
 extension FormStatusDefinti on FormStatus {
   String statusDisplay() {
@@ -92,10 +98,13 @@ class FormItemField extends FormUrlChoices {
   late bool required;
   late bool read_only;
   late int? max_length;
+
   late bool? obscure;
   late String? from_field;
   late dynamic? show_only;
   late String? show_only_field;
+  late String? start_value;
+  late String? end_value;
   late bool? show_reset_value;
   bool hasController;
 
@@ -113,6 +122,8 @@ class FormItemField extends FormUrlChoices {
       this.hasController = false,
       this.show_only_field,
       this.show_reset_value,
+      this.start_value,
+      this.end_value,
       super.from_field_source,
       super.storage,
       super.instance_url,
@@ -122,7 +133,11 @@ class FormItemField extends FormUrlChoices {
       super.search_field = "name",
       super.value_field = "id",
       super.select_first = false,
-      super.multiple = false});
+      super.multiple = false}) {
+    dprint("\n\n\nTHE START VALUEDS");
+    dprint(start_value);
+    dprint(end_value);
+  }
 
   // this.url,
   // this.display_name = "name",
