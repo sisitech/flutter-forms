@@ -80,6 +80,7 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
 
 const _$FieldTypeEnumMap = {
   FieldType.integer: 'integer',
+  FieldType.alphabets: 'alphabets',
   FieldType.string: 'string',
   FieldType.text: 'text',
   FieldType.datetime: 'datetime',

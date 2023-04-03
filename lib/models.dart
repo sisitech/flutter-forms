@@ -26,6 +26,7 @@ extension FormStatusDefinti on FormStatus {
 
 enum FieldType {
   integer,
+  alphabets,
   string,
   text,
   datetime,

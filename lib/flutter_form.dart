@@ -296,15 +296,25 @@ getInputBasedOnType(FormItemField field) {
 
   Widget reactiveInput;
   switch (field.type) {
-    case FieldType.float:
-    case FieldType.integer:
-      var isTextArea = field.max_length != null && field.max_length! > 300;
+    case FieldType.alphabets:
       reactiveInput = ReactiveTextField(
           formControlName: field.name,
           validationMessages: defaultValidationMessage,
           keyboardType: TextInputType.number,
           textInputAction: TextInputAction.next,
-          maxLines: isTextArea ? null : 1,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]'))
+          ],
+          decoration: inputDecoration(field));
+      break;
+
+    case FieldType.float:
+    case FieldType.integer:
+      reactiveInput = ReactiveTextField(
+          formControlName: field.name,
+          validationMessages: defaultValidationMessage,
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.next,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: inputDecoration(field));
       break;

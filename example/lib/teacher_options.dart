@@ -90,6 +90,12 @@ const teacherOptions = {
         "label": "Middle name",
         "max_length": 45
       },
+      "contact_phone": {
+        "type": "alphabets",
+        "required": false,
+        "read_only": false,
+        "label": "Contact Phone",
+      },
       "contact_name": {
         "type": "field",
         "required": false,
