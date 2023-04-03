@@ -340,6 +340,7 @@ getInputBasedOnType(FormItemField field) {
             LabelWidget(field),
             ReactiveCheckbox(
               formControlName: field.name,
+              activeColor: Get.theme.primaryColor,
             ),
           ],
         ),
