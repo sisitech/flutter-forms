@@ -10,6 +10,7 @@ import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'form_connect.dart';
@@ -24,18 +25,22 @@ class InputController extends GetxController {
 
   var visible = true.obs;
 
+  dynamic fromFieldValue = null;
+
   FormProvider formProvider = Get.find<FormProvider>();
   RxList<DropdownMenuItem> choices = RxList.empty();
   RxList<FormChoice> formChoices = RxList.empty();
+  late String storageContainer;
 
   InputController({
     this.formController,
+    this.storageContainer = "GetStorage",
     required this.field,
     this.form,
     this.onSelectFirst,
     this.fetchFirst = true,
   });
-  Rx<FormChoice?> selected = Rx(null);
+  RxList<FormChoice> selectedItems = RxList.empty();
 
   var searchController = TextEditingController();
 
@@ -63,17 +68,22 @@ class InputController extends GetxController {
   }
 
   handleFromField() {
-    dprint("Got a first from_field");
+    // dprint("Got a first from_field");
     fromFieldSubscription =
         form?.control(field.from_field!).valueChanges.listen((event) async {
-      dprint("Lister ${field.name} notified of ${field.from_field} changes");
-      dprint(event);
-      await handleShowOnly(event);
+      // dprint("Lister ${field.name} notified of ${field.from_field} changes");
+      dprint("From field changed to $event");
+      fromFieldValue = event;
+      // try {
+      //   form?.control(field.name).reset();
+      // } catch (e) {}
+      await handleShowOnly();
     });
-    handleShowOnly(form?.control(field.from_field!).value);
+    fromFieldValue = form?.control(field.from_field!).value;
+    handleShowOnly();
   }
 
-  getFromFieldValue(dynamic fromFieldValue) async {
+  getFromFieldValue() async {
     dprint("Getting field value");
     if (field.show_only_field == null) {
       return fromFieldValue;
@@ -87,41 +97,65 @@ class InputController extends GetxController {
     dprint(fullUrl);
     try {
       var instanceRes = await formProvider.formGet(fullUrl);
-      dprint(instanceRes.body);
-      dprint(instanceRes.statusCode);
       return instanceRes.body?[field.show_only_field];
     } catch (e) {
       dprint(e);
       return fromFieldValue;
     }
-
-    return fromFieldValue;
   }
 
-  handleShowOnly(dynamic value) async {
-    if (field.show_only == null) return;
+  handleShowOnly() async {
+    // Handle getting the information
+    var parsedFromFieldValue = await getFromFieldValue();
+    dprint("Parsed from field $parsedFromFieldValue");
+
+    if (field.show_only == null) {
+      if (field.type != FieldType.multifield) {
+        await getOptions();
+      }
+      return;
+    }
+
     visible.value = false;
-    var fromFieldValue = await getFromFieldValue(value);
     var showOnlyValue = field.show_only;
-    dprint("Got $fromFieldValue making sure is $showOnlyValue");
-    var show = showOnlyValue == fromFieldValue;
+
+    dprint("Got $parsedFromFieldValue making sure is $showOnlyValue");
+    var show = showOnlyValue.toString() == parsedFromFieldValue.toString();
     dprint("SHowing $show");
     if (!show) {
       if (form?.controls.containsKey(field.name) ?? false) {
+        dprint("Removing control ${field.name}");
         form?.removeControl(field.name);
       }
     } else {
-      form?.addAll({field.name: getFormControl(field)});
+      var fieldControl = getFormControl(field);
+      form?.addAll({field.name: fieldControl});
+      dprint("Adding control ${field.name}");
+      dprint(fieldControl.value);
+      //Update if any data available
+      if (formController?.instance != null) {
+        dprint("Updaint values possible");
+        var instance = formController?.instance;
+        if (instance?.containsKey(field.name) ?? false) {
+          var value = instance?[field.name];
+          fieldControl.patchValue(value);
+        }
+      }
+      dprint("After patch ${fieldControl.value}");
     }
-
     visible.value = show;
+    // Update options if show
+    if (show) {
+      if (field.type != FieldType.multifield) {
+        await getOptions();
+      }
+    }
   }
 
   setUpInputOptions() {
     if (field.from_field != null) {
       handleFromField();
-    }
-    if (this.fetchFirst) {
+    } else if (this.fetchFirst) {
       this.getOptions();
     }
   }
@@ -130,8 +164,8 @@ class InputController extends GetxController {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       // do something  with query
-      dprint("Searching for the stuff");
-      dprint(query);
+      // dprint("Searching for the stuff");
+      // dprint(query);
       resetOptions();
 
       if (query != "") {
@@ -140,8 +174,9 @@ class InputController extends GetxController {
     });
   }
 
-  selectValue(FormChoice? choice) {
-    selected.value = choice;
+  selectValue(List<FormChoice> choices) {
+    dprint("Selecting Value");
+    selectedItems.value = choices;
 
     ///NOTE! Reset the controller before the options
     resetSearchController();
@@ -152,6 +187,11 @@ class InputController extends GetxController {
     searchController.text = "";
   }
 
+  cancelNoResults() {
+    noResults.value = "";
+    resetSearchController();
+  }
+
   resetOptions() {
     // dprint("resetting options");
     formChoices.value = [];
@@ -159,18 +199,102 @@ class InputController extends GetxController {
     noResults.value = "";
   }
 
-  getOptions({String? search}) async {
+  getOptions({dynamic? search = null}) async {
     List<FormChoice>? rawChoices = [];
     Map<String, dynamic> queryParams = {};
     formChoices.value = [];
 
     if (search != null) {
-      queryParams[field.search_field] = search;
+      queryParams[field.search_field] = search.toString();
     }
-    // dprint(queryParams);
 
+    if (fromFieldValue != null &&
+        (field.from_field_value_field?.isNotEmpty ?? false)) {
+      queryParams[field.from_field_value_field!] = "$fromFieldValue";
+    }
+
+    if (field.type == FieldType.multifield) {
+      queryParams["page_size"] = "4";
+    }
+
+    // dprint(queryParams);
     if (field.choices != null) {
+      // dprint("GOt to the field choices");
+
       rawChoices = field.choices;
+    } else if (field.storage != null) {
+      final box = GetStorage(storageContainer);
+      List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
+      dprint("FOind ${rawItems.length} for ${field.name}");
+      // new Map<String, dynamic>.from(overview)
+      List<dynamic> items = [];
+      // queryParams[field.search_field] = search;
+
+      if (field.from_field != null) {
+        // dprint(fromFieldValue);
+        // dprint(field.from_field_value_field);
+        if (field.from_field_source?.isNotEmpty ?? false) {
+          if (field.search_field == "") {
+            throw ("field.search_field not set");
+          }
+          if (rawItems.length > 0) {
+            // dprint(rawItems.first);
+            // dprint("${field.from_field_source} $fromFieldValue");
+            var sourceitem = rawItems.firstWhere((element) =>
+                element[field.from_field_value_field]
+                    .toString()
+                    .toLowerCase() ==
+                fromFieldValue.toString().toLowerCase());
+            dprint(sourceitem);
+            if (sourceitem != null) {
+              items = sourceitem[field.from_field_source];
+            }
+          }
+        } else if (field.from_field_value_field?.isNotEmpty ?? false) {
+          if (rawItems.length > 0) {
+            dprint(
+                "DOing filtering of  from_field_value_field ${field.from_field_value_field}");
+            // dprint(rawItems.first);
+            items = rawItems
+                .where((element) =>
+                    element[field.from_field_value_field]
+                        .toString()
+                        .toLowerCase() ==
+                    fromFieldValue.toString().toLowerCase())
+                .toList();
+
+            // dprint(field.name);
+            // dprint(items);
+          } else {
+            dprint("No raw items");
+          }
+        } else {
+          dprint("Just a show only field");
+          items = rawItems;
+        }
+      } else {
+        dprint("No from_field field");
+
+        items = rawItems;
+      }
+      // dprint(field.storage);
+
+      // dprint(field.name);
+      // dprint(items);
+
+      /// Perform search
+
+      rawChoices = items
+          .map((element) => new Map<dynamic, dynamic>.from(element))
+          .map((choice) {
+        var display_name =
+            choice[field.display_name] ?? "${field.display_name} 404";
+        var value_field =
+            choice[field.value_field] ?? "${field.value_field} 404";
+        return FormChoice(display_name: display_name, value: value_field);
+      }).toList();
+
+      // dprint(rawChoices);
     } else if (field.url != null) {
       try {
         isLoading.value = true;
@@ -178,18 +302,18 @@ class InputController extends GetxController {
         isLoading.value = false;
         var urlChoices = [];
         // dprint(choices);
-        dprint("Getting status codfe ");
-        dprint(choices.statusCode);
+        // dprint("Getting status codfe ");
+        // dprint(choices.statusCode);
         // dprint(choices.body);
         if (choices.statusCode == null) {
           dprint("NO internet conncetion");
           noResults.value = "No internet connection! Try again later!";
           return;
         }
-        dprint("Getting the options");
+        // dprint("Getting the options");
         if (choices.statusCode == 200) {
           if (choices?.body.runtimeType == String) {
-            dprint("FOnd strineg instrad");
+            // dprint("FOnd strineg instrad");
             return;
           }
           if (choices.body.containsKey("results")) {
@@ -212,8 +336,7 @@ class InputController extends GetxController {
         } else {
           dprint("ad");
         }
-        noResults.value =
-            rawChoices != null && rawChoices!.isEmpty ? "No results." : "";
+
         // dprint(choices.body);
 
       } catch (e) {
@@ -228,6 +351,19 @@ class InputController extends GetxController {
       }
     }
 
+    //Search
+    // dprint("Search $search ${field.url}");
+    if (search != null && field.url == null) {
+      rawChoices = rawChoices
+          ?.where((FormChoice e) => e.display_name
+              .toLowerCase()
+              .contains(search.toString().toLowerCase()))
+          .toList();
+    }
+
+    noResults.value =
+        rawChoices != null && rawChoices!.isEmpty ? "No results." : "";
+
     // dprint(rawChoices!.map((e) => {e.display_name, e.value}));
     formChoices.value = rawChoices ?? [];
     choices.value = rawChoices!
@@ -236,6 +372,9 @@ class InputController extends GetxController {
               child: Text(e.display_name),
             ))
         .toList();
+
+    // selected.value = null;
+    // selected.value = null;
 
     // Seclt first woeks for FieldTye.field only
     // dprint("Checking to select first");

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -40,9 +42,16 @@ class MyCustomForm extends StatelessWidget {
   final String? submitButtonPreText;
   final ContentType contentType;
   final Function? handleErrors;
-  final Function? onSuccess;
+  final Function(dynamic data)? onSuccess;
+  final Function(dynamic data)? onOfflineSuccess;
   final Function? onControllerSetup;
   final Function? onFormItemTranform;
+  late String storageContainer;
+  late String offlineStorageContainer;
+  late bool enableOfflineMode;
+  late bool enableOfflineSave;
+  late bool? showOfflineMessage;
+  final Function(Map<String, dynamic>)? validateOfflineData;
 
   final String loadingMessage;
   FormStatus status;
@@ -58,6 +67,7 @@ class MyCustomForm extends StatelessWidget {
   final String? instanceUrl;
 
   final Function? getDynamicUrl;
+  final Function? getOfflineName;
 
   MyCustomForm({
     super.key,
@@ -65,11 +75,19 @@ class MyCustomForm extends StatelessWidget {
     this.formItems = defaultOptions,
     required this.formGroupOrder,
     this.formHeader,
+    this.showOfflineMessage = true,
+    this.enableOfflineMode = false,
+    this.enableOfflineSave = false,
+    this.validateOfflineData,
     this.formFooter,
     this.extraFields,
     this.isValidateOnly = false,
     this.url,
+    this.getOfflineName,
+    this.onOfflineSuccess,
     this.PreSaveData,
+    this.storageContainer = "GetStorage",
+    this.offlineStorageContainer = "GetStorage",
     this.onStatus,
     this.instanceUrl,
     this.getDynamicUrl,
@@ -87,14 +105,23 @@ class MyCustomForm extends StatelessWidget {
     final controller = Get.put(
         FormController(
           formItems: formItems,
+          formTitle: formTitle,
+          getOfflineName: getOfflineName,
+          storageContainer: storageContainer,
           formGroupOrder: formGroupOrder,
+          enableOfflineSave: enableOfflineSave,
           extraFields: extraFields,
           PreSaveData: PreSaveData,
+          showOfflineMessage: showOfflineMessage,
+          enableOfflineMode: enableOfflineMode,
+          validateOfflineData: validateOfflineData,
           loadingMessage: loadingMessage,
+          offlineStorageContainer: offlineStorageContainer,
           isValidateOnly: isValidateOnly,
           instance: instance,
           instanceUrl: instanceUrl,
           url: url,
+          onOfflineSuccess: onOfflineSuccess,
           onFormItemTranform: onFormItemTranform,
           getDynamicUrl: getDynamicUrl,
           status: status,
@@ -116,7 +143,7 @@ class MyCustomForm extends StatelessWidget {
     return GetBuilder(
         init: controller,
         builder: (_) {
-          dprint("Rebuilding");
+          // dprint("Rebuilding");
           return ReactiveForm(
             formGroup: controller.form,
             child: Column(
@@ -132,11 +159,8 @@ class MyCustomForm extends StatelessWidget {
                 // ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
-                const SizedBox(
-                  height: 10,
-                ),
                 Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: controller.errors.length,
@@ -148,11 +172,16 @@ class MyCustomForm extends StatelessWidget {
                     },
                   ),
                 ),
+                if (controller.errors.isNotEmpty)
+                  const SizedBox(
+                    height: 10,
+                  ),
                 const SizedBox(
                   height: 10,
                 ),
                 MySubmitButton(
                   formTitle: formTitle,
+                  enableOfflineSave: enableOfflineMode,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
                           .tr,
@@ -171,9 +200,9 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
   var rowFields = controller.fields.where(
     (field) => fieldNames.contains(field.name),
   );
-  dprint(rowFields);
+  // dprint(rowFields);
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 5),
+    padding: const EdgeInsets.only(top: 20),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -190,8 +219,8 @@ Widget getRowInputs(FormController controller, List<String> fieldNames) {
 }
 
 Widget getInput(FormItemField field) {
-  dprint(field.name);
-  dprint(field.hasController);
+  // dprint(field.name);
+  // dprint(field.hasController);
 
   if (field.hasController) {
     var inputCont = Get.find<InputController>(tag: field.name);
@@ -226,7 +255,7 @@ inputDecoration(field) => InputDecoration(
       // errorStyle: TextStyle(height: 0.7),
     );
 Widget LabelWidget(FormItemField field) {
-  dprint(labelName(field));
+  // dprint(labelName(field));
   return Text(
     labelName(field),
     style: Get.theme.inputDecorationTheme.labelStyle,
@@ -272,7 +301,7 @@ getInputBasedOnType(FormItemField field) {
         formControlName: field.name.tr,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
-          dprint("Picker errprs");
+          // dprint("Picker errprs");
           String? errorText;
           if (picker.control.errors != null) {
             errorText = picker.control?.errors.keys.join("\n");
@@ -369,24 +398,40 @@ class MySubmitButton extends StatelessWidget {
   final String? submitButtonText;
   final String? submitButtonPreText;
   final String formTitle;
+  late bool enableOfflineSave;
   MySubmitButton({
     super.key,
     required this.formTitle,
     this.submitButtonText,
     this.submitButtonPreText,
+    this.enableOfflineSave = false,
   }) {
     controller = Get.find<FormController>(tag: formTitle);
   }
 
   @override
   Widget build(BuildContext context) {
+    NetworkStatusController netCont = Get.find<NetworkStatusController>();
+
     var submitText = "${submitButtonPreText} ${submitButtonText}";
     return Obx(
-      () => ElevatedButton(
-          onPressed: controller!.isLoading == true ? null : _onPressed,
-          child: Text(controller!.isLoading == true
-              ? controller!.loadingMessage.tr
-              : submitText)),
+      () => Column(
+        children: [
+          if (!netCont.isDeviceConnected.value)
+            Text(
+              "No internet connection".interpolate({}).tr,
+              style: Get.theme.textTheme.titleSmall
+                  ?.copyWith(color: Get.theme.errorColor),
+            ),
+          if (netCont.isDeviceConnected.value || enableOfflineSave)
+            ElevatedButton(
+              onPressed: controller!.isLoading == true ? null : _onPressed,
+              child: Text(controller!.isLoading == true
+                  ? controller!.loadingMessage.tr
+                  : submitText),
+            ),
+        ],
+      ),
     );
   }
 

@@ -53,7 +53,7 @@ const teacherOptions = {
         "label": "Tsc Number",
         "max_length": 45,
         "show_only": "TSC",
-        "from_field": "role",
+        // "from_field": "role",
         "default": ""
       },
       "role_name": {
@@ -160,17 +160,32 @@ const teacherOptions = {
         "required": false,
         "read_only": false,
         "label": "Teacher Type",
-        "choices": [
-          {"value": "TSC", "display_name": "TSC"},
-          {"value": "BRD", "display_name": "BOM"}
-        ]
+        "storage": "districts",
+        // "url": "api/v1/shops",
+        "display_name": "name",
+        // "choices": [
+        //   {"value": "TSC", "display_name": "TSC"},
+        //   {"value": "BRD", "display_name": "BOM"}
+        // ]
       },
       "phone": {
-        "type": "string",
-        "required": true,
+        "type": "choice",
+        "required": false,
         "read_only": false,
+        "multiple": false,
         "label": "Phone Number",
-        "max_length": 20
+        "max_length": 20,
+        "display_name": "name",
+        // "from_field": "role",
+        // "url": "api/v1/shehiyas",
+        // "from_field_value_field": "id",
+        // "from_field_source": "shehiyas_details",
+        "storage": "shehiyas",
+        // "show_only": "1"
+        // "choices": [
+        //   {"value": "TSC", "display_name": "TSC"},
+        //   {"value": "BRD", "display_name": "BOM"}
+        // ]
       },
       "qualifications": {
         "type": "choice",

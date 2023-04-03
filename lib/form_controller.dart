@@ -1,10 +1,14 @@
 library flutter_form;
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/models.dart';
+import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -18,45 +22,74 @@ class FormController extends GetxController {
   final Map<String, dynamic>? extraFields;
   final bool isValidateOnly;
   final String? url;
+  final String formTitle;
   final String? instanceUrl;
   final ContentType contentType;
   final Function? handleErrors;
   final String loadingMessage;
-  final Function? onSuccess;
+  final Function(dynamic data)? onSuccess;
+  final Function(dynamic data)? onOfflineSuccess;
   final Function? PreSaveData;
   final Function? getDynamicUrl;
   final Function? onFormItemTranform;
   final Function? onControllerSetup;
+  final Function? getOfflineName;
+  var httpMethoFromStatus = {
+    FormStatus.Add: "POST",
+    FormStatus.Update: "PATCH",
+    FormStatus.Delete: "DELETE",
+  };
+
+  late bool enableOfflineMode;
+  late bool? showOfflineMessage;
+  late bool enableOfflineSave;
+
+  final Function(Map<String, dynamic>)? validateOfflineData;
 
   final Map<String, dynamic>? instance;
   FormStatus status;
   final Function? onStatus;
 
   var isLoading = false.obs;
+  var isInternetConnected = false.obs;
   FormProvider serv = Get.put<FormProvider>(FormProvider());
+  NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
   List<FormItemField> fields = [];
   List<String> errors = [];
   int? instanceId;
+  late String storageContainer;
+  late String offlineStorageContainer;
+  StreamSubscription? subscription;
 
-  FormController(
-      {required this.formItems,
-      this.isValidateOnly = false,
-      this.url,
-      this.extraFields,
-      this.onSuccess,
-      this.handleErrors,
-      this.getDynamicUrl,
-      this.instance,
-      this.onFormItemTranform,
-      this.onStatus,
-      this.instanceUrl,
-      this.onControllerSetup,
-      this.status = FormStatus.Add,
-      this.PreSaveData,
-      required this.loadingMessage,
-      required this.contentType,
-      this.formGroupOrder = const []}) {
+  FormController({
+    required this.formItems,
+    this.isValidateOnly = false,
+    this.url,
+    this.extraFields,
+    required this.formTitle,
+    this.showOfflineMessage,
+    this.enableOfflineMode = false,
+    this.validateOfflineData,
+    this.onSuccess,
+    this.getOfflineName,
+    this.handleErrors,
+    this.enableOfflineSave = false,
+    this.onOfflineSuccess,
+    this.getDynamicUrl,
+    this.instance,
+    this.onFormItemTranform,
+    this.onStatus,
+    this.instanceUrl,
+    this.storageContainer = "GetStorage",
+    this.offlineStorageContainer = "GetStorage",
+    this.onControllerSetup,
+    this.status = FormStatus.Add,
+    this.PreSaveData,
+    required this.loadingMessage,
+    required this.contentType,
+    this.formGroupOrder = const [],
+  }) {
     // dprint(formItems);
     // dprint("Initialized this controller for me..");
   }
@@ -65,6 +98,22 @@ class FormController extends GetxController {
   void onInit() {
     super.onInit();
     setUpForm();
+    internretStatusCheck();
+  }
+
+  @override
+  void onClose() {
+    subscription?.cancel();
+    super.onClose();
+  }
+
+  internretStatusCheck() async {
+    dprint("Network connection is ${netCont.isDeviceConnected}");
+    subscription = netCont.isDeviceConnected.listen((value) {
+      dprint("\n\n********\n\nInternet status $value");
+    });
+    dprint(
+        "Network chckin.. connection is ${await netCont.checkIntenetConnection()}");
   }
 
   var form = FormGroup({});
@@ -114,6 +163,7 @@ class FormController extends GetxController {
 
     if (this.instance != null) {
       this.instance?.forEach((key, value) {
+        dprint("Instance found ");
         if (possibleFields.contains(key)) {
           // Updating a multified of an instance
           /**  instance{
@@ -130,22 +180,30 @@ class FormController extends GetxController {
             if (this.instance!.containsKey("multifield")) {
               var allMultiFields = this.instance!["multifield"];
               if (allMultiFields?.containsKey(key)) {
-                // dprint("GEttitng Input controller with tag: ${key}");
-                // dprint("FOund");
-                // dprint(allMultiFields[key]);
                 var controller = Get.find<InputController>(tag: key);
-                controller.selected.value = allMultiFields[key];
+                dprint("Updaint fields $key");
+                dprint(allMultiFields[key]);
+                // controller.selectedItems.value = allMultiFields[key];
+                controller.formChoices.value = allMultiFields[key];
               }
             }
           }
-          form.control(key).patchValue(value);
+          if (field.type == FieldType.date ||
+              field.type == FieldType.datetime) {
+            dprint(value);
+            form.control(key).patchValue(DateTime.parse(value));
+          } else {
+            form.control(key).patchValue(value);
+          }
         }
         // this.form.updateValue(this.instance);
       });
 
       if (this.instance!.containsKey("id")) {
         this.instanceId = instance?["id"];
-        updateStatus(FormStatus.Update);
+        if (status == FormStatus.Add) {
+          updateStatus(FormStatus.Update);
+        }
       }
     }
 
@@ -168,6 +226,7 @@ class FormController extends GetxController {
         InputController(
             field: field,
             formController: this,
+            storageContainer: storageContainer,
             form: form,
             fetchFirst: field.type == FieldType.multifield ? false : true),
         tag: field.name,
@@ -175,12 +234,45 @@ class FormController extends GetxController {
     }
   }
 
+  getCurrentFormFields() {
+    return {...form.value, ...extraFields ?? {}};
+  }
+
   preparePostData() {
-    var value = {...form.value, ...extraFields ?? {}};
+    var value = getCurrentFormFields();
     if (PreSaveData != null) {
       value = PreSaveData!(value);
     }
     return value;
+  }
+
+  validateDataOfflineMode() async {
+    var value = getCurrentFormFields();
+    if (validateOfflineData != null) {
+      var res = validateOfflineData!(value);
+      dprint("Validation is $res");
+      return res;
+    }
+    return null;
+  }
+
+  updateFormErrors(Map<String, dynamic> formErrors) {
+    formErrors.forEach((key, value) {
+      if (fields.map((e) => e.name).contains(key)) {
+        String display = getErrorDisplay(value);
+        form.control(key).setErrors({display: "error"});
+      } else {
+        String display = getErrorDisplay(value);
+        if (handleErrors == null) {
+          errors.add(display);
+        }
+      }
+    });
+    if (handleErrors != null) {
+      String display = handleErrors!(formErrors);
+      errors.add(display);
+    }
+    form.markAllAsTouched();
   }
 
   resolveRequestUrl(formData) {
@@ -193,36 +285,97 @@ class FormController extends GetxController {
   submit() async {
     if (!form.valid) {
       // dprint("Not valied");
-      dprint(form.errors);
+      // dprint(form.errors);
       form.markAllAsTouched();
       return;
     }
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
+
+    errors = [];
+    update();
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];
+
     // Pre Save Data
     var data = preparePostData();
+
+    // Offline mode support
+    if (enableOfflineMode && !netCont.isDeviceConnected.value) {
+      var res = await validateDataOfflineMode();
+      dprint("Gto from offline validate");
+      dprint(res);
+      if (res != null) {
+        updateFormErrors(res);
+        isLoading.value = false;
+        return;
+      }
+    }
+
+    isLoading.value = true;
+
     var requrl = resolveRequestUrl(data);
+
     dprint(isValidateOnly);
     if (isValidateOnly) {
       if (onSuccess != null) {
-        onSuccess!(data);
+        await onSuccess!(data);
       }
+      isLoading.value = false;
+      return;
+    }
+
+    // Confirm Internet connection before submitting
+    if (!netCont.isDeviceConnected.value) {
+      try {
+        if (enableOfflineSave) {
+          var offlineCont = Get.find<OfflineHttpCacheController>();
+          if (status == FormStatus.Update) {
+            if (instanceId != null) {
+              requrl = "$requrl/${instanceId}/".replaceAll("//", "/");
+            }
+          }
+          String offlineName = formTitle;
+          if (getOfflineName != null) {
+            offlineName = await getOfflineName!();
+          }
+          OfflineHttpCall offlineHttpCall = OfflineHttpCall(
+              name: offlineName,
+              httpMethod: httpMethoFromStatus[status] ?? "POST",
+              urlPath: requrl,
+              formData: data,
+              storageContainer: offlineStorageContainer);
+          offlineCont.saveOfflineCache(offlineHttpCall,
+              taskPrefix: myform_work_manager_tasks_prefix);
+          dprint("Saved offfline succeffully $storageContainer");
+        } else {
+          dprint("Offline save skipped `enableOfflineSave` DISABLED");
+        }
+
+        if (onOfflineSuccess != null) {
+          await onOfflineSuccess!(data);
+        }
+      } catch (e) {
+        isLoading.value = false;
+        dprint("Failed to save offline");
+        dprint(e);
+      }
+      isLoading.value = false;
       return;
     }
     try {
-      isLoading.value = true;
-      // dprint("Making api vcall");
-      errors = [];
-      update();
+      dprint("Making api vcall");
+
       Response res;
       if (contentType == ContentType.form_url_encoded) {
         // dprint("Url encoded");
         res = await serv.formPostUrlEncoded(requrl, data);
       } else {
-        // dprint("None url encoded");
-        if (status == FormStatus.Update) {
+        dprint("None url encoded");
+        if (status == FormStatus.Delete) {
+          dprint(data);
+          res = await serv.formDelete(requrl, query: data);
+        } else if (status == FormStatus.Update) {
           var updateUrl = "${getInstanceUrl()}/${instanceId}/";
           res = await serv.formPatch(updateUrl, data);
         } else {
@@ -240,21 +393,7 @@ class FormController extends GetxController {
           // dprint("Done with call");
           var formErrors = res.body as Map<String, dynamic>;
           // dprint(formErrors);
-          formErrors.forEach((key, value) {
-            if (fields.map((e) => e.name).contains(key)) {
-              String display = getErrorDisplay(value);
-              form.control(key).setErrors({display: "dada"});
-            } else {
-              String display = getErrorDisplay(value);
-              if (handleErrors == null) {
-                errors.add(display);
-              }
-            }
-          });
-          if (handleErrors != null) {
-            String display = handleErrors!(formErrors);
-            errors.add(display);
-          }
+          updateFormErrors(formErrors);
         } catch (e) {
           dprint(e);
         }
@@ -266,8 +405,6 @@ class FormController extends GetxController {
       dprint(e);
     }
 
-    // dprint(data);
-    // dprint('Hello Reactive Forms!!!');
     update();
   }
 

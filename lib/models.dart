@@ -3,12 +3,14 @@ library flutter_form;
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
+const myform_work_manager_tasks_prefix = "MYFORM";
+
 enum ContentType {
   json,
   form_url_encoded,
 }
 
-enum FormStatus { Add, Update }
+enum FormStatus { Add, Update, Delete }
 
 extension FormStatusDefinti on FormStatus {
   String statusDisplay() {
@@ -38,6 +40,7 @@ class FormChoice {
   late dynamic value;
 
   FormChoice({required this.display_name, this.value});
+
   factory FormChoice.fromJson(Map<String, dynamic> json) =>
       _$FormChoiceFromJson(json);
   Map<String, dynamic> toJson() => _$FormChoiceToJson(this);
@@ -51,11 +54,14 @@ class FormChoice {
 
 class FormUrlChoices {
   String? url;
+  String? storage;
+  String? from_field_source;
   late String? instance_url;
-  late bool? multiple;
+  late bool multiple;
   late String display_name;
   late String search_field;
   late String value_field;
+  late String? from_field_value_field;
   late List<FormChoice>? choices;
   late bool select_first;
 
@@ -68,8 +74,11 @@ class FormUrlChoices {
       {this.url,
       this.display_name = "name",
       this.value_field = "id",
+      this.from_field_value_field,
       this.search_field = "",
       this.instance_url,
+      this.from_field_source,
+      this.storage,
       this.select_first = false,
       this.multiple = false});
 }
@@ -104,8 +113,11 @@ class FormItemField extends FormUrlChoices {
       this.hasController = false,
       this.show_only_field,
       this.show_reset_value,
+      super.from_field_source,
+      super.storage,
       super.instance_url,
       super.url,
+      super.from_field_value_field,
       super.display_name = "name",
       super.search_field = "name",
       super.value_field = "id",

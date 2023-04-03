@@ -4,28 +4,144 @@ import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth_controller.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/form_controller.dart';
+import 'package:flutter_form/handle_offline_records.dart';
 import 'package:flutter_form/models.dart';
-import 'package:flutter_login/flutter_login.dart';
+
 import 'package:flutter_utils/flutter_utils.dart';
+
 import 'package:flutter_utils/models.dart';
+import 'package:flutter_utils/network_status/network_status.dart';
+import 'package:flutter_utils/network_status/network_status_controller.dart';
+import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
+import 'package:flutter_utils/text_view/text_view.dart';
+import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:form_example/options_login.dart';
 import 'package:form_example/teacher_options.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'custom_field.dart';
 import 'internalization/translate.dart';
+import 'main_controller.dart';
 
-void main() {
-  Get.put<APIConfig>(APIConfig(
-      apiEndpoint: "https://dukapi.roometo.com",
-      version: "api/v1",
-      clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
-      tokenUrl: 'o/token/',
-      grantType: "password",
-      revokeTokenUrl: 'o/revoke_token/'));
-  Get.lazyPut(() => AuthController());
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  dprint("Dispatcher called ");
+  Workmanager().executeTask((task, inputData) async {
+    dprint("Starting work for $task");
+    Get.put<APIConfig>(
+      APIConfig(
+          apiEndpoint: "https://dukapi.roometo.com",
+          version: "api/v1",
+          clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+          tokenUrl: 'o/token/',
+          grantType: "password",
+          revokeTokenUrl: 'o/revoke_token/'),
+    );
+    if (task.startsWith(myform_work_manager_tasks_prefix)) {
+      dprint("Handing over work to myform handler $task");
+      var res = await handleOfflineRecords(task);
+      return Future.value(res);
+    } else {
+      return Future.value(true);
+    }
+  });
+}
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init('school');
+  await GetStorage.init();
+  Get.put<APIConfig>(
+    APIConfig(
+        apiEndpoint: "https://dukapi.roometo.com",
+        version: "api/v1",
+        clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+        tokenUrl: 'o/token/',
+        grantType: "password",
+        revokeTokenUrl: 'o/revoke_token/'),
+  );
+  Get.put(NetworkStatusController());
+  Get.put(AuthController());
+  Get.put(OfflineHttpCacheController());
+
+  Get.put(MyMainController());
+
+  Workmanager().initialize(
+      callbackDispatcher, // The top level function, aka callbackDispatcher
+      isInDebugMode:
+          true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+      );
+
+  // await createSchools();
   runApp(const MyApp());
+}
+
+createSchools() async {
+  final box = GetStorage("school");
+  await box.erase();
+  var classes = await box.read("classes");
+  var allShehiyas = [];
+  if (classes == null) {
+    var classes = [];
+    for (int i = 0; i < 8; i++) {
+      var students = [i, i + 10, i + 20].map((e) {
+        return {
+          "name": "Ler $i",
+          "stream": i,
+        };
+      });
+      var stream = {
+        "class_name": "Class $i",
+        "base_class": "$i",
+        "id": i,
+        // "students": students
+      };
+      classes.add(stream);
+    }
+
+    var counties = classes
+        .map((e) => ({
+              "name": "County ${e['id']}",
+              "id": e["id"],
+              "districts_details": []
+            }))
+        .toList();
+
+    var districts = counties.map((e) {
+      var innerdistricts = [1, 2 + 10, 3 + 20].map((e) {
+        return {
+          "id": e,
+          "name": "Ler $e",
+          "district": "$e",
+        };
+      });
+      Function shehiyas = (e) => innerdistricts.map((Map<String, dynamic> f) {
+            // dprint(e["id"]);
+            f['name'] = "${f?['name']} - District ${e['id']}";
+            f["id"] = "${f['id']}${e['id']}";
+            f["district"] = e['id'];
+            return f;
+          }).toList();
+
+      allShehiyas.addAll(shehiyas(e));
+      return {
+        "name": "District ${e['id']}",
+        "id": e["id"],
+        "county": e["id"],
+        "shehiyas_details": shehiyas(e)
+      };
+    }).toList();
+
+    await box.write("classes", classes);
+    await box.write("regions", counties);
+    await box.write("districts", districts);
+    await box.write("shehiyas", allShehiyas);
+  }
+  // dprint(value)
+  dprint(await box.read("districts"));
+  // dprint(await box.read("classes"));
 }
 
 const Color PRIMARY_COLOR = Color(0xff7240FF);
@@ -120,6 +236,7 @@ class MyApp extends StatelessWidget {
           // fontFamily: GoogleFonts.notoSans().fontFamily,
         ),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        // home:StorageTestForm(), //const MyHomePage(title: 'Flutter Demo Home Page'),
       );
     });
   }
@@ -133,6 +250,13 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     APIConfig config = Get.find<APIConfig>();
+    OfflineHttpCacheController offlnCont =
+        Get.find<OfflineHttpCacheController>();
+
+    AuthController authCont = Get.find<AuthController>();
+
+    MyMainController mainCont = Get.find<MyMainController>();
+
     dprint(context.width);
     FormController? controller;
 
@@ -145,27 +269,52 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text("Hello Forms"),
+            NetworkStatusWidget(),
             MyCustomForm(
               formItems: loginOptions,
+              enableOfflineMode: true,
+              // isValidateOnly: true,
+              storageContainer: "school",
               url: "o/token/",
               submitButtonText: "Login",
               // submitButtonPreText: "",
               loadingMessage: "Signing in...",
-              instance: {
+              validateOfflineData: (res) {
+                return {"detail": "Hahaha not this"};
+              },
+              instance: const {
                 // "id": 12,
-                "username": "myadm1in",
+                "username": "myadmin",
                 "password": "#myadmin",
+                "client_d": "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+                "grant_type": "password",
               },
               onSuccess: (res) async {
+                dprint("Received");
+                dprint(res);
+                await authCont.saveToken(res as Map<String, dynamic>);
+
+                var data = {
+                  "name": "Get Shops",
+                  "urlPath": "api/v1/shops",
+                  "storageContainer": "school",
+                  "httpMethod": "GET",
+                  "status": "",
+                  "tries": 0,
+                };
+                offlnCont.saveOfflineCache(OfflineHttpCall.fromJson(data),
+                    taskPrefix: "MYFORM");
+              },
+              onOfflineSuccess: (res) async {
                 dprint("Success login.");
                 dprint(res);
 
                 await Future.delayed(const Duration(milliseconds: 1000));
                 dprint("Done");
               },
-              handleErrors: (value) {
-                return "Your password might be wrong";
-              },
+              // handleErrors: (value) {
+              //   return "Your password might be wrong";
+              // },
               contentType: ContentType.form_url_encoded,
               extraFields: {
                 "client_id": config.clientId,
@@ -177,6 +326,51 @@ class MyHomePage extends StatelessWidget {
               ],
               formTitle: "Signupdada",
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: mainCont.getAllOfflineData,
+                  child: Text("Refresh"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    var box = GetStorage("school");
+                    await box.erase();
+                    dprint("Cleared storage");
+                  },
+                  child: Text("Clear Storage"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await Workmanager().cancelAll();
+                    dprint("Cleared work manager tasks");
+                  },
+                  child: Text("Clear Tasks"),
+                ),
+              ],
+            ),
+            Obx(() {
+              return ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  OfflineHttpCall item = mainCont.ofllineData.value[index];
+                  // item.name
+                  // item.formData
+                  // item.tries
+                  return ListTile(
+                    title: Text(item.name),
+                    subtitle: TextView(
+                      display_message: "@urlPath#",
+                      data: item.toJson(),
+                    ),
+                    trailing: Text(item.tries.toString()),
+                  );
+                },
+                itemCount: mainCont.ofllineData.value.length,
+              );
+            }),
             MyCustomForm(
               formItems: teacherOptions,
               // onFormItemTranform: (FormItemField field) {
@@ -185,16 +379,43 @@ class MyHomePage extends StatelessWidget {
               //   }
               //   return field;
               // },
+
+              url: "api/v1/teachers",
               onControllerSetup: (contr) => controller = contr,
-              instance: const {
-                // "contact_email": "michameiu@gmail.com",
-                // "multifield": {
-                //   // "contact_email": FormChoice(
-                //   //   display_name: "myadmin2",
-                //   //   value: "michameiu@gmail.com",
-                //   // )
-                // }
+              instance: {
+                "contact_email": "michameiu@gmail.com",
+                "id": 34,
+                "role": 1,
+                "phone": 12, // const ["121", "12", "13", "14"],
+                "multifield": {
+                  "phone": [
+                    FormChoice(
+                      display_name: "Ler 11  District 1",
+                      value: "12",
+                    ),
+                    FormChoice(
+                      display_name: "Ler 12 -District 1",
+                      value: "121",
+                    ),
+                    FormChoice(
+                      display_name: "Ler 13  District 1",
+                      value: "13",
+                    ),
+                    FormChoice(
+                      display_name: "Ler 14  District 1",
+                      value: "14",
+                    ),
+                  ],
+                  "role": [
+                    FormChoice(
+                      display_name: "District 11",
+                      value: "1",
+                    ),
+                  ],
+                }
               },
+              storageContainer: "school",
+              status: FormStatus.Update,
               contentType: ContentType.json,
               formHeader: const Text("Welcome home"),
               onSuccess: (value) {
@@ -211,10 +432,10 @@ class MyHomePage extends StatelessWidget {
               // handleErrors: (value) {
               //   return "Textsitn new validation";
               // },
-              isValidateOnly: true,
+              // isValidateOnly: true,
               formGroupOrder: const [
-                ["name"],
                 ['role'],
+                ["phone"],
                 ["active"],
                 ["modified"],
                 ["contact_name"],
@@ -239,7 +460,6 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            LoginWidget(),
           ],
         ),
       ),

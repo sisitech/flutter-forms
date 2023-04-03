@@ -10,23 +10,21 @@ import '../models.dart';
 
 class MultiSelectView extends StatelessWidget {
   /// The value of the Counter
-  final FormChoice? value;
+  final List<FormChoice>? value;
 
-  /// The callback to notify that the user has pressed the increment button.
   final Function onChange;
   final InputController inputController;
   final FormItemField fieldOption;
   ReactiveFormFieldState<dynamic?, dynamic?> reactiveField;
 
-  /// Creates a [Counter] instance.
-  /// The [value] of the counter is required and must not by null.
-  MultiSelectView(
-      {super.key,
-      this.value,
-      required this.onChange,
-      required this.inputController,
-      required this.fieldOption,
-      required this.reactiveField});
+  MultiSelectView({
+    super.key,
+    this.value,
+    required this.onChange,
+    required this.inputController,
+    required this.fieldOption,
+    required this.reactiveField,
+  });
 
   selectStuff(FormChoice? formChoice) {
     onChange(formChoice);
@@ -34,99 +32,144 @@ class MultiSelectView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // dprint(context);
-    // dprint("Reveived erros");
-    // dprint(reactiveField.errorText);
     return Container(
-      constraints: BoxConstraints(maxHeight: 500, minHeight: 50),
+      constraints: const BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: inputController.searchController,
-              decoration: InputDecoration(
-                // icon: Icon(Icons.person),
-                suffixIcon: Icon(Icons.search),
-                hintText: fieldOption?.placeholder ?? "",
-                labelText: fieldOption.label,
-                errorText: reactiveField.errorText,
-              ),
-              onChanged: inputController.onSearchChanged,
-              onSaved: (String? value) {
-                // This optional block of code can be used to run
-                // code when the user saves the form.
-              },
-              validator: (String? value) {
-                dprint("Valiadtin");
-                return reactiveField.errorText;
-              },
-            ),
-            if (inputController.isLoading.value)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: LinearProgressIndicator(),
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              TextFormField(
+                controller: inputController.searchController,
+                decoration: InputDecoration(
+                  // icon: Icon(Icons.person),
+                  suffixIcon: Icon(Icons.search),
+                  hintText: fieldOption?.placeholder ?? "",
+                  labelText: fieldOption.label,
+                  errorText: reactiveField.errorText,
                 ),
+                onChanged: inputController.onSearchChanged,
+                onSaved: (String? value) {
+                  // This optional block of code can be used to run
+                  // code when the user saves the form.
+                },
+                validator: (String? value) {
+                  // dprint("Valiadtin");
+                  return reactiveField.errorText;
+                },
               ),
-            if (inputController.noResults.value != "")
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "${inputController.noResults.value}",
-                    style: Get.theme.textTheme.caption,
+              if (inputController.isLoading.value)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 13),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: LinearProgressIndicator(),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      dprint("${inputController.noResults.value}");
-                      inputController.noResults.value = "";
-                    },
-                    icon: const Icon(Icons.cancel),
-                  )
-                ],
-              ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(0),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    var choice = inputController.formChoices.value[index];
-                    // dprint(
-                    //     "Changing... ${choice.value} ${inputController.formChoices.value}");
-                    // dprint(inputController.selected?.value);
-
-                    return GestureDetector(
-                      onTap: () {
-                        onChange(choice);
-                      },
-                      child: ListTile(
-                        title: Text("${choice.display_name}"),
-                        trailing: inputController.selected?.value?.value ==
-                                choice.value
-                            ? Icon(
-                                Icons.check_circle,
-                              )
-                            : null,
-                      ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      Divider(),
-                  itemCount: inputController.choices.length,
                 ),
-              ),
-            )
-          ],
+              if (inputController.noResults.value != "")
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${inputController.noResults.value}",
+                      style: Get.theme.textTheme.caption,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // dprint("${inputController.noResults.value}");
+                        inputController.cancelNoResults();
+                      },
+                      icon: const Icon(Icons.cancel),
+                    )
+                  ],
+                ),
+              Column(
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int index) {
+                          var choice = inputController.formChoices.value[index];
+                          // dprint(
+                          //     "Changing... ${choice.value} ${inputController.formChoices.value}");
+                          // dprint(inputController.selected?.value)
+                          dprint("Changin values");
+
+                          return GestureDetector(
+                            onTap: () {
+                              onChange(choice);
+                            },
+                            child: ListTile(
+                              title: Text("${choice.display_name}"),
+                              trailing: inputController.selectedItems?.value
+                                          ?.map((e) => e.value)
+                                          .contains(choice.value) ??
+                                      false
+                                  ? const Icon(
+                                      Icons.check_circle,
+                                    )
+                                  : null,
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) =>
+                            Divider(),
+                        itemCount: inputController.choices.length,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         );
       }),
     );
   }
+}
+
+updateFieldValue(InputController controller, FormChoice? formChoice,
+    ReactiveFormFieldState<dynamic?, dynamic?> field) {
+  if (formChoice?.value == null) {
+    dprint("Muliselect value null. Ignored");
+    return;
+  }
+  // dprint(formChoice?.display_name);
+  // dprint(formChoice?.value);
+  if (controller.field.multiple) {
+    var value = formChoice?.value;
+    List<String> values = field.value ?? [];
+
+    if (!values.contains(value)) {
+      values.add("$value");
+    }
+    // dprint("Updating $values");
+    field.didChange(values);
+  } else {
+    field.didChange("${formChoice?.value}");
+  }
+  field.setState(() {});
+}
+
+removeFieldValue(InputController controller, FormChoice choice,
+    ReactiveFormFieldState<dynamic?, dynamic?> field) {
+  dprint("Removing ${choice.value}");
+  if (controller.field.multiple) {
+    List<String> values = field.value;
+    if (values.contains("${choice.value}")) {
+      values.remove("${choice.value}");
+    }
+    dprint("$values");
+    field.didChange(values);
+  } else {
+    field.didChange(null);
+  }
+  field.setState(() {});
 }
 
 class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
@@ -140,30 +183,54 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               // dprint(field.errorText);
               // dprint("Reactive forms event");
               // dprint(field.valueAccessor.runtimeType);
-              // dprint(field);
+              // dprint(field).na;
               // var tag = "${formControlName}${formName}";
               var controller = Get.find<InputController>(tag: fildOption.name);
 
               // make sure never to pass null value to the Counter widget.
               final fieldValue = field.value;
-              FormChoice? valueChoice;
-              // dprint("Field Value");
-              // dprint(fieldValue);
+              List<FormChoice> valueChoice = [];
+
+              bool isMultiple = controller.field.multiple;
+              dprint(fieldValue);
 
               if (fieldValue == null) {
-                valueChoice = null;
+                valueChoice = [];
               } else {
-                var filt = controller.formChoices.value
-                    ?.where((element) => "${element.value}" == fieldValue);
-                if (filt!.isNotEmpty) {
-                  valueChoice = filt.first;
-                } else {
-                  /// Maintain state when resizing
-                  valueChoice = controller.selected.value;
-                }
-              }
-              controller.selectValue(valueChoice);
+                dprint("Updaint choicess");
+                var currentChoices = [];
+                List<FormChoice> filt = [];
+                if (isMultiple) {
+                  filt = controller.formChoices.value
+                          ?.where((element) =>
+                              (fieldValue as List<String>).any((ele) {
+                                return ele.toString() ==
+                                    element.value.toString();
+                              }))
+                          .toList() ??
+                      [];
 
+                  if (filt.isEmpty) {
+                    filt = controller.selectedItems.value
+                        .where((element) =>
+                            (fieldValue as List<String>).any((ele) {
+                              return ele.toString() == element.value.toString();
+                            }))
+                        .toList();
+                  }
+                } else {
+                  filt = controller.formChoices.value
+                          ?.where((element) =>
+                              fieldValue == element.value.toString())
+                          .toList() ??
+                      [];
+                }
+                valueChoice = filt;
+              }
+              dprint("Updapint choicess");
+              dprint(valueChoice);
+              controller.selectValue(valueChoice);
+              dprint(fieldValue);
               return Container(
                 constraints:
                     BoxConstraints(maxHeight: Get.height, minHeight: 50),
@@ -176,23 +243,26 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                       fieldOption: fildOption,
                       reactiveField: field,
                       onChange: (value) {
-                        if (value == null) {
-                          field.didChange("$value");
-                        } else {
-                          // controller.selected.value = valueChoice;a
-                          field.didChange("${value?.value}");
-                        }
+                        dprint("Select vlaihdi $value");
+                        updateFieldValue(controller, value, field);
                       },
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (fieldValue != null)
-                          _buildChip(valueChoice?.display_name ?? "O", field)
-                        // Text(
-                        //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
-                      ],
-                    )
+                    if (valueChoice.isNotEmpty)
+                      Column(
+                        // physics: NeverScrollableScrollPhysics(),
+                        // shrinkWrap: true,
+                        // gridDelegate:
+                        //     const SliverGridDelegateWithFixedCrossAxisCount(
+                        //   crossAxisCount: 2,
+                        //   mainAxisExtent: 50,
+                        // ),
+                        children: [
+                          if (fieldValue != null)
+                            ..._buildChip(controller, valueChoice, field)
+                          // Text(
+                          //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
+                        ],
+                      )
                   ],
                 ),
               );
@@ -203,25 +273,40 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
       ReactiveFormFieldState<dynamic?, dynamic?>();
 }
 
-Widget _buildChip(String label, field) {
-  return Card(
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Chip(
-          labelPadding: EdgeInsets.all(2.0),
-          label: Text(
-            label,
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            field.didChange(null);
-          },
-          icon: Icon(Icons.cancel),
-          // color: Get.theme.errorColor,
-        )
-      ],
-    ),
-  );
+List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
+    ReactiveFormFieldState<dynamic, dynamic> field,
+    {int rowCount = 2}) {
+  List<List<FormChoice>> groupedRows =
+      List.generate((choices.length / rowCount).ceil(), (index) {
+    int startIndex = index * rowCount;
+    int endIndex = (index + 1) * rowCount;
+    return choices.sublist(
+        startIndex, endIndex < choices.length ? endIndex : choices.length);
+  });
+  dprint(groupedRows);
+  return groupedRows.map((rowChoices) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: rowChoices
+            .map(
+              (choice) => Card(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      choice.display_name,
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        removeFieldValue(controller, choice, field);
+                      },
+                      icon: Icon(Icons.cancel),
+                      // color: Get.theme.errorColor,
+                    )
+                  ],
+                ),
+              ),
+            )
+            .toList());
+  }).toList();
 }

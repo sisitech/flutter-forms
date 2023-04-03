@@ -83,7 +83,7 @@ const options = {
         "max_length": 100
       },
       "role": {
-        "type": "field",
+        "type": "multifield",
         "required": false,
         "read_only": false,
         "label": "Role",
