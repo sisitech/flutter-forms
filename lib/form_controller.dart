@@ -379,7 +379,7 @@ class FormController extends GetxController {
 
     var requrl = resolveRequestUrl(data);
 
-    dprint(isValidateOnly);
+    dprint("Is validate only $isValidateOnly");
     if (isValidateOnly) {
       if (onSuccess != null) {
         await onSuccess!(data);
@@ -390,6 +390,8 @@ class FormController extends GetxController {
 
     // Confirm Internet connection before submitting
     if (!netCont.isDeviceConnected.value) {
+      dprint("No intetnet");
+
       try {
         if (enableOfflineSave) {
           var offlineCont = Get.find<OfflineHttpCacheController>();
@@ -404,6 +406,7 @@ class FormController extends GetxController {
             offlineName = await getOfflineName!();
           }
           dprint("Saving");
+          dprint(data);
           OfflineHttpCall offlineHttpCall = OfflineHttpCall(
               name: offlineName,
               httpMethod: httpMethoFromStatus[status] ?? "POST",
