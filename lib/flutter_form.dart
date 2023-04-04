@@ -206,24 +206,28 @@ class MyCustomForm extends StatelessWidget {
                               "Please correct the following fields".ctr,
                               style: TextStyle(color: Get.theme.errorColor),
                             ),
-                            Center(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount:
-                                    controller.requiredFieldNames.value.length,
-                                itemBuilder: (context, index) {
-                                  return Center(
-                                    child: Text(
-                                      controller
-                                          .requiredFieldNames.value[index].ctr,
-                                      style: TextStyle(
-                                          color: Get.theme.errorColor),
-                                    ),
-                                  );
-                                },
-                              ),
+                            Text(
+                              controller.requiredFieldsMessage,
+                              style: TextStyle(color: Get.theme.errorColor),
                             ),
+                            // Center(
+                            //   child: ListView.builder(
+                            //     shrinkWrap: true,
+                            //     physics: NeverScrollableScrollPhysics(),
+                            //     itemCount:
+                            //         controller.requiredFieldNames.value.length,
+                            //     itemBuilder: (context, index) {
+                            //       return Center(
+                            //         child: Text(
+                            //           controller
+                            //               .requiredFieldNames.value[index].ctr,
+                            //           style: TextStyle(
+                            //               color: Get.theme.errorColor),
+                            //         ),
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
                           ],
                         ),
                     ],

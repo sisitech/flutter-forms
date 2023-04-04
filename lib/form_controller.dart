@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
+import 'package:flutter_utils/internalization/extensions.dart';
 import 'package:flutter_utils/models.dart';
 import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
@@ -47,6 +48,7 @@ class FormController extends GetxController {
   late bool enableOfflineMode;
   late bool? showOfflineMessage;
   late bool enableOfflineSave;
+  String requiredFieldsMessage = '';
 
   RxList<String> requiredFieldNames = RxList();
 
@@ -325,6 +327,9 @@ class FormController extends GetxController {
         requiredFieldNames.value = form.errors.keys
             .map((e) => fields.firstWhere((field) => field.name == e).label)
             .toList();
+
+        requiredFieldsMessage =
+            requiredFieldNames.value.map((e) => "$e".ctr).join(", ");
       } catch (e) {
         dprint(e);
       }
