@@ -35,7 +35,7 @@ class FormController extends GetxController {
   final Function? getDynamicUrl;
   final Function? onFormItemTranform;
   final Function? onControllerSetup;
-  final Function? getOfflineName;
+  final Function(dynamic data)? getOfflineName;
   late bool displayRequiredFieldsOnValidate;
 
   var httpMethoFromStatus = {
@@ -403,7 +403,7 @@ class FormController extends GetxController {
           }
           String offlineName = name;
           if (getOfflineName != null) {
-            offlineName = await getOfflineName!();
+            offlineName = await getOfflineName!(data);
           }
           dprint("Saving");
           dprint(data);
