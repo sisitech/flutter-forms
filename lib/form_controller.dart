@@ -70,6 +70,7 @@ class FormController extends GetxController {
   late String storageContainer;
   late String offlineStorageContainer;
   StreamSubscription? subscription;
+  StreamSubscription? formChangesSub;
 
   FormController({
     required this.formItems,
@@ -115,6 +116,7 @@ class FormController extends GetxController {
   @override
   void onClose() {
     subscription?.cancel();
+    formChangesSub?.cancel();
     super.onClose();
   }
 
@@ -219,11 +221,27 @@ class FormController extends GetxController {
         }
       }
     }
-
+    listenToFormChanges();
     update();
   }
 
   updateMultified(key, value) {}
+  listenToFormChanges() {
+    formChangesSub = form.valueChanges.listen((event) {
+      Map<String, Object> error_to_show = {};
+      form.errors.forEach((key, value) {
+        var field = form.control(key);
+        if (field.touched) {
+          // dprint("Wada something wrokn $key");
+          error_to_show.addAll({
+            key: form.errors?[key] ?? {required: true}
+          });
+        }
+      });
+
+      updateRequiredFieldsErrors(error_to_show);
+    });
+  }
 
   setupInputController(FormItemField field) {
     var requireControllerTypes = [
@@ -318,18 +336,23 @@ class FormController extends GetxController {
     form.markAllAsTouched();
   }
 
+  updateRequiredFieldsErrors(Map<String, Object> form_errors) {
+    requiredFieldNames.value = form_errors.keys.toList();
+    var field_names = requiredFieldNames.value
+        .map((e) => fields.firstWhere((field) => field.name == e).label)
+        .toList();
+    requiredFieldsMessage = field_names.map((e) => "$e".ctr).join(", ");
+
+    dprint("Updating message $requiredFieldsMessage");
+  }
+
   submit() async {
     requiredFieldNames.value = [];
     if (!form.valid) {
       // dprint("Not valied");
       dprint(form.errors);
       try {
-        requiredFieldNames.value = form.errors.keys
-            .map((e) => fields.firstWhere((field) => field.name == e).label)
-            .toList();
-
-        requiredFieldsMessage =
-            requiredFieldNames.value.map((e) => "$e".ctr).join(", ");
+        updateRequiredFieldsErrors(form.errors);
       } catch (e) {
         dprint(e);
       }
