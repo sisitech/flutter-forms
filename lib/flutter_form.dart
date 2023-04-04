@@ -54,6 +54,8 @@ class MyCustomForm extends StatelessWidget {
   late bool enableOfflineMode;
   late bool enableOfflineSave;
   late bool? showOfflineMessage;
+  // late bool? showOfflineMessage;
+
   final Function(Map<String, dynamic>)? customDataValidation;
 
   final Function(Map<String, dynamic>)? validateOfflineData;
@@ -300,7 +302,7 @@ getInputBasedOnType(FormItemField field) {
       reactiveInput = ReactiveTextField(
           formControlName: field.name,
           validationMessages: defaultValidationMessage,
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]'))
