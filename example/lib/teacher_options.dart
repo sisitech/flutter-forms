@@ -135,8 +135,7 @@ const teacherOptions = {
         "type": "string",
         "required": true,
         "read_only": false,
-        "label":
-            "Location, Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location, Location,Location,",
+        "label": "Location",
         "max_length": 400
       },
       "last_name": {

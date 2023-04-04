@@ -403,6 +403,7 @@ class FormController extends GetxController {
           if (getOfflineName != null) {
             offlineName = await getOfflineName!();
           }
+          dprint("Saving");
           OfflineHttpCall offlineHttpCall = OfflineHttpCall(
               name: offlineName,
               httpMethod: httpMethoFromStatus[status] ?? "POST",
@@ -419,10 +420,11 @@ class FormController extends GetxController {
         if (onOfflineSuccess != null) {
           await onOfflineSuccess!(data);
         }
-      } catch (e) {
+      } catch (e, trace) {
         isLoading.value = false;
         dprint("Failed to save offline");
         dprint(e);
+        dprint(trace);
       }
       isLoading.value = false;
       return;

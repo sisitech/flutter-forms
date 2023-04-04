@@ -279,6 +279,7 @@ class MyHomePage extends StatelessWidget {
               // isValidateOnly: true,
               // formTitle: "Login",
               storageContainer: "school",
+
               url: "o/token/",
               submitButtonPreText: "",
               submitButtonText: "Login",
@@ -396,6 +397,8 @@ class MyHomePage extends StatelessWidget {
               // },
 
               url: "api/v1/teachers",
+              enableOfflineMode: true,
+              enableOfflineSave: true,
               onControllerSetup: (contr) => controller = contr,
               instance: false
                   ? null
@@ -403,7 +406,7 @@ class MyHomePage extends StatelessWidget {
                       "contact_email": "michameiu@gmail.com",
                       "id": 34,
                       "role": 1,
-                      "modified": "2023-03-04",
+                      // "modified": "2023-03-04",
                       "contact_phone": "2323aba989dad",
                       // "tsc_no": "A3B4",
                       "phone": const ["121", "12", "13", "14"],
