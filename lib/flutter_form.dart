@@ -74,7 +74,7 @@ class MyCustomForm extends StatelessWidget {
   final String? instanceUrl;
 
   final Function? getDynamicUrl;
-  final Function? getOfflineName;
+  final Function(dynamic data)? getOfflineName;
   TextStyle? formTitleStyle;
 
   MyCustomForm({
