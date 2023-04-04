@@ -428,7 +428,7 @@ class FormController extends GetxController {
           if (getOfflineName != null) {
             offlineName = await getOfflineName!(data);
           }
-          dprint("Saving");
+          dprint("Saving".toUrlNoSlash());
           dprint(data);
           OfflineHttpCall offlineHttpCall = OfflineHttpCall(
               name: offlineName,

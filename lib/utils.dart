@@ -1,23 +1,11 @@
 library flutter_form;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'models.dart';
-
-extension MyStringExt on String {
-  String toUrlNoSlash() {
-    if (this.endsWith("/")) {
-      return this.substring(0, this.length - 1);
-    }
-    return this;
-  }
-
-  String toUrlWithSlash() {
-    return "${this.toUrlNoSlash()}/";
-  }
-}
 
 getFullInstanceUrl(String url, instanceId) {
   return "${url.toUrlNoSlash()}/$instanceId/";
