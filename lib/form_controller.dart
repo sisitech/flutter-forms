@@ -9,6 +9,7 @@ import 'package:flutter_utils/flutter_utils.dart';
 import 'package:flutter_utils/models.dart';
 import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
+import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -34,6 +35,8 @@ class FormController extends GetxController {
   final Function? onFormItemTranform;
   final Function? onControllerSetup;
   final Function? getOfflineName;
+  late bool displayRequiredFieldsOnValidate;
+
   var httpMethoFromStatus = {
     FormStatus.Add: "POST",
     FormStatus.Update: "PATCH",
@@ -44,6 +47,8 @@ class FormController extends GetxController {
   late bool enableOfflineMode;
   late bool? showOfflineMessage;
   late bool enableOfflineSave;
+
+  RxList<String> requiredFieldNames = RxList();
 
   final Function(Map<String, dynamic>)? validateOfflineData;
   final Function(Map<String, dynamic>)? customDataValidation;
@@ -58,7 +63,7 @@ class FormController extends GetxController {
   NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
   List<FormItemField> fields = [];
-  List<String> errors = [];
+  RxList<String> errors = RxList();
   int? instanceId;
   late String storageContainer;
   late String offlineStorageContainer;
@@ -75,6 +80,7 @@ class FormController extends GetxController {
     this.validateOfflineData,
     this.onSuccess,
     this.customDataValidation,
+    this.displayRequiredFieldsOnValidate = false,
     this.getOfflineName,
     this.handleErrors,
     this.enableOfflineSave = false,
@@ -271,31 +277,6 @@ class FormController extends GetxController {
     return null;
   }
 
-  updateFormErrors(Map<String, dynamic> formErrors,
-      {handleCustomErrors = false}) {
-    formErrors.forEach((key, value) {
-      if (fields.map((e) => e.name).contains(key)) {
-        String display = getErrorDisplay(value);
-        form.control(key).setErrors({display: "error"});
-      } else {
-        String display = getErrorDisplay(value);
-        if (handleErrors == null) {
-          dprint("Adding error");
-          errors.add(display);
-        }
-      }
-    });
-
-    Function? handleErrorFunc = getHandleCustomErrorsFuncntcion();
-
-    if (handleErrorFunc != null) {
-      dprint("HAndi;oingg..");
-      String display = handleErrorFunc!(formErrors);
-      errors.add(display);
-    }
-    form.markAllAsTouched();
-  }
-
   getHandleCustomErrorsFuncntcion() {
     if (netCont.isDeviceConnected.value) {
       return handleErrors;
@@ -310,17 +291,54 @@ class FormController extends GetxController {
     return url;
   }
 
+  updateFormErrors(Map<String, dynamic> formErrors,
+      {handleCustomErrors = false}) {
+    formErrors.forEach((key, value) {
+      if (fields.map((e) => e.name).contains(key)) {
+        String display = getErrorDisplay(value);
+        form.control(key).setErrors({display: "error"});
+      } else {
+        String display = getErrorDisplay(value);
+        if (handleErrors == null) {
+          dprint("Adding error");
+          errors.value.add(display);
+        }
+      }
+    });
+
+    Function? handleErrorFunc = getHandleCustomErrorsFuncntcion();
+
+    if (handleErrorFunc != null) {
+      dprint("HAndi;oingg..");
+      String display = handleErrorFunc!(formErrors);
+      errors.value.add(display);
+    }
+    form.markAllAsTouched();
+  }
+
   submit() async {
+    requiredFieldNames.value = [];
     if (!form.valid) {
       // dprint("Not valied");
       dprint(form.errors);
+      try {
+        requiredFieldNames.value = form.errors.keys
+            .map((e) => fields.firstWhere((field) => field.name == e).label)
+            .toList();
+      } catch (e) {
+        dprint(e);
+      }
+
+      dprint(requiredFieldNames);
+
       form.markAllAsTouched();
+
       return;
     }
     // dprint({url, isValidateOnly});
     // dprint(extraFields);
 
-    errors = [];
+    errors.value = [];
     update();
     const successStatusCodes = [200, 201, 204];
     const errorStatusCodes = [400, 401, 403];

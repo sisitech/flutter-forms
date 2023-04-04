@@ -54,7 +54,7 @@ class MyCustomForm extends StatelessWidget {
   late bool enableOfflineMode;
   late bool enableOfflineSave;
   late bool? showOfflineMessage;
-  // late bool? showOfflineMessage;
+  late bool displayRequiredFieldsOnValidate;
 
   final Function(Map<String, dynamic>)? customDataValidation;
 
@@ -88,6 +88,7 @@ class MyCustomForm extends StatelessWidget {
     this.enableOfflineSave = false,
     this.validateOfflineData,
     this.customDataValidation,
+    this.displayRequiredFieldsOnValidate = true,
     this.formFooter,
     this.formTitleStyle,
     this.extraFields,
@@ -123,6 +124,7 @@ class MyCustomForm extends StatelessWidget {
           enableOfflineSave: enableOfflineSave,
           customDataValidation: customDataValidation,
           extraFields: extraFields,
+          displayRequiredFieldsOnValidate: displayRequiredFieldsOnValidate,
           PreSaveData: PreSaveData,
           showOfflineMessage: showOfflineMessage,
           enableOfflineMode: enableOfflineMode,
@@ -171,19 +173,62 @@ class MyCustomForm extends StatelessWidget {
                   ),
                 ...controller.formGroupOrder.map(
                     (rowElements) => getRowInputs(controller, rowElements)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: controller.errors.length,
-                    itemBuilder: (context, index) {
-                      return Text(
-                        controller.errors[index].ctr,
-                        style: TextStyle(color: Colors.red),
-                      );
-                    },
-                  ),
-                ),
+                Obx(() {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      children: [
+                        if (controller.errors.isNotEmpty)
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: controller.errors.value.length,
+                            itemBuilder: (context, index) {
+                              return Text(
+                                controller.errors.value[index].ctr,
+                                style: TextStyle(color: Get.theme.errorColor),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
+                  );
+                }),
+                Obx(() {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (controller.requiredFieldNames.value.isNotEmpty)
+                        Column(
+                          children: [
+                            Text(
+                              "Please correct the following fields".ctr,
+                              style: TextStyle(color: Get.theme.errorColor),
+                            ),
+                            Center(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount:
+                                    controller.requiredFieldNames.value.length,
+                                itemBuilder: (context, index) {
+                                  return Center(
+                                    child: Text(
+                                      controller
+                                          .requiredFieldNames.value[index].ctr,
+                                      style: TextStyle(
+                                          color: Get.theme.errorColor),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  );
+                }),
                 if (controller.errors.isNotEmpty)
                   const SizedBox(
                     height: 10,
