@@ -197,7 +197,9 @@ class FormController extends GetxController {
                 dprint("Updaint fields $key");
                 dprint(allMultiFields[key]);
                 // controller.selectedItems.value = allMultiFields[key];
-                controller.updateChoices.value = allMultiFields[key];
+                if (allMultiFields[key].isNotEmpty) {
+                  controller.updateChoices.value = allMultiFields[key];
+                }
               }
             }
           }
