@@ -9,8 +9,10 @@ import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-Future<bool> handleOfflineRecords(String taskName) async {
+Future<dynamic> handleOfflineRecords(String taskName) async {
   // var netCont = Get.put(NetworkStatusController());
+
+  var successfulRecords = [];
   dprint("Handling very iofad offline forms");
   var authCont = Get.put(AuthController());
   dprint("Auth Initialized");
@@ -50,6 +52,8 @@ Future<bool> handleOfflineRecords(String taskName) async {
           var res = await makeHttpCall(data, taskPrefix);
           if (!res) {
             errors = errors + 1;
+          } else {
+            successfulRecords.add({storageContainerName: key});
           }
         }
       } catch (e, stacktrace) {
@@ -61,9 +65,9 @@ Future<bool> handleOfflineRecords(String taskName) async {
       }
     }
     if (errors > 0) {
-      return Future.value(false);
+      return Future.value(successfulRecords);
     }
-    return Future.value(true);
+    return Future.value(successfulRecords);
   } catch (e, stacktrace) {
     dprint("Main error");
     dprint(e);
