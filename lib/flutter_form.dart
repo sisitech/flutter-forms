@@ -399,7 +399,7 @@ getInputBasedOnType(FormItemField field) {
       break;
     case FieldType.date:
       reactiveInput = ReactiveDatePicker(
-        formControlName: field.name.ctr,
+        formControlName: field.name,
         builder: (BuildContext context,
             ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
           // dprint("Picker errprs");
