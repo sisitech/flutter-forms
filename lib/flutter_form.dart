@@ -434,7 +434,7 @@ getInputBasedOnType(FormItemField field) {
                             SizedBox(
                               width: 10,
                             ),
-                            Text(dateToCustomString(picker.control.value).ctr),
+                            Text(dateToCustomString(picker.control.value)),
                           ],
                         ),
                       ),
