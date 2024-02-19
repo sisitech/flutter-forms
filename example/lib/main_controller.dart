@@ -49,4 +49,9 @@ class MyMainController extends SuperController {
     // TODO: implement onResumed
     getAllOfflineData();
   }
+
+  @override
+  void onHidden() {
+    // TODO: implement onHidden
+  }
 }
