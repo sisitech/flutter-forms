@@ -40,7 +40,7 @@ dependencies:
   flutter_utils:
     git:
       url: git@github.com:sisitech/flutter_utils.git
-
+      ref: b3bf4ec
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -49,6 +49,12 @@ dependencies:
   dynamic_color: ^1.5.4
   get_storage: ^2.0.3
   workmanager: ^0.5.1
+
+dependency_overrides:
+  flutter_utils:
+    git:
+      url: git@github.com:sisitech/flutter_utils.git
+      ref: b3bf4ec
 
 dev_dependencies:
   flutter_test:
