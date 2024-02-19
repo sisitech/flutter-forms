@@ -310,12 +310,12 @@ Widget getInput(FormItemField field) {
 labelName(field) => "${field.label}".ctr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
-      labelText: labelName(field),
-      helperText: "${field.placeholder ?? ''}".ctr,
-      counterText: "",
-      // helperStyle: TextStyle(height: 0.7),
-      // errorStyle: TextStyle(height: 0.7),
-    );
+    labelText: labelName(field),
+    helperText: "${field.placeholder ?? ''}".ctr,
+    counterText: "",
+    helperStyle: TextStyle(height: 0.7),
+    errorStyle: TextStyle(height: 0.7),
+    labelStyle: TextStyle(fontSize: 14));
 Widget LabelWidget(FormItemField field) {
   // dprint(labelName(field));
   return Text(
@@ -372,15 +372,16 @@ getInputBasedOnType(FormItemField field) {
     case FieldType.string:
       var isTextArea = field.max_length != null && field.max_length! > 300;
       reactiveInput = ReactiveTextField(
-          formControlName: field.name,
-          validationMessages: defaultValidationMessage,
-          maxLength: field.max_length,
-          minLines: isTextArea ? 2 : 1,
-          textInputAction:
-              isTextArea ? TextInputAction.newline : TextInputAction.next,
-          maxLines: isTextArea ? null : 1,
-          obscureText: field.obscure ?? false,
-          decoration: inputDecoration(field));
+        formControlName: field.name,
+        validationMessages: defaultValidationMessage,
+        maxLength: field.max_length,
+        minLines: isTextArea ? 2 : 1,
+        textInputAction:
+            isTextArea ? TextInputAction.newline : TextInputAction.next,
+        maxLines: isTextArea ? null : 1,
+        obscureText: field.obscure ?? false,
+        decoration: inputDecoration(field),
+      );
       break;
     case FieldType.boolean:
       reactiveInput = Padding(
