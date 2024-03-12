@@ -441,7 +441,7 @@ getInputBasedOnType(FormItemField field) {
                       width: 1.0, // Width of the border
                     ),
                     borderRadius:
-                        BorderRadius.circular(15.0), // Border corner radius
+                        BorderRadius.circular(8.0), // Border corner radius
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
