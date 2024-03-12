@@ -264,7 +264,7 @@ Widget getRowInputs(FormController controller, List<String> fieldNames,
   );
   // dprint(rowFields);
   return Padding(
-    padding: const EdgeInsets.only(top: 20),
+    padding: const EdgeInsets.only(top: 0, bottom: 0),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -301,7 +301,10 @@ Widget getInput(FormItemField field) {
 
   return Expanded(
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 10,
+      ),
       child: getInputBasedOnType(field),
     ),
   );
@@ -310,12 +313,11 @@ Widget getInput(FormItemField field) {
 labelName(field) => "${field.label}".ctr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
-    labelText: labelName(field),
-    helperText: "${field.placeholder ?? ''}".ctr,
-    counterText: "",
-    helperStyle: TextStyle(height: 0.7),
-    errorStyle: TextStyle(height: 0.7),
-    labelStyle: TextStyle(fontSize: 14));
+      labelText: labelName(field),
+      helperText: "${field.placeholder ?? ''}".ctr,
+      counterText: "",
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+    );
 Widget LabelWidget(FormItemField field) {
   // dprint(labelName(field));
   return Text(
@@ -489,6 +491,9 @@ getInputBasedOnType(FormItemField field) {
                   inputCont.isLoading.value ? "Loading...".ctr : "Select".ctr),
               formControlName: field.name,
               items: inputCont.choices?.value ?? [],
+            ),
+            const SizedBox(
+              height: 30,
             ),
           ],
         ),

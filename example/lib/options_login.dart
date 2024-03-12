@@ -15,7 +15,6 @@ const loginOptions = {
         "read_only": false,
         "label": "Username",
         "max_length": 45,
-        "placeholder": "School emis Code / Phone number"
       },
       "password": {
         "type": "string",

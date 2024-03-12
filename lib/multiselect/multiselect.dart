@@ -247,7 +247,7 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
                         // ),
                         children: [
                           if (fieldValue != null)
-                            ..._buildChip(controller, valueChoice, field)
+                            ..._buildChip(controller, valueChoice, field),
                           // Text(
                           //     "Selectd ${controller.selected?.value} ${fieldValue} : ${fieldValue}")
                         ],
@@ -294,7 +294,7 @@ List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
                       },
                       icon: Icon(Icons.cancel),
                       // color: Get.theme.errorColor,
-                    )
+                    ),
                   ],
                 ),
               ),
