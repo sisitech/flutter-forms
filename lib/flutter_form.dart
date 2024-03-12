@@ -210,6 +210,9 @@ class MyCustomForm extends StatelessWidget {
                               controller.requiredFieldsMessage,
                               style: TextStyle(color: Get.theme.errorColor),
                             ),
+                            const SizedBox(
+                              height: 10,
+                            ),
                             // Center(
                             //   child: ListView.builder(
                             //     shrinkWrap: true,
@@ -317,6 +320,7 @@ inputDecoration(field) => InputDecoration(
       helperText: "${field.placeholder ?? ''}".ctr,
       counterText: "",
       floatingLabelBehavior: FloatingLabelBehavior.always,
+      filled: false,
     );
 Widget LabelWidget(FormItemField field) {
   // dprint(labelName(field));
@@ -387,16 +391,26 @@ getInputBasedOnType(FormItemField field) {
       break;
     case FieldType.boolean:
       reactiveInput = Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            LabelWidget(field),
-            ReactiveCheckbox(
-              formControlName: field.name,
-              activeColor: Get.theme.primaryColor,
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Container(
+          padding: const EdgeInsets.all(8), // Add padding inside the container
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 1.0, // Width of the border
+              color: Get.theme.primaryColor,
             ),
-          ],
+            borderRadius: BorderRadius.circular(15.0), // Border corner radius
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              LabelWidget(field),
+              ReactiveCheckbox(
+                formControlName: field.name,
+                activeColor: Get.theme.primaryColor,
+              ),
+            ],
+          ),
         ),
       );
       break;
@@ -416,40 +430,57 @@ getInputBasedOnType(FormItemField field) {
 
           return GestureDetector(
             onTap: picker.showPicker,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(
+                      8), // Add padding inside the container
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Get.theme.primaryColor, // Color of the border
+                      width: 1.0, // Width of the border
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(15.0), // Border corner radius
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      LabelWidget(field),
-                      IconButton(
-                        onPressed: picker.showPicker,
-                        icon: Row(
-                          children: [
-                            Icon(
-                              Icons.date_range_outlined,
-                              color: hasError ? Get.theme.errorColor : null,
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          LabelWidget(field),
+                          IconButton(
+                            onPressed: picker.showPicker,
+                            icon: Row(
+                              children: [
+                                Icon(
+                                  Icons.date_range_outlined,
+                                  color: hasError ? Get.theme.errorColor : null,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(dateToCustomString(picker.control.value)),
+                              ],
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(dateToCustomString(picker.control.value)),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+                      if (hasError)
+                        Text(
+                          (errorText ?? "").ctr,
+                          style: TextStyle(color: Get.theme.errorColor),
+                        ),
                     ],
                   ),
-                  if (hasError)
-                    Text(
-                      (errorText ?? "").ctr,
-                      style: TextStyle(color: Get.theme.errorColor),
-                    )
-                ],
-              ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           );
           ;
@@ -491,6 +522,9 @@ getInputBasedOnType(FormItemField field) {
                   inputCont.isLoading.value ? "Loading...".ctr : "Select".ctr),
               formControlName: field.name,
               items: inputCont.choices?.value ?? [],
+              decoration: const InputDecoration(
+                filled: false,
+              ),
             ),
             const SizedBox(
               height: 30,
