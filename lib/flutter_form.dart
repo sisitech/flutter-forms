@@ -181,7 +181,7 @@ class MyCustomForm extends StatelessWidget {
                         if (controller.errors.isNotEmpty)
                           ListView.builder(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.errors.value.length,
                             itemBuilder: (context, index) {
                               return Text(
@@ -329,6 +329,18 @@ inputDecoration(field) => InputDecoration(
           color: Get.theme.primaryColor,
         ),
       ),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Get.theme.primaryColor,
+        ),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Get.theme.primaryColor.withOpacity(0.5),
+        ),
+        borderRadius: BorderRadius.circular(4.0),
+      ),
     );
 Widget LabelWidget(FormItemField field) {
   // dprint(labelName(field));
@@ -442,11 +454,11 @@ getInputBasedOnType(FormItemField field) {
               children: [
                 Container(
                   padding: const EdgeInsets.all(
-                      8), // Add padding inside the container
+                    8,
+                  ), // Add padding inside the container
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color:
-                          Get.theme.colorScheme.primary, // Color of the border
+                      color: Get.theme.primaryColor, // Color of the border
                       width: 1.0, // Width of the border
                     ),
                     borderRadius:
