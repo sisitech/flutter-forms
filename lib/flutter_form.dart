@@ -317,10 +317,18 @@ labelName(field) => "${field.label}".ctr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
+      labelStyle: const TextStyle(
+        fontSize: 14,
+      ),
       helperText: "${field.placeholder ?? ''}".ctr,
       counterText: "",
-      floatingLabelBehavior: FloatingLabelBehavior.always,
+      floatingLabelBehavior: FloatingLabelBehavior.auto,
       filled: false,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Get.theme.primaryColor,
+        ),
+      ),
     );
 Widget LabelWidget(FormItemField field) {
   // dprint(labelName(field));
@@ -399,7 +407,7 @@ getInputBasedOnType(FormItemField field) {
               width: 1.0, // Width of the border
               color: Get.theme.primaryColor,
             ),
-            borderRadius: BorderRadius.circular(15.0), // Border corner radius
+            borderRadius: BorderRadius.circular(4.0), // Border corner radius
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -437,11 +445,12 @@ getInputBasedOnType(FormItemField field) {
                       8), // Add padding inside the container
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Get.theme.primaryColor, // Color of the border
+                      color:
+                          Get.theme.colorScheme.primary, // Color of the border
                       width: 1.0, // Width of the border
                     ),
                     borderRadius:
-                        BorderRadius.circular(8.0), // Border corner radius
+                        BorderRadius.circular(4.0), // Border corner radius
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -460,7 +469,7 @@ getInputBasedOnType(FormItemField field) {
                                   Icons.date_range_outlined,
                                   color: hasError ? Get.theme.errorColor : null,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(dateToCustomString(picker.control.value)),
@@ -522,8 +531,20 @@ getInputBasedOnType(FormItemField field) {
                   inputCont.isLoading.value ? "Loading...".ctr : "Select".ctr),
               formControlName: field.name,
               items: inputCont.choices?.value ?? [],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: false,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Get.theme.primaryColor,
+                  ),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Get.theme.primaryColor,
+                  ),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
               ),
             ),
             const SizedBox(
