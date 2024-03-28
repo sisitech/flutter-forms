@@ -521,7 +521,6 @@ getInputBasedOnType(FormItemField field) {
         formControlName: field.name,
         fildOption: field,
       );
-
       break;
     case FieldType.field:
     case FieldType.choice:

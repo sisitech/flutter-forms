@@ -469,10 +469,7 @@ class MyHomePage extends StatelessWidget {
                 ["contact_name"],
                 ["contact_phone"],
                 ["tsc_no"],
-                [
-                  "contact_email"
-                  // "image",
-                ],
+                ["contact_email_test"],
                 ["location"]
               ],
               formTitle: "Login",
