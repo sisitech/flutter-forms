@@ -44,6 +44,9 @@ class MultiSelectView extends StatelessWidget {
                 controller: inputController.searchController,
                 decoration: InputDecoration(
                   // icon: Icon(Icons.person),
+                  labelStyle: const TextStyle(
+                    fontSize: 14,
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Get.theme.primaryColor,
@@ -238,7 +241,7 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               dprint("Field value $fieldValue");
               dprint("Field value ${field.value}");
               return Container(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   bottom: 20,
                 ),
                 constraints:
