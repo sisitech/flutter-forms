@@ -44,6 +44,23 @@ class MultiSelectView extends StatelessWidget {
                 controller: inputController.searchController,
                 decoration: InputDecoration(
                   // icon: Icon(Icons.person),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Get.theme.primaryColor,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Get.theme.primaryColor,
+                    ),
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Get.theme.primaryColor.withOpacity(0.5),
+                    ),
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
                   suffixIcon: Icon(Icons.search),
                   hintText: fieldOption?.placeholder ?? "",
                   labelText: fieldOption.label,
@@ -221,6 +238,9 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               dprint("Field value $fieldValue");
               dprint("Field value ${field.value}");
               return Container(
+                padding: EdgeInsets.only(
+                  bottom: 20,
+                ),
                 constraints:
                     BoxConstraints(maxHeight: Get.height, minHeight: 50),
                 child: Column(
