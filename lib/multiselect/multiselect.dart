@@ -305,7 +305,7 @@ List<Widget> _buildChip(InputController controller, List<FormChoice> choices,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 7,
                     ),
                     Text(
