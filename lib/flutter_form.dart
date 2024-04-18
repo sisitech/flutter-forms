@@ -577,41 +577,50 @@ getInputBasedOnType(FormItemField field) {
 }
 
 class MySubmitButton extends StatelessWidget {
-  FormController? controller;
   final String? submitButtonText;
   final String? submitButtonPreText;
   final String name;
   late bool enableOfflineSave;
+
   MySubmitButton({
     super.key,
     required this.name,
     this.submitButtonText,
     this.submitButtonPreText,
     this.enableOfflineSave = false,
-  }) {
-    controller = Get.find<FormController>(tag: name);
-  }
+  });
 
   @override
   Widget build(BuildContext context) {
+    FormController controller = Get.find<FormController>(tag: name);
     NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
-    var submitText = "${submitButtonPreText} ${submitButtonText}";
+    var submitText = "${submitButtonPreText ?? ''} ${submitButtonText ?? ''}";
     return Obx(
       () => Column(
         children: [
           if (!netCont.isDeviceConnected.value)
             Text(
-              "No internet connection".interpolate({}).ctr,
+              "No internet connection".ctr,
               style: Get.theme.textTheme.titleSmall
-                  ?.copyWith(color: Get.theme.errorColor),
+                  ?.copyWith(color: Get.theme.colorScheme.error),
             ),
           if (netCont.isDeviceConnected.value || enableOfflineSave)
             ElevatedButton(
-              onPressed: controller!.isLoading == true ? null : _onPressed,
-              child: Text(controller!.isLoading == true
-                  ? controller!.loadingMessage.ctr
-                  : submitText),
+              onPressed: controller.isLoading.value ? null : _onPressed,
+              child: controller.isLoading.value
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                    )
+                  : Text(submitText.ctr),
             ),
         ],
       ),
@@ -619,7 +628,6 @@ class MySubmitButton extends StatelessWidget {
   }
 
   void _onPressed() {
-    // controller.form
     final controller = Get.find<FormController>(tag: name);
     controller.submit();
   }
