@@ -603,21 +603,19 @@ class MySubmitButton extends StatelessWidget {
             Text(
               "No internet connection".ctr,
               style: Get.theme.textTheme.titleSmall
-                  ?.copyWith(color: Get.theme.colorScheme.error),
+                  ?.copyWith(color: Get.theme.errorColor),
             ),
           if (netCont.isDeviceConnected.value || enableOfflineSave)
             ElevatedButton(
               onPressed: controller.isLoading.value ? null : _onPressed,
               child: controller.isLoading.value
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 24,
                       height: 24,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).primaryColor),
                       ),
                     )
                   : Text(submitText.ctr),
