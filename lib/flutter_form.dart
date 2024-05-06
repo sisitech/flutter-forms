@@ -72,6 +72,8 @@ class MyCustomForm extends StatelessWidget {
   final Map<String, dynamic>? extraFields;
 
   final String? instanceUrl;
+  final bool showNoInternectConnectionMessage;
+
 
   final Function? getDynamicUrl;
   final Function(dynamic data)? getOfflineName;
@@ -93,6 +95,7 @@ class MyCustomForm extends StatelessWidget {
     this.formTitleStyle,
     this.extraFields,
     this.isValidateOnly = false,
+    this.showNoInternectConnectionMessage=true,
     this.url,
     required this.name,
     this.getOfflineName,
@@ -242,6 +245,7 @@ class MyCustomForm extends StatelessWidget {
                   ),
                 MySubmitButton(
                   name: name,
+                  showNoInternectConnectionMessage:showNoInternectConnectionMessage,
                   enableOfflineSave: enableOfflineMode,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
@@ -581,12 +585,14 @@ class MySubmitButton extends StatelessWidget {
   final String? submitButtonPreText;
   final String name;
   late bool enableOfflineSave;
+  final bool showNoInternectConnectionMessage;
 
   MySubmitButton({
     super.key,
     required this.name,
     this.submitButtonText,
     this.submitButtonPreText,
+    this.showNoInternectConnectionMessage=true,
     this.enableOfflineSave = false,
   });
 
@@ -599,7 +605,7 @@ class MySubmitButton extends StatelessWidget {
     return Obx(
       () => Column(
         children: [
-          if (!netCont.isDeviceConnected.value)
+          if (!netCont.isDeviceConnected.value && showNoInternectConnectionMessage)
             Text(
               "No internet connection".ctr,
               style: Get.theme.textTheme.titleSmall

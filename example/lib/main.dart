@@ -276,6 +276,7 @@ class MyHomePage extends StatelessWidget {
             MyCustomForm(
               formItems: loginOptions,
               enableOfflineMode: true,
+              showNoInternectConnectionMessage:false,
               // isValidateOnly: true,
               // formTitle: "Login",
               storageContainer: "school",
