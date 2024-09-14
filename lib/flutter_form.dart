@@ -53,31 +53,24 @@ class MyCustomForm extends StatelessWidget {
   late String offlineStorageContainer;
   late bool enableOfflineMode;
   late bool enableOfflineSave;
-  late bool? showOfflineMessage;
+  late bool showOfflineMessage;
+  late Color? offlineMessageColor;
+  final String? offlineMessage;
   late bool displayRequiredFieldsOnValidate;
-
-  final Function(Map<String, dynamic>)? customDataValidation;
-
-  final Function(Map<String, dynamic>)? validateOfflineData;
-
   final String loadingMessage;
   FormStatus status;
-  final Function? onStatus;
-
   final Map<String, dynamic>? instance;
-
   final String? url;
   final List<List<String>> formGroupOrder;
-
   final Map<String, dynamic>? extraFields;
-
+  TextStyle? formTitleStyle;
   final String? instanceUrl;
-  final bool showNoInternectConnectionMessage;
 
-
+  final Function(Map<String, dynamic>)? customDataValidation;
+  final Function(Map<String, dynamic>)? validateOfflineData;
+  final Function? onStatus;
   final Function? getDynamicUrl;
   final Function(dynamic data)? getOfflineName;
-  TextStyle? formTitleStyle;
 
   MyCustomForm({
     super.key,
@@ -85,8 +78,9 @@ class MyCustomForm extends StatelessWidget {
     this.formItems = defaultOptions,
     required this.formGroupOrder,
     this.formHeader,
-    this.showOfflineMessage = true,
+    this.offlineMessage,
     this.enableOfflineMode = false,
+    this.offlineMessageColor,
     this.enableOfflineSave = false,
     this.validateOfflineData,
     this.customDataValidation,
@@ -95,7 +89,7 @@ class MyCustomForm extends StatelessWidget {
     this.formTitleStyle,
     this.extraFields,
     this.isValidateOnly = false,
-    this.showNoInternectConnectionMessage=true,
+    this.showOfflineMessage = false,
     this.url,
     required this.name,
     this.getOfflineName,
@@ -245,8 +239,10 @@ class MyCustomForm extends StatelessWidget {
                   ),
                 MySubmitButton(
                   name: name,
-                  showNoInternectConnectionMessage:showNoInternectConnectionMessage,
+                  showNoInternectConnectionMessage: showOfflineMessage,
                   enableOfflineSave: enableOfflineMode,
+                  offlineMessageColor: offlineMessageColor,
+                  offlineMessage: offlineMessage,
                   submitButtonPreText:
                       (submitButtonPreText ?? controller.status.statusDisplay())
                           .ctr,
@@ -583,16 +579,19 @@ getInputBasedOnType(FormItemField field) {
 class MySubmitButton extends StatelessWidget {
   final String? submitButtonText;
   final String? submitButtonPreText;
+  final String? offlineMessage;
   final String name;
-  late bool enableOfflineSave;
+  final bool enableOfflineSave;
+  final Color? offlineMessageColor;
   final bool showNoInternectConnectionMessage;
-
-  MySubmitButton({
+  const MySubmitButton({
     super.key,
     required this.name,
     this.submitButtonText,
     this.submitButtonPreText,
-    this.showNoInternectConnectionMessage=true,
+    this.showNoInternectConnectionMessage = true,
+    this.offlineMessage,
+    this.offlineMessageColor,
     this.enableOfflineSave = false,
   });
 
@@ -601,15 +600,23 @@ class MySubmitButton extends StatelessWidget {
     FormController controller = Get.find<FormController>(tag: name);
     NetworkStatusController netCont = Get.find<NetworkStatusController>();
 
+    String finalOfflineMessage = offlineMessage ?? "No internet connection".ctr;
+    var finalMessageColor =
+        offlineMessageColor ?? Theme.of(context).colorScheme.error;
+
     var submitText = "${submitButtonPreText ?? ''} ${submitButtonText ?? ''}";
     return Obx(
       () => Column(
         children: [
-          if (!netCont.isDeviceConnected.value && showNoInternectConnectionMessage)
-            Text(
-              "No internet connection".ctr,
-              style: Get.theme.textTheme.titleSmall
-                  ?.copyWith(color: Get.theme.errorColor),
+          if (!netCont.isDeviceConnected.value &&
+              showNoInternectConnectionMessage)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                finalOfflineMessage,
+                style: Get.theme.textTheme.titleSmall
+                    ?.copyWith(color: finalMessageColor),
+              ),
             ),
           if (netCont.isDeviceConnected.value || enableOfflineSave)
             ElevatedButton(
