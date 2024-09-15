@@ -84,6 +84,7 @@ class InputController extends GetxController {
     fromFieldValue = form?.control(field.from_field!).value;
 
     // Prevent fetch_first multifields from gettting info first time
+    // Unless its a show only field
     if (!field.fetch_first) {
       handleShowOnly();
     }
@@ -124,6 +125,10 @@ class InputController extends GetxController {
       return;
     }
     dprint("Show only enbled");
+
+    if (field.fetch_first) {
+      await getOptions();
+    }
 
     var showOnlyValue = field.show_only;
 

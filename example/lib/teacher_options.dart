@@ -80,7 +80,9 @@ const teacherOptions = {
         "type": "string",
         "required": true,
         "read_only": false,
-        "label": "First name",
+        "label": "Rule name",
+        "from_field": "active",
+        "show_only": true,
         "max_length": 45
       },
       "middle_name": {
@@ -193,6 +195,20 @@ const teacherOptions = {
         "required": false,
         "read_only": false,
         "label": "Is non delete"
+      },
+      "tag_rule_type": {
+        "type": "field",
+        "required": false,
+        "read_only": false,
+        // "fetch_first": true,
+        "label": "Rule Type",
+        "display_name": "name",
+        "from_field": "active",
+        "show_only": true,
+        "choices": [
+          {"value": "AMNT", "display_name": "Name Only"},
+          {"value": "BRD", "display_name": "Name and Account"},
+        ]
       },
       "role": {
         "type": "choice",
