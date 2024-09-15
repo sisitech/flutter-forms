@@ -273,8 +273,11 @@ class InputController extends GetxController {
       var rawItemsDynamic = await box.read(field.storage ?? "");
       List<dynamic> rawItems = [];
       if (rawItemsDynamic is List<dynamic>) {
+        dprint("The items are a dynamiiiiiiic.");
+
         rawItems = rawItemsDynamic;
-      } else if (rawItemsDynamic is String) {
+      } else if (rawItemsDynamic is String && rawItemsDynamic.isNotEmpty) {
+        dprint("The items are a striiiiing.");
         // If you expected a list, perhaps deserialize it
         try {
           rawItems = jsonDecode(rawItemsDynamic);
