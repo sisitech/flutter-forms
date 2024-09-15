@@ -2,6 +2,9 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_auth/flutter_auth_controller.dart';
+import 'package:flutter_auth/offline_cache/models.dart';
+import 'package:flutter_auth/offline_cache/offline_cache_controller.dart';
+import 'package:flutter_auth/offline_cache/offline_cache_widget.dart';
 import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/handle_offline_records.dart';
@@ -26,20 +29,28 @@ import 'custom_field.dart';
 import 'internalization/translate.dart';
 import 'main_controller.dart';
 
+// var authConfig = APIConfig(
+//     apiEndpoint: "https://dukapi.roometo.com",
+//     version: "api/v1",
+//     clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
+//     tokenUrl: 'o/token/',
+//     grantType: "password",
+//     revokeTokenUrl: 'o/revoke_token/');
+
+var authConfig = APIConfig(
+    apiEndpoint: "https://api.expensetracker.wavvy.dev",
+    version: "api/v1",
+    clientId: "fbaPXGrD6wewVEqoOkJfvierIrYbnROPXMa8CDv5",
+    tokenUrl: 'o/token/',
+    grantType: "password",
+    revokeTokenUrl: 'o/revoke_token/');
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   dprint("Dispatcher called ");
   Workmanager().executeTask((task, inputData) async {
     dprint("Starting work for $task");
-    Get.put<APIConfig>(
-      APIConfig(
-          apiEndpoint: "https://dukapi.roometo.com",
-          version: "api/v1",
-          clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
-          tokenUrl: 'o/token/',
-          grantType: "password",
-          revokeTokenUrl: 'o/revoke_token/'),
-    );
+    Get.put<APIConfig>(authConfig);
+
     if (task.startsWith(myform_work_manager_tasks_prefix)) {
       dprint("Handing over work to myform handler $task");
       var res = await handleOfflineRecords(task);
@@ -54,20 +65,43 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init('school');
   await GetStorage.init();
-  Get.put<APIConfig>(
-    APIConfig(
-        apiEndpoint: "https://dukapi.roometo.com",
-        version: "api/v1",
-        clientId: "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
-        tokenUrl: 'o/token/',
-        grantType: "password",
-        revokeTokenUrl: 'o/revoke_token/'),
-  );
+  Get.put<APIConfig>(authConfig);
   Get.put(NetworkStatusController());
   Get.put(AuthController());
   Get.put(OfflineHttpCacheController());
 
   Get.put(MyMainController());
+
+  var v1 = "api/v1";
+  int pageSize = 500;
+  final box = GetStorage();
+
+  Get.put(OfflineCacheSyncController(box: box, offlineCacheItems: [
+    OfflineCacheItem(
+      nickName: "Dataset 1",
+      pageSize: pageSize,
+      tableName: 'categorys',
+      path: "$v1/categories",
+    ),
+    OfflineCacheItem(
+      nickName: "Dataset 2",
+      pageSize: pageSize,
+      tableName: 'subCategorys',
+      path: "$v1/sub-categories",
+    ),
+    // OfflineCacheItem(
+    //   nickName: "Dataset 3",
+    //   tableName: 'tags',
+    //   pageSize: pageSize,
+    //   path: "$v1/tags",
+    // ),
+    // OfflineCacheItem(
+    //   nickName: "Dataset 4",
+    //   pageSize: pageSize,
+    //   tableName: 'taggingRules',
+    //   path: "$v1/tagging-rules",
+    // ),
+  ]));
 
   Workmanager().initialize(
       callbackDispatcher, // The top level function, aka callbackDispatcher
@@ -301,7 +335,7 @@ class MyHomePage extends StatelessWidget {
               },
               instance: const {
                 // "id": 12,
-                "username": "myadmin",
+                "username": "myadmin@gmail.com",
                 "password": "#myadmin",
                 "client_d": "NUiCuG59zwZJR14tIdWD7iQ5ILFnpxbdrO2epHIG",
                 "grant_type": "password",
@@ -440,7 +474,7 @@ class MyHomePage extends StatelessWidget {
                         ],
                       }
                     },
-              storageContainer: "school",
+              // storageContainer: "school",
               PreSaveData: (formData) {
                 dprint(formData);
                 return formData;
@@ -465,15 +499,17 @@ class MyHomePage extends StatelessWidget {
               // isValidateOnly: true,
               formGroupOrder: const [
                 ['role'],
-                ["phone"],
-                ["active"],
-                ["created"],
-                ["modified"],
-                ["contact_name"],
-                ["contact_phone"],
-                ["tsc_no"],
                 ["contact_email_test"],
-                ["location"]
+                ['contact_email_e'],
+                ['active'],
+                ["phone"],
+                // ["active"],
+                // ["created"],
+                // ["modified"],
+                // ["contact_name"],
+                // ["contact_phone"],
+                // ["tsc_no"],
+                // ["location"]
               ],
               formTitle: "Login",
               formFooter: Padding(
@@ -485,6 +521,7 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
+            const OfflineCacheListWidget(),
             const SizedBox(
               height: 20,
             ),

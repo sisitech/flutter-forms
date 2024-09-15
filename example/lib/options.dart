@@ -49,7 +49,7 @@ const options = {
         "type": "multifield",
         "required": false,
         "read_only": false,
-        "label": "Contact Email",
+        "label": "Contact Email a",
         "url": "api/v1/users",
         "display_name": "username",
         "search_field": "username",

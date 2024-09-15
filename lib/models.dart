@@ -99,6 +99,7 @@ class FormItemField extends FormUrlChoices {
   late bool required;
   late bool read_only;
   late int? max_length;
+  late bool fetch_first;
 
   late bool? obscure;
   late String? from_field;
@@ -118,6 +119,7 @@ class FormItemField extends FormUrlChoices {
       this.required = false,
       this.read_only = false,
       this.max_length,
+      this.fetch_first = false,
       this.show_only,
       this.from_field,
       this.hasController = false,
@@ -135,9 +137,9 @@ class FormItemField extends FormUrlChoices {
       super.value_field = "id",
       super.select_first = false,
       super.multiple = false}) {
-    dprint("\n\n\nTHE START VALUEDS");
-    dprint(start_value);
-    dprint(end_value);
+    // dprint("\n\n\nTHE START VALUEDS");
+    // dprint(start_value);
+    // dprint(end_value);
   }
 
   // this.url,

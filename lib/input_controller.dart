@@ -82,7 +82,11 @@ class InputController extends GetxController {
       await handleShowOnly();
     });
     fromFieldValue = form?.control(field.from_field!).value;
-    handleShowOnly();
+
+    // Prevent fetch_first multifields from gettting info first time
+    if (!field.fetch_first) {
+      handleShowOnly();
+    }
   }
 
   getFromFieldValue() async {
@@ -114,11 +118,12 @@ class InputController extends GetxController {
 
     dprint("Parsed from field $parsedFromFieldValue");
     if (field.show_only == null) {
-      if (field.type != FieldType.multifield) {
+      if (field.type != FieldType.multifield || field.fetch_first) {
         await getOptions();
       }
       return;
     }
+    dprint("Show only enbled");
 
     var showOnlyValue = field.show_only;
 
@@ -178,7 +183,7 @@ class InputController extends GetxController {
   }
 
   selectValue(List<FormChoice> choices) {
-    dprint("Selecting Value input contr");
+    // dprint("Selecting Value input contr");
     selectedItems.value = choices;
 
     ///NOTE! Reset the controller before the options
@@ -197,8 +202,10 @@ class InputController extends GetxController {
 
   resetOptions() {
     // dprint("resetting options");
-    formChoices.value = [];
-    choices.value = [];
+    if (!field.fetch_first) {
+      formChoices.value = [];
+      choices.value = [];
+    }
     noResults.value = "";
   }
 
@@ -222,6 +229,10 @@ class InputController extends GetxController {
   }
 
   getOptions({dynamic? search = null}) async {
+    if (field.from_field != null) {
+      // dprint("From field enbled..");
+    }
+    dprint(field.from_field);
     List<FormChoice>? rawChoices = [];
     Map<String, dynamic> queryParams = {};
     formChoices.value = [];
@@ -236,7 +247,9 @@ class InputController extends GetxController {
     }
 
     if (field.type == FieldType.multifield) {
-      queryParams["page_size"] = "4";
+      if (!field.fetch_first) {
+        queryParams["page_size"] = "4";
+      }
     }
 
     // dprint(queryParams);
@@ -249,6 +262,8 @@ class InputController extends GetxController {
       }).toList();
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
+      dprint("THE OFFLINE KEYS ARES container $storageContainer");
+      dprint(box.getKeys());
       List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
       dprint("FOind ${rawItems.length} for ${field.name}");
       // new Map<String, dynamic>.from(overview)
@@ -270,15 +285,15 @@ class InputController extends GetxController {
                     .toString()
                     .toLowerCase() ==
                 fromFieldValue.toString().toLowerCase());
-            dprint(sourceitem);
+            // dprint(sourceitem);
             if (sourceitem != null) {
               items = sourceitem[field.from_field_source];
             }
           }
         } else if (field.from_field_value_field?.isNotEmpty ?? false) {
           if (rawItems.length > 0) {
-            dprint(
-                "DOing filtering of  from_field_value_field ${field.from_field_value_field}");
+            // dprint(
+            //     "DOing filtering of  from_field_value_field ${field.from_field_value_field}");
             // dprint(rawItems.first);
             items = rawItems
                 .where((element) =>
@@ -364,7 +379,6 @@ class InputController extends GetxController {
         }
 
         // dprint(choices.body);
-
       } catch (e) {
         if (e.runtimeType is HttpResponse) {
           dprint("Error a http response");

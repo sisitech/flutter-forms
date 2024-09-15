@@ -176,7 +176,7 @@ class FormController extends GetxController {
 
     if (this.instance != null) {
       this.instance?.forEach((key, value) {
-        dprint("Instance found ");
+        // dprint("Instance found ");
         if (possibleFields.contains(key)) {
           // Updating a multified of an instance
           /**  instance{
@@ -194,8 +194,8 @@ class FormController extends GetxController {
               var allMultiFields = this.instance!["multifield"];
               if (allMultiFields?.containsKey(key)) {
                 var controller = Get.find<InputController>(tag: key);
-                dprint("Updaint fields $key");
-                dprint(allMultiFields[key]);
+                // dprint("Updaint fields $key");
+                // dprint(allMultiFields[key]);
                 // controller.selectedItems.value = allMultiFields[key];
                 if (allMultiFields[key].isNotEmpty) {
                   controller.updateChoices.value = allMultiFields[key];
@@ -205,7 +205,7 @@ class FormController extends GetxController {
           }
           if (field.type == FieldType.date ||
               field.type == FieldType.datetime) {
-            dprint(value);
+            // dprint(value);
             if (value != null) {
               form.control(key).patchValue(DateTime.parse(value));
             }
@@ -255,13 +255,19 @@ class FormController extends GetxController {
     if (requireControllerTypes.contains(field.type) ||
         field.from_field != null) {
       field.hasController = true;
+      if (field.type == FieldType.multifield) {
+        // print("\n\n\\n");
+        // dprint(
+        //     "####The fetch first is ${field.name} ${field.label} ${field.fetch_first}\n\n\n\n\n\n");
+      }
       var inputCont = Get.put(
         InputController(
             field: field,
             formController: this,
             storageContainer: storageContainer,
             form: form,
-            fetchFirst: field.type == FieldType.multifield ? false : true),
+            fetchFirst:
+                field.type == FieldType.multifield ? field.fetch_first : true),
         tag: field.name,
       );
     }

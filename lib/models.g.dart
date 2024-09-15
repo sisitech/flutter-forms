@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of flutter_form;
+part of 'models.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -26,7 +26,8 @@ FormItemField _$FormItemFieldFromJson(Map<String, dynamic> json) =>
       placeholder: json['placeholder'] as String?,
       required: json['required'] as bool? ?? false,
       read_only: json['read_only'] as bool? ?? false,
-      max_length: json['max_length'] as int?,
+      max_length: (json['max_length'] as num?)?.toInt(),
+      fetch_first: json['fetch_first'] as bool? ?? false,
       show_only: json['show_only'],
       from_field: json['from_field'] as String?,
       hasController: json['hasController'] as bool? ?? false,
@@ -68,6 +69,7 @@ Map<String, dynamic> _$FormItemFieldToJson(FormItemField instance) =>
       'required': instance.required,
       'read_only': instance.read_only,
       'max_length': instance.max_length,
+      'fetch_first': instance.fetch_first,
       'obscure': instance.obscure,
       'from_field': instance.from_field,
       'show_only': instance.show_only,

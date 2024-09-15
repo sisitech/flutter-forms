@@ -105,6 +105,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.10"
+  drift:
+    dependency: transitive
+    description:
+      name: drift
+      sha256: b50a8342c6ddf05be53bda1d246404cbad101b64dc73e8d6d1ac1090d119b4e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.15.0"
   dynamic_color:
     dependency: "direct main"
     description:
@@ -186,8 +194,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "24b040cf359406ec3594f488f6a1cb12f20fbc6a"
+      ref: "04a3cb4"
+      resolved-ref: "04a3cb436e585aed0a6a756f82f44353a8f5033d"
       url: "git@github.com:sisitech/flutter_auth.git"
     source: git
     version: "0.0.1"
@@ -526,6 +534,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  sqlite3:
+    dependency: transitive
+    description:
+      name: sqlite3
+      sha256: "1abbeb84bf2b1a10e5e1138c913123c8aa9d83cd64e5f9a0dd847b3c83063202"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
   stack_trace:
     dependency: transitive
     description:
@@ -703,5 +719,5 @@ packages:
     source: hosted
     version: "6.5.0"
 sdks:
-  dart: ">=3.2.0 <4.0.0"
+  dart: ">=3.3.0 <4.0.0"
   flutter: ">=3.16.0"

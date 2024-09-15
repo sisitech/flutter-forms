@@ -51,6 +51,11 @@ dependencies:
   workmanager: ^0.5.1
 
 dependency_overrides:
+  flutter_auth:
+    git:
+      url: git@github.com:sisitech/flutter_auth.git
+      ref: 04a3cb4
+
   flutter_utils:
     git:
       url: git@github.com:sisitech/flutter_utils.git
