@@ -499,8 +499,8 @@ class MyHomePage extends StatelessWidget {
               // isValidateOnly: true,
               formGroupOrder: const [
                 // ['role'],
-                ["contact_email_test"],
-                ['contact_email_e'],
+                ["category"],
+                ['subcategory'],
                 ['active'],
                 ['first_name'],
                 ['tag_rule_type'],
