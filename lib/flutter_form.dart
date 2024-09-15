@@ -350,6 +350,19 @@ Widget LabelWidget(FormItemField field) {
   );
 }
 
+Widget MultifieldLabelWidget(FormItemField field) {
+  // dprint(labelName(field));
+  return Align(
+    alignment: Alignment.topLeft,
+    child: Text(
+      labelName(field),
+      style: Get.textTheme.bodyLarge?.copyWith(
+        color: Get.theme.colorScheme.onPrimary,
+      ),
+    ),
+  );
+}
+
 parseDateFromString(String? dateString, DateTime defaultDate) {
   if (dateString?.isNotEmpty ?? false) {
     DateTime? parsedDate = dateString?.toDate;

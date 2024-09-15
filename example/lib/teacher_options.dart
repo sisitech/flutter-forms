@@ -162,7 +162,7 @@ const teacherOptions = {
         "type": "boolean",
         "required": false,
         "read_only": false,
-        "label": "Tag Similar"
+        "label": "Tag Similar Transactions"
       },
       "location": {
         "type": "string",

@@ -39,170 +39,182 @@ class MultiSelectView extends StatelessWidget {
       constraints: const BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
         return SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: fieldOption.fetch_first
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.start,
-            children: <Widget>[
-              if (fieldOption.fetch_first) LabelWidget(fieldOption),
-              if (!fieldOption.fetch_first)
-                TextFormField(
-                  controller: inputController.searchController,
-                  decoration: InputDecoration(
-                    // icon: Icon(Icons.person),
-                    labelStyle: const TextStyle(
-                      fontSize: 14,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Get.theme.primaryColor,
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Get.theme.primaryColor,
-                      ),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Get.theme.primaryColor.withOpacity(0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    suffixIcon: Icon(Icons.search),
-                    hintText: fieldOption?.placeholder ?? "",
-                    labelText: fieldOption.label,
-                    errorText: reactiveField.errorText,
-                  ),
-                  onChanged: inputController.onSearchChanged,
-                  onSaved: (String? value) {
-                    // This optional block of code can be used to run
-                    // code when the user saves the form.
-                  },
-                  validator: (String? value) {
-                    // dprint("Valiadtin");
-                    return reactiveField.errorText;
-                  },
-                ),
-              if (inputController.isLoading.value)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 13),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: LinearProgressIndicator(),
-                  ),
-                ),
-              if (inputController.noResults.value != "" &&
-                  !inputController.isLoading.value) ...[
-                if (fieldOption.fetch_first)
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      inputController.getOptions();
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text("Try again Now"),
-                  ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${inputController.noResults.value}",
-                      style: Get.theme.textTheme.caption,
-                    ),
-                    /* 
-                        IN fetch first mode show the errror continually untill 
-                        it returns something using try agaun
-                    */
-                    if (!fieldOption.fetch_first)
-                      IconButton(
-                        onPressed: () {
-                          // dprint("${inputController.noResults.value}");
-
-                          inputController.cancelNoResults();
-                        },
-                        icon: const Icon(Icons.cancel),
-                      )
-                  ],
-                ),
-              ],
-              Column(
+          child: Card(
+            color: Get.theme.colorScheme.primary,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (fieldOption.fetch_first) ...[
-                    Wrap(
-                      alignment: WrapAlignment.spaceBetween,
-                      // mainAxisAlignment: MainAxisAlignment.start,
-                      children: inputController.formChoices
-                          .map(
-                            (choice) => SingleChoiceGridWidget(
-                                onChange: onChange,
-                                choice: choice,
-                                inputController: inputController),
-                          )
-                          .toList(),
-                    ),
-                    // GridView.builder(
-                    //   physics: NeverScrollableScrollPhysics(),
-                    //   shrinkWrap: true,
-                    //   gridDelegate:
-                    //       const SliverGridDelegateWithMaxCrossAxisExtent(
-                    //     maxCrossAxisExtent: 250,
-                    //   ),
-                    //   itemCount: inputController.formChoices.length,
-                    //   itemBuilder: (context, index) {
-                    //     var choice = inputController.formChoices.value[index];
-                    //     return SingleChoiceGridWidget(
-                    //         onChange: onChange,
-                    //         choice: choice,
-                    //         inputController: inputController);
-
-                    //     return Container(
-                    //       color: Colors.blue,
-                    //       child: Center(child: Text('Item $index')),
-                    //     );
-                    //   },
-                    // )
-                  ],
+                crossAxisAlignment: fieldOption.fetch_first
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.start,
+                children: <Widget>[
+                  if (fieldOption.fetch_first)
+                    MultifieldLabelWidget(fieldOption),
                   if (!fieldOption.fetch_first)
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(0),
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (BuildContext context, int index) {
-                            var choice =
-                                inputController.formChoices.value[index];
-
-                            return GestureDetector(
-                              onTap: () {
-                                onChange(choice);
-                              },
-                              child: ListTile(
-                                title: Text("${choice.display_name}"),
-                                trailing: inputController.selectedItems?.value
-                                            ?.map((e) => e.value)
-                                            .contains(choice.value) ??
-                                        false
-                                    ? const Icon(
-                                        Icons.check_circle,
-                                      )
-                                    : null,
-                              ),
-                            );
-                          },
-                          separatorBuilder: (BuildContext context, int index) =>
-                              Divider(),
-                          itemCount: inputController.choices.length,
+                    TextFormField(
+                      controller: inputController.searchController,
+                      decoration: InputDecoration(
+                        // icon: Icon(Icons.person),
+                        labelStyle: const TextStyle(
+                          fontSize: 14,
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Get.theme.primaryColor,
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Get.theme.primaryColor,
+                          ),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Get.theme.primaryColor.withOpacity(0.5),
+                          ),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        suffixIcon: Icon(Icons.search),
+                        hintText: fieldOption?.placeholder ?? "",
+                        labelText: fieldOption.label,
+                        errorText: reactiveField.errorText,
+                      ),
+                      onChanged: inputController.onSearchChanged,
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        // dprint("Valiadtin");
+                        return reactiveField.errorText;
+                      },
+                    ),
+                  if (inputController.isLoading.value)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 13),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        child: LinearProgressIndicator(),
                       ),
                     ),
+                  if (inputController.noResults.value != "" &&
+                      !inputController.isLoading.value) ...[
+                    if (fieldOption.fetch_first)
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          inputController.getOptions();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text("Try again Now"),
+                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "${inputController.noResults.value}",
+                          style: Get.theme.textTheme.bodyMedium,
+                        ),
+                        /* 
+                            IN fetch first mode show the errror continually untill 
+                            it returns something using try agaun
+                        */
+                        if (!fieldOption.fetch_first)
+                          IconButton(
+                            onPressed: () {
+                              // dprint("${inputController.noResults.value}");
+
+                              inputController.cancelNoResults();
+                            },
+                            icon: const Icon(Icons.cancel),
+                          )
+                      ],
+                    ),
+                  ],
+                  SizedBox(
+                    height: Get.height * 0.01,
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (fieldOption.fetch_first) ...[
+                        Wrap(
+                          alignment: WrapAlignment.start,
+                          // mainAxisAlignment: MainAxisAlignment.start,
+                          children: inputController.formChoices
+                              .map(
+                                (choice) => SingleChoiceGridWidget(
+                                    onChange: onChange,
+                                    choice: choice,
+                                    inputController: inputController),
+                              )
+                              .toList(),
+                        ),
+                        // GridView.builder(
+                        //   physics: NeverScrollableScrollPhysics(),
+                        //   shrinkWrap: true,
+                        //   gridDelegate:
+                        //       const SliverGridDelegateWithMaxCrossAxisExtent(
+                        //     maxCrossAxisExtent: 250,
+                        //   ),
+                        //   itemCount: inputController.formChoices.length,
+                        //   itemBuilder: (context, index) {
+                        //     var choice = inputController.formChoices.value[index];
+                        //     return SingleChoiceGridWidget(
+                        //         onChange: onChange,
+                        //         choice: choice,
+                        //         inputController: inputController);
+
+                        //     return Container(
+                        //       color: Colors.blue,
+                        //       child: Center(child: Text('Item $index')),
+                        //     );
+                        //   },
+                        // )
+                      ],
+                      if (!fieldOption.fetch_first)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(0),
+                            child: ListView.separated(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                var choice =
+                                    inputController.formChoices.value[index];
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    onChange(choice);
+                                  },
+                                  child: ListTile(
+                                    title: Text("${choice.display_name}"),
+                                    trailing: inputController
+                                                .selectedItems?.value
+                                                ?.map((e) => e.value)
+                                                .contains(choice.value) ??
+                                            false
+                                        ? const Icon(
+                                            Icons.check_circle,
+                                          )
+                                        : null,
+                                  ),
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                                      Divider(),
+                              itemCount: inputController.choices.length,
+                            ),
+                          ),
+                        ),
+                    ],
+                  )
                 ],
-              )
-            ],
+              ),
+            ),
           ),
         );
       }),
@@ -234,7 +246,8 @@ class SingleChoiceGridWidget extends StatelessWidget {
       },
       child: Card(
         elevation: 1,
-        color: isSelected ? Theme.of(context).colorScheme.primary : null,
+        color:
+            isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
         child: Padding(
           padding: const EdgeInsets.all(6.0),
           child: Row(
@@ -247,19 +260,12 @@ class SingleChoiceGridWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(3.0),
                 child: Text(
                   choice.display_name,
-                  style: TextStyle(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : null,
-                  ),
                 ),
               ),
               if (isSelected)
                 Icon(
                   Icons.check_circle,
-                  color: Theme.of(context).colorScheme.onPrimary,
                 )
-              // color: Get.theme.errorColor,
             ],
           ),
         ),
