@@ -1,6 +1,7 @@
 library flutter_form;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -267,9 +268,25 @@ class InputController extends GetxController {
       }).toList();
     } else if (field.storage != null) {
       final box = GetStorage(storageContainer);
-      dprint("THE OFFLINE KEYS ARES container $storageContainer");
+      dprint("THE OFFLINE KEYS ARaES container $storageContainer");
       dprint(box.getKeys());
-      List<dynamic> rawItems = await box.read(field.storage ?? "") ?? [];
+      var rawItemsDynamic = await box.read(field.storage ?? "");
+      List<dynamic> rawItems = [];
+      if (rawItemsDynamic is List<dynamic>) {
+        dprint("The items are a dynamiiiiiiic.");
+
+        rawItems = rawItemsDynamic;
+      } else if (rawItemsDynamic is String && rawItemsDynamic.isNotEmpty) {
+        dprint("The items are a striiiiing.");
+        // If you expected a list, perhaps deserialize it
+        try {
+          rawItems = jsonDecode(rawItemsDynamic);
+        } catch (e) {
+          dprint(e);
+          dprint(rawItemsDynamic);
+        }
+      }
+
       dprint("FOind ${rawItems.length} for ${field.name}");
       // new Map<String, dynamic>.from(overview)
       List<dynamic> items = [];
