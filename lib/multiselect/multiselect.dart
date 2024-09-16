@@ -253,7 +253,7 @@ class SingleChoiceGridWidget extends StatelessWidget {
         elevation: 1,
         color: isSelected
             ? multiselectTheme?.selectedChoiceWidgetBackgroundColor
-            : null,
+            : multiselectTheme?.choiceWidgetBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(6.0),
           child: Row(
