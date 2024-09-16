@@ -10,6 +10,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import '../flutter_form.dart';
 import '../input_controller.dart';
 import '../models.dart';
+import 'multiselect_theme.dart';
 
 class MultiSelectView extends StatelessWidget {
   /// The value of the Counter
@@ -35,12 +36,14 @@ class MultiSelectView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var multiselectTheme =
+        Theme.of(context).extension<SisitechMultiSelectTheme>();
     return Container(
       constraints: const BoxConstraints(maxHeight: 500, minHeight: 50),
       child: Obx(() {
         return SingleChildScrollView(
           child: Card(
-            color: Get.theme.colorScheme.primary,
+            color: multiselectTheme?.backgroundColor ?? Colors.transparent,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -50,7 +53,7 @@ class MultiSelectView extends StatelessWidget {
                     : CrossAxisAlignment.start,
                 children: <Widget>[
                   if (fieldOption.fetch_first)
-                    MultifieldLabelWidget(fieldOption),
+                    MultifieldLabelWidget(fieldOption, context),
                   if (!fieldOption.fetch_first)
                     TextFormField(
                       controller: inputController.searchController,
@@ -236,6 +239,8 @@ class SingleChoiceGridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var multiselectTheme =
+        Theme.of(context).extension<SisitechMultiSelectTheme>();
     var isSelected = (inputController.selectedItems?.value
             ?.map((e) => e.value)
             .contains(choice.value) ??
@@ -246,8 +251,9 @@ class SingleChoiceGridWidget extends StatelessWidget {
       },
       child: Card(
         elevation: 1,
-        color:
-            isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
+        color: isSelected
+            ? multiselectTheme?.selectedChoiceWidgetBackgroundColor
+            : null,
         child: Padding(
           padding: const EdgeInsets.all(6.0),
           child: Row(
