@@ -245,8 +245,10 @@ class MyApp extends StatelessWidget {
           colorScheme: darkScheme,
           extensions: <ThemeExtension<dynamic>>[
             SisitechMultiSelectTheme(
-                // backgroundColor: Colors.transparent,
-                ),
+              // choiceWidgetBackgroundColor: Colors.red,
+              selectedChoiceWidgetBackgroundColor:
+                  Get.theme.colorScheme.primaryContainer,
+            ),
           ],
           // colors: const FlexSchemeColor(
           //   primary: Color(0xffb499ff),
