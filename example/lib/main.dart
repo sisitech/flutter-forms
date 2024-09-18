@@ -9,6 +9,7 @@ import 'package:flutter_form/flutter_form.dart';
 import 'package:flutter_form/form_controller.dart';
 import 'package:flutter_form/handle_offline_records.dart';
 import 'package:flutter_form/models.dart';
+import 'package:flutter_form/multiselect/multiselect_theme.dart';
 
 import 'package:flutter_utils/flutter_utils.dart';
 import 'package:flutter_utils/internalization/extensions.dart';
@@ -242,6 +243,13 @@ class MyApp extends StatelessWidget {
         ),
         darkTheme: FlexThemeData.dark(
           colorScheme: darkScheme,
+          extensions: <ThemeExtension<dynamic>>[
+            SisitechMultiSelectTheme(
+              // choiceWidgetBackgroundColor: Colors.red,
+              selectedChoiceWidgetBackgroundColor:
+                  Get.theme.colorScheme.primaryContainer,
+            ),
+          ],
           // colors: const FlexSchemeColor(
           //   primary: Color(0xffb499ff),
           //   primaryContainer: Color(0xff7240ff),

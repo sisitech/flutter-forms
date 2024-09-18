@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form/form_controller.dart';
+import 'package:flutter_form/multiselect/multiselect_theme.dart';
 import 'package:flutter_form/utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 import 'package:flutter_utils/internalization/extensions.dart';
@@ -350,14 +351,15 @@ Widget LabelWidget(FormItemField field) {
   );
 }
 
-Widget MultifieldLabelWidget(FormItemField field) {
-  // dprint(labelName(field));
+Widget MultifieldLabelWidget(FormItemField field, BuildContext context) {
+  var multiselectTheme =
+      Theme.of(context).extension<SisitechMultiSelectTheme>();
   return Align(
     alignment: Alignment.topLeft,
     child: Text(
       labelName(field),
       style: Get.textTheme.bodyLarge?.copyWith(
-        color: Get.theme.colorScheme.onPrimary,
+        color: multiselectTheme?.labelColor,
       ),
     ),
   );
