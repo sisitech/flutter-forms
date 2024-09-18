@@ -329,7 +329,7 @@ class FormController extends GetxController {
         String display = getErrorDisplay(value);
         if (handleErrors == null) {
           dprint("Adding error");
-          errors.value.add(display);
+          errors.value.add("$key - $display");
         }
       }
     });
