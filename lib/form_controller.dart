@@ -22,7 +22,7 @@ class FormController extends GetxController {
   final Map<String, dynamic> formItems;
   List<List<String>> formGroupOrder;
   final Map<String, dynamic>? extraFields;
-  final bool isValidateOnly;
+  bool isValidateOnly;
   final String? url;
   final String name;
   final String? instanceUrl;
