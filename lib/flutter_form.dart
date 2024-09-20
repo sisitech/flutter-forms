@@ -40,6 +40,7 @@ class MyCustomForm extends StatelessWidget {
   final dynamic? formItems;
   final Widget? formHeader;
   final Widget? formFooter;
+  final Widget? formPreFooter;
   final bool isValidateOnly;
   final Function? PreSaveData;
   final String? submitButtonText;
@@ -87,6 +88,7 @@ class MyCustomForm extends StatelessWidget {
     this.customDataValidation,
     this.displayRequiredFieldsOnValidate = true,
     this.formFooter,
+    this.formPreFooter,
     this.formTitleStyle,
     this.extraFields,
     this.isValidateOnly = false,
@@ -238,6 +240,12 @@ class MyCustomForm extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
+                if (formPreFooter != null) ...[
+                  formPreFooter!,
+                  const SizedBox(
+                    height: 10,
+                  ),
+                ],
                 MySubmitButton(
                   name: name,
                   showNoInternectConnectionMessage: showOfflineMessage,
