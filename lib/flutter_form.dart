@@ -651,7 +651,7 @@ class MySubmitButton extends StatelessWidget {
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).primaryColor),
+                            Theme.of(context).disabledColor),
                       ),
                     )
                   : Text(submitText.ctr),
