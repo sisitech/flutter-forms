@@ -186,7 +186,8 @@ class MyCustomForm extends StatelessWidget {
                             itemBuilder: (context, index) {
                               return Text(
                                 controller.errors.value[index].ctr,
-                                style: TextStyle(color: Get.theme.errorColor),
+                                style: TextStyle(
+                                    color: Get.theme.colorScheme.error),
                               );
                             },
                           ),
@@ -204,11 +205,13 @@ class MyCustomForm extends StatelessWidget {
                           children: [
                             Text(
                               "Please correct the following fields".ctr,
-                              style: TextStyle(color: Get.theme.errorColor),
+                              style:
+                                  TextStyle(color: Get.theme.colorScheme.error),
                             ),
                             Text(
                               controller.requiredFieldsMessage,
-                              style: TextStyle(color: Get.theme.errorColor),
+                              style:
+                                  TextStyle(color: Get.theme.colorScheme.error),
                             ),
                             const SizedBox(
                               height: 10,
@@ -502,7 +505,9 @@ getInputBasedOnType(FormItemField field) {
                               children: [
                                 Icon(
                                   Icons.date_range_outlined,
-                                  color: hasError ? Get.theme.errorColor : null,
+                                  color: hasError
+                                      ? Get.theme.colorScheme.error
+                                      : null,
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -516,7 +521,7 @@ getInputBasedOnType(FormItemField field) {
                       if (hasError)
                         Text(
                           (errorText ?? "").ctr,
-                          style: TextStyle(color: Get.theme.errorColor),
+                          style: TextStyle(color: Get.theme.colorScheme.error),
                         ),
                     ],
                   ),
