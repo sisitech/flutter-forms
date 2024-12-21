@@ -51,6 +51,9 @@ dependencies:
   workmanager: ^0.5.1
 
 dependency_overrides:
+  intl: ^0.19.0
+  win32: ^5.5.4
+  mixpanel_flutter: ^2.3.3
   flutter_auth:
     git:
       url: git@github.com:sisitech/flutter_auth.git
@@ -59,7 +62,7 @@ dependency_overrides:
   flutter_utils:
     git:
       url: git@github.com:sisitech/flutter_utils.git
-      ref: b3bf4ec
+      ref: "b68a85f"
 
 dev_dependencies:
   flutter_test:
