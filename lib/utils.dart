@@ -26,9 +26,10 @@ String dateToCustomString(DateTime? date) {
   return format.format(date);
 }
 
-getFieldValidators(FormItemField field) {
-  List<Map<String, dynamic>? Function(AbstractControl<dynamic>)> validators =
-      [];
+List<Validator<dynamic>> getFieldValidators(FormItemField field) {
+  // List<Map<String, dynamic>? Function(AbstractControl<dynamic>)> validators =
+  //     [];
+  List<Validator<dynamic>> validators = [];
   if (field.required) {
     validators.add(Validators.required);
   }
@@ -36,7 +37,7 @@ getFieldValidators(FormItemField field) {
 }
 
 FormControl getFormControl(FormItemField field) {
-  var validators = getFieldValidators(field);
+  List<Validator<dynamic>> validators = getFieldValidators(field);
   // Setup INput COntroller base on
 
   var formControl;
