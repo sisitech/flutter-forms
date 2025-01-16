@@ -681,6 +681,7 @@ class MySubmitButton extends StatelessWidget {
 
   void _onPressed() {
     final controller = Get.find<FormController>(tag: name);
+    controller.form.unfocus();
     controller.submit();
   }
 }
