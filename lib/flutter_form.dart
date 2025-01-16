@@ -659,7 +659,10 @@ class MySubmitButton extends StatelessWidget {
                             Theme.of(context).disabledColor),
                       ),
                     )
-                  : Text(submitText.ctr),
+                  : Text(
+                      submitText.ctr,
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
             ),
         ],
       ),
