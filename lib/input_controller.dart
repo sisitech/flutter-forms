@@ -66,8 +66,9 @@ class InputController extends GetxController {
 
   @override
   void onClose() {
-    super.onClose();
     fromFieldSubscription?.cancel();
+    searchController.dispose();
+    super.onClose();
   }
 
   handleFromField() {

@@ -216,24 +216,6 @@ class MyCustomForm extends StatelessWidget {
                             const SizedBox(
                               height: 10,
                             ),
-                            // Center(
-                            //   child: ListView.builder(
-                            //     shrinkWrap: true,
-                            //     physics: NeverScrollableScrollPhysics(),
-                            //     itemCount:
-                            //         controller.requiredFieldNames.value.length,
-                            //     itemBuilder: (context, index) {
-                            //       return Center(
-                            //         child: Text(
-                            //           controller
-                            //               .requiredFieldNames.value[index].ctr,
-                            //           style: TextStyle(
-                            //               color: Get.theme.errorColor),
-                            //         ),
-                            //       );
-                            //     },
-                            //   ),
-                            // ),
                           ],
                         ),
                     ],
@@ -354,8 +336,8 @@ inputDecoration(field) => InputDecoration(
         borderRadius: BorderRadius.circular(4.0),
       ),
     );
+
 Widget LabelWidget(FormItemField field) {
-  // dprint(labelName(field));
   return Text(
     labelName(field),
     style: Get.theme.inputDecorationTheme.labelStyle,
@@ -436,31 +418,49 @@ getInputBasedOnType(FormItemField field) {
       );
       break;
     case FieldType.boolean:
-      reactiveInput = Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Container(
-          padding: const EdgeInsets.all(8), // Add padding inside the container
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 1.0, // Width of the border
-              color: Get.theme.primaryColor,
-            ),
-            borderRadius: BorderRadius.circular(4.0), // Border corner radius
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              LabelWidget(field),
-              ReactiveCheckbox(
-                formControlName: field.name,
-                activeColor: Get.theme.primaryColor,
+      var inputCont = Get.find<InputController>(tag: field.name);
+      FormControl<bool> formControl =
+          inputCont.form?.control(field.name) as FormControl<bool>;
+
+      reactiveInput = GestureDetector(
+        onTap: () {
+          formControl.updateValue(!(formControl.value ?? false));
+          formControl.focus();
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Container(
+            padding:
+                const EdgeInsets.all(8), // Add padding inside the container
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              border: Border.all(
+                width: 1.0, // Width of the border
+                color: Get.theme.primaryColor,
               ),
-            ],
+              borderRadius: BorderRadius.circular(4.0), // Border corner radius
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                LabelWidget(field),
+                ReactiveCheckbox(
+                  onChanged: (value) {
+                    formControl.focus();
+                  },
+                  formControlName: field.name,
+                  activeColor: Get.theme.primaryColor,
+                ),
+              ],
+            ),
           ),
         ),
       );
       break;
     case FieldType.date:
+      var dateInputCont = Get.find<InputController>(tag: field.name);
+      FormGroup? form = dateInputCont.form;
+
       reactiveInput = ReactiveDatePicker(
         formControlName: field.name,
         builder: (BuildContext context,
@@ -472,15 +472,20 @@ getInputBasedOnType(FormItemField field) {
           }
           bool hasError =
               (errorText?.isNotEmpty ?? false) && picker.control.touched;
-          dprint(hasError);
 
           return GestureDetector(
-            onTap: picker.showPicker,
+            onTap: () {
+              form?.unfocus();
+              picker.showPicker();
+            },
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(
-                    8,
+                  padding: const EdgeInsets.only(
+                    top: 4,
+                    left: 8,
+                    right: 4,
+                    bottom: 4,
                   ), // Add padding inside the container
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -503,16 +508,16 @@ getInputBasedOnType(FormItemField field) {
                             onPressed: picker.showPicker,
                             icon: Row(
                               children: [
+                                Text(dateToCustomString(picker.control.value)),
+                                const SizedBox(
+                                  width: 10,
+                                ),
                                 Icon(
                                   Icons.date_range_outlined,
                                   color: hasError
                                       ? Get.theme.colorScheme.error
                                       : null,
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(dateToCustomString(picker.control.value)),
                               ],
                             ),
                           ),
@@ -553,7 +558,6 @@ getInputBasedOnType(FormItemField field) {
     case FieldType.field:
     case FieldType.choice:
       var inputCont = Get.put(InputController(field: field), tag: field.name);
-
       reactiveInput = Obx(
         () => Column(
           mainAxisSize: MainAxisSize.min,
@@ -572,17 +576,24 @@ getInputBasedOnType(FormItemField field) {
               items: inputCont.choices?.value ?? [],
               decoration: InputDecoration(
                 filled: false,
+                // border: Get.theme.inputDecorationTheme.focusedBorder,
+                // focusedBorder: Get.theme.inputDecorationTheme.focusedBorder,
+                // enabledBorder: Get.theme.inputDecorationTheme.enabledBorder,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Get.theme.primaryColor,
+                  ),
+                ),
                 border: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Get.theme.primaryColor,
                   ),
                   borderRadius: BorderRadius.circular(4.0),
                 ),
-                enabledBorder: OutlineInputBorder(
+                focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Get.theme.primaryColor,
+                    color: Get.theme.primaryColor.withOpacity(0.5),
                   ),
-                  borderRadius: BorderRadius.circular(4.0),
                 ),
               ),
             ),
@@ -661,7 +672,6 @@ class MySubmitButton extends StatelessWidget {
                     )
                   : Text(
                       submitText.ctr,
-                      style: Theme.of(context).textTheme.displayLarge,
                     ),
             ),
         ],

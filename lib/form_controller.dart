@@ -250,6 +250,9 @@ class FormController extends GetxController {
       FieldType.choice,
       FieldType.field,
       FieldType.multifield,
+      FieldType.boolean,
+      FieldType.date,
+      FieldType.datetime,
     ];
 
     if (requireControllerTypes.contains(field.type) ||

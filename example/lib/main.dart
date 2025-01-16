@@ -212,29 +212,19 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         theme: FlexThemeData.light(
           colorScheme: lightScheme,
-          // colors: const FlexSchemeColor(
-          //   primary: Color(0xff7240ff),
-          //   primaryContainer: Color(0xffd1c0ff),
-          //   secondary: Color(0xffac3306),
-          //   secondaryContainer: Color(0xffffdbcf),
-          //   tertiary: Color(0xff006875),
-          //   tertiaryContainer: Color(0xff95f0ff),
-          //   appBarColor: Color(0xffffdbcf),
-          //   error: Color(0xffb00020),
-          // ),
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 9,
-          subThemesData: const FlexSubThemesData(
-            blendOnLevel: 10,
-            blendOnColors: false,
-            defaultRadius: 17.0,
-            bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-            navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
-            navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
-            navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
-            navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
-            navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-          ),
+          // subThemesData: const FlexSubThemesData(
+          //   blendOnLevel: 10,
+          //   blendOnColors: false,
+          //   defaultRadius: 17.0,
+          //   bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+          //   navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
+          //   navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
+          //   navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+          //   navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
+          //   navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+          // ),
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
           useMaterial3: true,
           swapLegacyOnMaterial3: true,
@@ -262,22 +252,23 @@ class MyApp extends StatelessWidget {
           // ),
           surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
           blendLevel: 15,
-          subThemesData: const FlexSubThemesData(
-            blendOnLevel: 20,
-            defaultRadius: 17.0,
-            bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-            navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
-            navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
-            navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
-            navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
-            navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
-          ),
+          // subThemesData: const FlexSubThemesData(
+          //   blendOnLevel: 20,
+          //   defaultRadius: 17.0,
+          //   bottomNavigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+          //   navigationBarSelectedLabelSchemeColor: SchemeColor.secondary,
+          //   navigationBarUnselectedLabelSchemeColor: SchemeColor.tertiary,
+          //   navigationBarSelectedIconSchemeColor: SchemeColor.secondary,
+          //   navigationBarUnselectedIconSchemeColor: SchemeColor.tertiary,
+          //   navigationBarBackgroundSchemeColor: SchemeColor.onPrimary,
+          // ),
           visualDensity: FlexColorScheme.comfortablePlatformDensity,
           useMaterial3: true,
           swapLegacyOnMaterial3: true,
           // To use the Playground font, add GoogleFonts package and uncomment
           // fontFamily: GoogleFonts.notoSans().fontFamily,
         ),
+
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
         // home:StorageTestForm(), //const MyHomePage(title: 'Flutter Demo Home Page'),
       );
@@ -431,100 +422,114 @@ class MyHomePage extends StatelessWidget {
                 itemCount: mainCont.ofllineData.value.length,
               );
             }),
-            MyCustomForm(
-              name: "Hello",
-              formItems: teacherOptions,
-              // onFormItemTranform: (FormItemField field) {
-              //   if (field.name == "contact_name") {
-              //     field.label = "${field.label} Transformed";
-              //   }
-              //   return field;
-              // },
+            Theme(
+              data: Theme.of(context).copyWith(
+                inputDecorationTheme:
+                    Theme.of(context).inputDecorationTheme.copyWith(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Get.theme.primaryColor,
+                            ),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                        ),
+              ),
+              child: MyCustomForm(
+                name: "Hello",
+                formItems: teacherOptions,
+                // onFormItemTranform: (FormItemField field) {
+                //   if (field.name == "contact_name") {
+                //     field.label = "${field.label} Transformed";
+                //   }
+                //   return field;
+                // },
 
-              url: "api/v1/teachers",
-              enableOfflineMode: true,
-              enableOfflineSave: true,
-              onControllerSetup: (contr) => controller = contr,
-              instance: false
-                  ? null
-                  : {
-                      "contact_email": "michameiu@gmail.com",
-                      "id": 34,
-                      "role": 1,
-                      // "modified": "2023-03-04",
-                      "contact_phone": "2323aba989dad",
-                      // "tsc_no": "A3B4",
-                      "phone": const ["121", "12", "13", "14"],
-                      "multifield": {
-                        "phone": [
-                          FormChoice(
-                            display_name: "Ler 11  District 1",
-                            value: "12",
-                          ),
-                          FormChoice(
-                            display_name: "Ler 12 -District 1",
-                            value: "121",
-                          ),
-                          FormChoice(
-                            display_name: "Ler 13  District 1",
-                            value: "13",
-                          ),
-                          FormChoice(
-                            display_name: "Ler 14  District 1",
-                            value: "14",
-                          ),
-                        ],
-                        "role": [
-                          FormChoice(
-                            display_name: "District 11",
-                            value: "1",
-                          ),
-                        ],
-                      }
-                    },
-              // storageContainer: "school",
-              PreSaveData: (formData) {
-                dprint(formData);
-                return formData;
-              },
-              // status: FormStatus.Update,
-              contentType: ContentType.json,
-              // formHeader: const Text("Welcome home"),
-              onSuccess: (value) {
-                dprint(value);
-                dprint(value["modified"].runtimeType);
-                if (controller != null) {
-                  var controlName = "modified";
-                  controller?.form
-                      .control(controlName)
-                      .setErrors({"Faield..": ""});
-                  controller?.form.control(controlName).markAsTouched();
-                }
-              },
-              // handleErrors: (value) {
-              //   return "Textsitn new validation";
-              // },
-              // isValidateOnly: true,
-              formGroupOrder: const [
-                // ['role'],
-                ["category"],
-                ['subcategory'],
-                ['active'],
-                ['first_name'],
-                ['tag_rule_type'],
-                // ["phone"],
-                // ["active"],
-                // ["created"],
-                // ["modified"],
-                // ["contact_name"],
-                // ["contact_phone"],
-                // ["tsc_no"],
-                // ["location"]
-              ],
-              formTitle: "Login",
-              formFooter: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Text("Sign Up"),
+                url: "api/v1/teachers",
+                enableOfflineMode: true,
+                enableOfflineSave: true,
+                onControllerSetup: (contr) => controller = contr,
+                instance: false
+                    ? null
+                    : {
+                        "contact_email": "michameiu@gmail.com",
+                        "id": 34,
+                        "role": 1,
+                        // "modified": "2023-03-04",
+                        "contact_phone": "2323aba989dad",
+                        // "tsc_no": "A3B4",
+                        "phone": const ["121", "12", "13", "14"],
+                        "multifield": {
+                          "phone": [
+                            FormChoice(
+                              display_name: "Ler 11  District 1",
+                              value: "12",
+                            ),
+                            FormChoice(
+                              display_name: "Ler 12 -District 1",
+                              value: "121",
+                            ),
+                            FormChoice(
+                              display_name: "Ler 13  District 1",
+                              value: "13",
+                            ),
+                            FormChoice(
+                              display_name: "Ler 14  District 1",
+                              value: "14",
+                            ),
+                          ],
+                          "role": [
+                            FormChoice(
+                              display_name: "District 11",
+                              value: "1",
+                            ),
+                          ],
+                        }
+                      },
+                // storageContainer: "school",
+                PreSaveData: (formData) {
+                  dprint(formData);
+                  return formData;
+                },
+                // status: FormStatus.Update,
+                contentType: ContentType.json,
+                // formHeader: const Text("Welcome home"),
+                onSuccess: (value) {
+                  dprint(value);
+                  dprint(value["modified"].runtimeType);
+                  if (controller != null) {
+                    var controlName = "modified";
+                    controller?.form
+                        .control(controlName)
+                        .setErrors({"Faield..": ""});
+                    controller?.form.control(controlName).markAsTouched();
+                  }
+                },
+                // handleErrors: (value) {
+                //   return "Textsitn new validation";
+                // },
+                // isValidateOnly: true,
+                formGroupOrder: const [
+                  // ['role'],
+                  ["created"],
+                  // ["category"],
+                  // ['subcategory'],
+                  ['active'],
+                  ['first_name'],
+                  ['tag_rule_type'],
+                  // ["phone"],
+                  // ["active"],
+
+                  // ["modified"],
+                  // ["contact_name"],
+                  // ["contact_phone"],
+                  // ["tsc_no"],
+                  // ["location"]
+                ],
+                formTitle: "Login Teacher",
+                formFooter: Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text("Sign Up"),
+                ),
               ),
             ),
             // CustomFieldForm(),
