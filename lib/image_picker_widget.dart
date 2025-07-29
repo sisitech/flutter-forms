@@ -208,7 +208,7 @@ class _ImagePickerContent extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "Select Image".ctr,
+              "Select ${field.label}".ctr,
               style: Get.theme.textTheme.bodyMedium?.copyWith(
                 color: Get.theme.primaryColor,
                 fontWeight: FontWeight.w500,
