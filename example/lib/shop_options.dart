@@ -63,6 +63,13 @@ const shopOptions = {
         "label": "Banner Image",
         "placeholder": "Upload banner image"
       },
+      "menu_file": {
+        "type": "file",
+        "required": false,
+        "read_only": false,
+        "label": "Menu File",
+        "placeholder": "Upload menu PDF or document"
+      },
       "user": {
         "type": "field",
         "required": false,

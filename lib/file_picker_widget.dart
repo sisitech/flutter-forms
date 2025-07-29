@@ -30,76 +30,73 @@ class FilePickerWidget extends ReactiveFormField<String, String> {
                 ? control.value!.split('/').last
                 : "Select File".ctr;
 
-            return GestureDetector(
-              onTap: () async {
-                inputCont.form?.unfocus();
-                await _pickFile(control);
-              },
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(
-                      top: 4,
-                      left: 8,
-                      right: 4,
-                      bottom: 4,
-                    ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Label above input area (like other form inputs)
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: Text(
+                    "${field.label}".ctr + " ${field.required ? '*' : ''}",
+                    style: Get.theme.inputDecorationTheme.labelStyle,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                
+                // File picker input area
+                GestureDetector(
+                  onTap: () async {
+                    inputCont.form?.unfocus();
+                    await _pickFile(control);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(minHeight: 48), // Match standard input height
+                    padding: const EdgeInsets.all(12), // More generous padding like other inputs
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Get.theme.primaryColor,
+                        color: hasError ? Get.theme.colorScheme.error : Get.theme.primaryColor,
                         width: 1.0,
                       ),
                       borderRadius: BorderRadius.circular(4.0),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                "${field.label}".ctr + " ${field.required ? '*' : ''}",
-                                style: Get.theme.inputDecorationTheme.labelStyle,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                        Flexible(
+                          child: Text(
+                            displayText,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: control.value?.isNotEmpty == true 
+                                ? null 
+                                : Get.theme.hintColor,
                             ),
-                            Flexible(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      displayText,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Icon(
-                                    Icons.attach_file,
-                                    color: hasError
-                                        ? Get.theme.colorScheme.error
-                                        : null,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (hasError)
-                          Text(
-                            (errorText ?? "").ctr,
-                            style: TextStyle(color: Get.theme.colorScheme.error),
                           ),
+                        ),
+                        Icon(
+                          Icons.attach_file,
+                          color: hasError
+                              ? Get.theme.colorScheme.error
+                              : Get.theme.primaryColor,
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                ),
+                
+                // Error message below input
+                if (hasError) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    (errorText ?? "").ctr,
+                    style: TextStyle(color: Get.theme.colorScheme.error),
+                  ),
                 ],
-              ),
+                
+                const SizedBox(height: 30), // Match standard form input spacing
+              ],
             );
           },
         );

@@ -80,6 +80,7 @@ class ShopFormPage extends StatelessWidget {
                     ['support_email', 'support_phone'],
                     ['image'],
                     ['banner_image'],
+                    ['menu_file'],
                     ['user']
                   ],
                   submitButtonText: "Create Shop",
