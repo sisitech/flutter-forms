@@ -59,21 +59,33 @@ class FilePickerWidget extends ReactiveFormField<String, String> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "${field.label}".ctr + " ${field.required ? '*' : ''}",
-                              style: Get.theme.inputDecorationTheme.labelStyle,
+                            Flexible(
+                              child: Text(
+                                "${field.label}".ctr + " ${field.required ? '*' : ''}",
+                                style: Get.theme.inputDecorationTheme.labelStyle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Text(displayText),
-                                const SizedBox(width: 10),
-                                Icon(
-                                  Icons.attach_file,
-                                  color: hasError
-                                      ? Get.theme.colorScheme.error
-                                      : null,
-                                ),
-                              ],
+                            Flexible(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      displayText,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Icon(
+                                    Icons.attach_file,
+                                    color: hasError
+                                        ? Get.theme.colorScheme.error
+                                        : null,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
