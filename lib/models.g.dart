@@ -93,6 +93,7 @@ const _$FieldTypeEnumMap = {
   FieldType.boolean: 'boolean',
   FieldType.email: 'email',
   FieldType.file: 'file',
+  FieldType.image: 'image',
   FieldType.choice: 'choice',
   FieldType.float: 'float',
 };

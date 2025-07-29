@@ -37,6 +37,7 @@ enum FieldType {
   boolean,
   email,
   file,
+  image,
   choice,
   float
 }

@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/micha/Downloads/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/micha/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/micha/Sisitech/Libraries/Flutter/flutter-forms/example/android/app/.cxx/Debug/2n4v151c/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/micha/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/micha/Sisitech/Libraries/Flutter/flutter-forms/example/android/app/.cxx/Debug/2n4v151c/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

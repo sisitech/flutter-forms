@@ -101,8 +101,8 @@ const teacherOptions = {
         "required": false,
         "read_only": false,
         "label": "Contact name",
-        "url": "api/v1/shops",
-        "instance_url": "api/v1/shops/",
+        "url": "api/v1/categories",
+        "instance_url": "api/v1/categories/",
         "display_name": "name",
         "search_field": "name",
         "max_length": 45,
@@ -155,6 +155,20 @@ const teacherOptions = {
         "from_field": "category",
         "placeholder": "Search by username ...",
         "show_reset_value": true,
+      },
+      "receipt": {
+        "type": "image",
+        "required": false,
+        "read_only": false,
+        "label": "Receipt Image",
+        "placeholder": "Upload receipt photo"
+      },
+      "attachment": {
+        "type": "file",
+        "required": false,
+        "read_only": false,
+        "label": "Supporting Document",
+        "placeholder": "Upload supporting file"
       },
       "active": {
         "type": "boolean",

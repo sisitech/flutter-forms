@@ -29,6 +29,8 @@ import 'package:workmanager/workmanager.dart';
 import 'custom_field.dart';
 import 'internalization/translate.dart';
 import 'main_controller.dart';
+import 'widgets/mainform.dart';
+import 'widgets/app_drawer.dart';
 
 // var authConfig = APIConfig(
 //     apiEndpoint: "https://dukapi.roometo.com",
@@ -77,7 +79,8 @@ void main() async {
   int pageSize = 500;
   final box = GetStorage();
 
-  Get.put(OfflineCacheSyncController(box: box, offlineCacheItems: [
+  var controller =
+      Get.put(OfflineCacheSyncController(box: box, offlineCacheItems: [
     OfflineCacheItem(
       nickName: "Dataset 1",
       pageSize: pageSize,
@@ -90,20 +93,8 @@ void main() async {
       tableName: 'subCategorys',
       path: "$v1/sub-categories",
     ),
-    // OfflineCacheItem(
-    //   nickName: "Dataset 3",
-    //   tableName: 'tags',
-    //   pageSize: pageSize,
-    //   path: "$v1/tags",
-    // ),
-    // OfflineCacheItem(
-    //   nickName: "Dataset 4",
-    //   pageSize: pageSize,
-    //   tableName: 'taggingRules',
-    //   path: "$v1/tagging-rules",
-    // ),
   ]));
-
+  controller.updateCache();
   Workmanager().initialize(
       callbackDispatcher, // The top level function, aka callbackDispatcher
       isInDebugMode:
@@ -299,6 +290,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -344,16 +336,16 @@ class MyHomePage extends StatelessWidget {
                 dprint(res);
                 await authCont.saveToken(res as Map<String, dynamic>);
 
-                var data = {
-                  "name": "Get Shops",
-                  "urlPath": "api/v1/shops",
-                  "storageContainer": "school",
-                  "httpMethod": "GET",
-                  "status": "",
-                  "tries": 0,
-                };
-                offlnCont.saveOfflineCache(OfflineHttpCall.fromJson(data),
-                    taskPrefix: "MYFORM");
+                // var data = {
+                //   "name": "Get Shops",
+                //   "urlPath": "api/v1/shops",
+                //   "storageContainer": "school",
+                //   "httpMethod": "GET",
+                //   "status": "",
+                //   "tries": 0,
+                // };
+                // offlnCont.saveOfflineCache(OfflineHttpCall.fromJson(data),
+                //     taskPrefix: "MYFORM");
               },
               onOfflineSuccess: (res) async {
                 dprint("Success login.");
@@ -434,103 +426,7 @@ class MyHomePage extends StatelessWidget {
                           ),
                         ),
               ),
-              child: MyCustomForm(
-                name: "Hello",
-                formItems: teacherOptions,
-                // onFormItemTranform: (FormItemField field) {
-                //   if (field.name == "contact_name") {
-                //     field.label = "${field.label} Transformed";
-                //   }
-                //   return field;
-                // },
-
-                url: "api/v1/teachers",
-                enableOfflineMode: true,
-                enableOfflineSave: true,
-                onControllerSetup: (contr) => controller = contr,
-                instance: false
-                    ? null
-                    : {
-                        "contact_email": "michameiu@gmail.com",
-                        "id": 34,
-                        "role": 1,
-                        // "modified": "2023-03-04",
-                        "contact_phone": "2323aba989dad",
-                        // "tsc_no": "A3B4",
-                        "phone": const ["121", "12", "13", "14"],
-                        "multifield": {
-                          "phone": [
-                            FormChoice(
-                              display_name: "Ler 11  District 1",
-                              value: "12",
-                            ),
-                            FormChoice(
-                              display_name: "Ler 12 -District 1",
-                              value: "121",
-                            ),
-                            FormChoice(
-                              display_name: "Ler 13  District 1",
-                              value: "13",
-                            ),
-                            FormChoice(
-                              display_name: "Ler 14  District 1",
-                              value: "14",
-                            ),
-                          ],
-                          "role": [
-                            FormChoice(
-                              display_name: "District 11",
-                              value: "1",
-                            ),
-                          ],
-                        }
-                      },
-                // storageContainer: "school",
-                PreSaveData: (formData) {
-                  dprint(formData);
-                  return formData;
-                },
-                // status: FormStatus.Update,
-                contentType: ContentType.json,
-                // formHeader: const Text("Welcome home"),
-                onSuccess: (value) {
-                  dprint(value);
-                  dprint(value["modified"].runtimeType);
-                  if (controller != null) {
-                    var controlName = "modified";
-                    controller?.form
-                        .control(controlName)
-                        .setErrors({"Faield..": ""});
-                    controller?.form.control(controlName).markAsTouched();
-                  }
-                },
-                // handleErrors: (value) {
-                //   return "Textsitn new validation";
-                // },
-                // isValidateOnly: true,
-                formGroupOrder: const [
-                  // ['role'],
-                  ["created"],
-                  // ["category"],
-                  // ['subcategory'],
-                  ['active'],
-                  ['first_name'],
-                  ['tag_rule_type'],
-                  // ["phone"],
-                  // ["active"],
-
-                  // ["modified"],
-                  // ["contact_name"],
-                  // ["contact_phone"],
-                  // ["tsc_no"],
-                  // ["location"]
-                ],
-                formTitle: "Login Teacher",
-                formFooter: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text("Sign Up"),
-                ),
-              ),
+              child: MainForm(),
             ),
             // CustomFieldForm(),
             const SizedBox(

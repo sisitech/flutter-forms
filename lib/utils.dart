@@ -71,6 +71,12 @@ FormControl getFormControl(FormItemField field) {
     case FieldType.datetime:
       formControl = FormControl<DateTime>(validators: validators);
       break;
+    case FieldType.file:
+      formControl = FormControl<String>(validators: validators);
+      break;
+    case FieldType.image:
+      formControl = FormControl<String>(validators: validators);
+      break;
     default:
       formControl = FormControl(validators: validators);
   }

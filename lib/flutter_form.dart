@@ -18,6 +18,8 @@ import 'input_controller.dart';
 import 'models.dart';
 import 'multiselect/multiselect.dart';
 import 'utils.dart';
+import 'file_picker_widget.dart';
+import 'image_picker_widget.dart';
 
 /// A Calculator.
 class Calculator {
@@ -602,6 +604,20 @@ getInputBasedOnType(FormItemField field) {
             ),
           ],
         ),
+      );
+      break;
+    case FieldType.file:
+      var fileInputCont = Get.find<InputController>(tag: field.name);
+      reactiveInput = FilePickerWidget(
+        formControlName: field.name,
+        field: field,
+      );
+      break;
+    case FieldType.image:
+      var imageInputCont = Get.find<InputController>(tag: field.name);
+      reactiveInput = ImagePickerWidget(
+        formControlName: field.name,
+        field: field,
       );
       break;
     default:

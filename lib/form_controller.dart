@@ -37,7 +37,12 @@ class FormController extends GetxController {
   final Function? onControllerSetup;
   final Function(dynamic data)? getOfflineName;
   late bool displayRequiredFieldsOnValidate;
-
+// I/flutter (17098): Needs multipart: true
+// I/flutter (17098): Multipart POST to: https://api.expensetracker.wavvy.dev/api/v1/teachers/34/
+// I/flutter (17098): Added file: receipt -> /data/user/0/com.sisitech.myformexample/cache/3137792c-294e-4b34-aea3-172595542e2b/1000000019.jpg
+// I/flutter (17098): Added file: attachment -> /data/user/0/com.sisitech.myformexample/cache/file_picker/1753774782779/dummy_copy.pdf
+// I/flutter (17098): Added field: active -> false
+// I/flutter (17098): Added field: first_name -> micha
   var httpMethoFromStatus = {
     FormStatus.Add: "POST",
     FormStatus.Update: "PATCH",
@@ -253,6 +258,8 @@ class FormController extends GetxController {
       FieldType.boolean,
       FieldType.date,
       FieldType.datetime,
+      FieldType.file,
+      FieldType.image,
     ];
 
     if (requireControllerTypes.contains(field.type) ||
@@ -320,6 +327,22 @@ class FormController extends GetxController {
       return getDynamicUrl!(formData);
     }
     return url;
+  }
+
+  bool hasFileFields() {
+    // Check if any field in the form is a file or image type
+    return fields.any((field) =>
+        field.type == FieldType.file || field.type == FieldType.image);
+  }
+
+  bool hasFileData(Map<String, dynamic> data) {
+    // Check if any form data contains file paths
+    return data.values.any((value) =>
+        value is String &&
+        value.isNotEmpty &&
+        value.contains('/') &&
+        value.contains('.') &&
+        value.length > 3);
   }
 
   updateFormErrors(Map<String, dynamic> formErrors,
@@ -476,6 +499,11 @@ class FormController extends GetxController {
         res = await serv.formPostUrlEncoded(requrl, data);
       } else {
         dprint("None url encoded");
+
+        // Check if we need to use multipart for file uploads
+        bool needsMultipart = hasFileFields() && hasFileData(data);
+        dprint("Needs multipart: $needsMultipart");
+
         if (status == FormStatus.Delete) {
           dprint(data);
           res = await serv.formDelete(requrl, query: data);
@@ -486,12 +514,24 @@ class FormController extends GetxController {
             updateUrl = "$updateUrl/${instanceId}/".replaceAll("//", "/");
           }
           if (status == FormStatus.Replace) {
-            res = await serv.formPut(updateUrl, data);
+            if (needsMultipart) {
+              res = await serv.formPostMultipart(updateUrl, data);
+            } else {
+              res = await serv.formPut(updateUrl, data);
+            }
           } else {
-            res = await serv.formPatch(updateUrl, data);
+            if (needsMultipart) {
+              res = await serv.formPostMultipart(updateUrl, data);
+            } else {
+              res = await serv.formPatch(updateUrl, data);
+            }
           }
         } else {
-          res = await serv.formPost(requrl, data);
+          if (needsMultipart) {
+            res = await serv.formPostMultipart(requrl, data);
+          } else {
+            res = await serv.formPost(requrl, data);
+          }
         }
       }
       dprint(res.statusCode);
