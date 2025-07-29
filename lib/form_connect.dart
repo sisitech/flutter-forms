@@ -52,8 +52,16 @@ class FormProvider extends AuthProvider {
   }
 
   Future<Response> formPostMultipart(String? path, Map<String, dynamic> formData) async {
+    return _multipartRequest('POST', path, formData);
+  }
+
+  Future<Response> formPatchMultipart(String? path, Map<String, dynamic> formData) async {
+    return _multipartRequest('PATCH', path, formData);
+  }
+
+  Future<Response> _multipartRequest(String method, String? path, Map<String, dynamic> formData) async {
     var url = "${config!.apiEndpoint}/$path";
-    dprint("Multipart POST to: $url");
+    dprint("Multipart $method to: $url");
     
     try {
       var form = FormData({});
@@ -85,15 +93,24 @@ class FormProvider extends AuthProvider {
         }
       }
       
-      // Use GetConnect's post method with FormData
-      return post(url, form);
+      // Use appropriate HTTP method with FormData
+      switch (method.toUpperCase()) {
+        case 'POST':
+          return post(url, form);
+        case 'PATCH':
+          return patch(url, form);
+        case 'PUT':
+          return put(url, form);
+        default:
+          throw Exception('Unsupported HTTP method: $method');
+      }
       
     } catch (e) {
-      dprint("Multipart upload error: $e");
+      dprint("Multipart $method error: $e");
       // Return error response
       return Future.value(Response(
         statusCode: 500,
-        body: {'error': 'Multipart upload failed: $e'},
+        body: {'error': 'Multipart $method failed: $e'},
         statusText: 'Internal Server Error',
       ));
     }

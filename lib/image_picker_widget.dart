@@ -53,13 +53,13 @@ class _ImagePickerContent extends StatelessWidget {
           style: Get.theme.inputDecorationTheme.labelStyle,
         ),
         const SizedBox(height: 8),
-        
+
         // Conditional content based on selection state
         if (hasSelectedImage)
           _buildImagePreview(control, hasError, inputCont)
         else
           _buildImagePicker(control, hasError, inputCont),
-        
+
         // Error display
         if (hasError) ...[
           const SizedBox(height: 8),
@@ -68,19 +68,69 @@ class _ImagePickerContent extends StatelessWidget {
             style: TextStyle(color: Get.theme.colorScheme.error),
           ),
         ],
-        
+
         const SizedBox(height: 20),
       ],
     );
   }
 
-  Widget _buildImagePreview(FormControl<String> control, bool hasError, InputController inputCont) {
+  bool _isLocalFile(String? value) {
+    if (value == null || value.isEmpty) return false;
+    try {
+      return File(value).existsSync();
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Widget _buildErrorWidget(String? imagePath) {
+    return Container(
+      width: double.infinity,
+      height: 150,
+      color: Get.theme.colorScheme.surface,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Get.theme.colorScheme.error,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Failed to load image".ctr,
+            style: TextStyle(
+              color: Get.theme.colorScheme.error,
+              fontSize: 12,
+            ),
+          ),
+          if (imagePath != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              imagePath.length > 50
+                  ? '...${imagePath.substring(imagePath.length - 47)}'
+                  : imagePath,
+              style: TextStyle(
+                color: Get.theme.colorScheme.error,
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImagePreview(
+      FormControl<String> control, bool hasError, InputController inputCont) {
     return Container(
       width: double.infinity,
       height: 150,
       decoration: BoxDecoration(
         border: Border.all(
-          color: hasError ? Get.theme.colorScheme.error : Get.theme.primaryColor,
+          color:
+              hasError ? Get.theme.colorScheme.error : Get.theme.primaryColor,
           width: 1.0,
         ),
         borderRadius: BorderRadius.circular(8),
@@ -89,37 +139,41 @@ class _ImagePickerContent extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(control.value!),
-              width: double.infinity,
-              height: 150,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: double.infinity,
-                  height: 150,
-                  color: Get.theme.colorScheme.surface,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 48,
-                        color: Get.theme.colorScheme.error,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Failed to load image".ctr,
-                        style: TextStyle(
-                          color: Get.theme.colorScheme.error,
-                          fontSize: 12,
+            child: _isLocalFile(control.value)
+                ? Image.file(
+                    File(control.value!),
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildErrorWidget(control.value);
+                    },
+                  )
+                : Image.network(
+                    control.value!,
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: double.infinity,
+                        height: 150,
+                        color: Get.theme.colorScheme.surface,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildErrorWidget(control.value);
+                    },
                   ),
-                );
-              },
-            ),
           ),
           // Remove button
           Positioned(
@@ -170,7 +224,8 @@ class _ImagePickerContent extends StatelessWidget {
     );
   }
 
-  Widget _buildImagePicker(FormControl<String> control, bool hasError, InputController inputCont) {
+  Widget _buildImagePicker(
+      FormControl<String> control, bool hasError, InputController inputCont) {
     return InkWell(
       onTap: () async {
         inputCont.form?.unfocus();
@@ -181,7 +236,8 @@ class _ImagePickerContent extends StatelessWidget {
         height: 120,
         decoration: BoxDecoration(
           border: Border.all(
-            color: hasError ? Get.theme.colorScheme.error : Get.theme.primaryColor,
+            color:
+                hasError ? Get.theme.colorScheme.error : Get.theme.primaryColor,
             width: 1.0,
             style: BorderStyle.solid,
           ),

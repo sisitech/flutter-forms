@@ -126,3 +126,8 @@ The package includes comprehensive offline functionality:
 - Offline data validation through `validateOfflineData` callback
 - Background sync via WorkManager integration
 - Storage through GetStorage containers
+
+## Development Best Practices
+
+- **State Management**: 
+  - Never use stateful widgets in flutter use getx for state management

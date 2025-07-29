@@ -2,6 +2,7 @@ library flutter_form;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_form/utils.dart';
@@ -289,10 +290,46 @@ class FormController extends GetxController {
 
   preparePostData() {
     var value = getCurrentFormFields();
+    
+    // During updates, filter out image/file fields that contain URLs (not local files)
+    if (status == FormStatus.Update || status == FormStatus.Replace) {
+      value = _filterNonLocalFileFields(value);
+    }
+    
     if (PreSaveData != null) {
       value = PreSaveData!(value);
     }
     return value;
+  }
+
+  Map<String, dynamic> _filterNonLocalFileFields(Map<String, dynamic> data) {
+    Map<String, dynamic> filteredData = Map.from(data);
+    
+    // Get all file and image field names
+    var fileImageFields = fields
+        .where((field) => field.type == FieldType.file || field.type == FieldType.image)
+        .map((field) => field.name)
+        .toSet();
+    
+    // Remove file/image fields that contain URLs (not local files)
+    fileImageFields.forEach((fieldName) {
+      var value = filteredData[fieldName];
+      if (value is String && value.isNotEmpty) {
+        try {
+          // If it's not a local file (i.e., it's a URL), remove it from update data
+          if (!File(value).existsSync()) {
+            filteredData.remove(fieldName);
+            dprint("Filtered out non-local file field: $fieldName = $value");
+          }
+        } catch (e) {
+          // If File() throws an error, it's likely a URL, so remove it
+          filteredData.remove(fieldName);
+          dprint("Filtered out invalid file path: $fieldName = $value");
+        }
+      }
+    });
+    
+    return filteredData;
   }
 
   validateDataOfflineMode() async {
@@ -336,13 +373,16 @@ class FormController extends GetxController {
   }
 
   bool hasFileData(Map<String, dynamic> data) {
-    // Check if any form data contains file paths
-    return data.values.any((value) =>
-        value is String &&
-        value.isNotEmpty &&
-        value.contains('/') &&
-        value.contains('.') &&
-        value.length > 3);
+    // Check if any form data contains actual local file paths (not URLs)
+    return data.values.any((value) {
+      if (value is! String || value.isEmpty) return false;
+      try {
+        // Use File.exists() to confirm it's an actual local file, not a URL
+        return File(value).existsSync();
+      } catch (e) {
+        return false;
+      }
+    });
   }
 
   updateFormErrors(Map<String, dynamic> formErrors,
@@ -521,7 +561,7 @@ class FormController extends GetxController {
             }
           } else {
             if (needsMultipart) {
-              res = await serv.formPostMultipart(updateUrl, data);
+              res = await serv.formPatchMultipart(updateUrl, data);
             } else {
               res = await serv.formPatch(updateUrl, data);
             }
