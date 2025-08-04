@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../pages/shop_form_page.dart';
+import '../pages/product_variant_page.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -70,6 +71,14 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const ShopFormPage());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.inventory),
+            title: const Text('Product Variant'),
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const ProductVariantPage());
             },
           ),
           const Divider(),

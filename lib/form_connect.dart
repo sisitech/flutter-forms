@@ -87,8 +87,21 @@ class FormProvider extends AuthProvider {
             }
           } else {
             // Handle regular form fields
-            form.fields.add(MapEntry(key, value.toString()));
-            dprint("Added field: $key -> $value");
+            if (value is List) {
+              // Handle arrays - add each item as a separate form field
+              for (var item in value) {
+                // Convert to int if it's a numeric string (for pk values)
+                var fieldValue = item.toString();
+                if (RegExp(r'^\d+$').hasMatch(fieldValue)) {
+                  fieldValue = int.parse(fieldValue).toString();
+                }
+                form.fields.add(MapEntry(key, fieldValue));
+                dprint("Added array field: $key -> $fieldValue");
+              }
+            } else {
+              form.fields.add(MapEntry(key, value.toString()));
+              dprint("Added field: $key -> $value");
+            }
           }
         }
       }

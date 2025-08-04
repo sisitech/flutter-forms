@@ -15,9 +15,10 @@ class ShopFormController extends GetxController {
   void toggleMode() {
     isUpdateMode.value = !isUpdateMode.value;
     toggleCounter.value++;
-    
+
     // Clean up the old form controller
-    String oldFormName = isUpdateMode.value ? "ShopFormCreate" : "ShopFormUpdate";
+    String oldFormName =
+        isUpdateMode.value ? "ShopFormCreate" : "ShopFormUpdate";
     try {
       Get.delete<FormController>(tag: oldFormName);
     } catch (e) {
@@ -61,7 +62,8 @@ class ShopFormPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() => Text(shopController.isUpdateMode.value ? "Update Shop" : "Create Shop")),
+        title: Obx(() => Text(
+            shopController.isUpdateMode.value ? "Update Shop" : "Create Shop")),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       ),
       drawer: const AppDrawer(),
@@ -75,114 +77,121 @@ class ShopFormPage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Obx(() => Row(
-                  children: [
-                    Icon(
-                      shopController.isUpdateMode.value ? Icons.edit : Icons.add,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        shopController.isUpdateMode.value 
-                          ? "Update Mode: Editing existing shop" 
-                          : "Create Mode: Adding new shop",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    Switch(
-                      value: shopController.isUpdateMode.value,
-                      onChanged: (_) => shopController.toggleMode(),
-                      activeColor: Theme.of(context).primaryColor,
-                    ),
-                  ],
-                )),
+                      children: [
+                        Icon(
+                          shopController.isUpdateMode.value
+                              ? Icons.edit
+                              : Icons.add,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            shopController.isUpdateMode.value
+                                ? "Update Mode: Editing existing shop"
+                                : "Create Mode: Adding new shop",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        Switch(
+                          value: shopController.isUpdateMode.value,
+                          onChanged: (_) => shopController.toggleMode(),
+                          activeColor: Theme.of(context).primaryColor,
+                        ),
+                      ],
+                    )),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Form Card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Obx(() => MyCustomForm(
-                  key: ValueKey("${shopController.isUpdateMode.value}_${shopController.toggleCounter.value}"), // Force rebuild when mode changes
-                  name: shopController.isUpdateMode.value ? "ShopFormUpdate" : "ShopFormCreate",
-                  formItems: shopOptions,
-                  formTitle: "Shop Information",
-                  url: "api/v1/shops/",
-                  contentType: ContentType.json,
-                  enableOfflineMode: true,
-                  enableOfflineSave: true,
-                  instance: shopController.isUpdateMode.value ? shopInstance : null,
-                  onControllerSetup: (contr) {
-                    // Form controller is set up automatically
-                  },
-                  onSuccess: (value) {
-                    dprint(shopController.isUpdateMode.value 
-                      ? "Shop updated successfully:" 
-                      : "Shop created successfully:");
-                    dprint(value);
+                      key: ValueKey(
+                          "${shopController.isUpdateMode.value}_${shopController.toggleCounter.value}"), // Force rebuild when mode changes
+                      name: shopController.isUpdateMode.value
+                          ? "ShopFormUpdate"
+                          : "ShopFormCreate",
+                      formItems: shopOptions,
+                      formTitle: "Shop Information",
+                      url: "api/v1/shops/",
+                      contentType: ContentType.json,
+                      enableOfflineMode: true,
+                      enableOfflineSave: true,
+                      instance: shopController.isUpdateMode.value
+                          ? shopInstance
+                          : null,
+                      onControllerSetup: (contr) {
+                        // Form controller is set up automatically
+                      },
+                      onSuccess: (value) {
+                        dprint(shopController.isUpdateMode.value
+                            ? "Shop updated successfully:"
+                            : "Shop created successfully:");
+                        dprint(value);
 
-                    // Show success message
-                    Get.snackbar(
-                      "Success",
-                      shopController.isUpdateMode.value 
-                        ? "Shop updated successfully!" 
-                        : "Shop created successfully!",
-                      backgroundColor: Colors.green.withValues(alpha: 0.8),
-                      colorText: Colors.white,
-                      snackPosition: SnackPosition.TOP,
-                    );
+                        // Show success message
+                        Get.snackbar(
+                          "Success",
+                          shopController.isUpdateMode.value
+                              ? "Shop updated successfully!"
+                              : "Shop created successfully!",
+                          backgroundColor: Colors.green.withValues(alpha: 0.8),
+                          colorText: Colors.white,
+                          snackPosition: SnackPosition.TOP,
+                        );
 
-                    // Form handles its own state after successful submission
-                  },
-                  onOfflineSuccess: (value) {
-                    dprint(shopController.isUpdateMode.value 
-                      ? "Shop update saved offline:" 
-                      : "Shop creation saved offline:");
-                    dprint(value);
+                        // Form handles its own state after successful submission
+                      },
+                      onOfflineSuccess: (value) {
+                        dprint(shopController.isUpdateMode.value
+                            ? "Shop update saved offline:"
+                            : "Shop creation saved offline:");
+                        dprint(value);
 
-                    Get.snackbar(
-                      "Saved Offline",
-                      shopController.isUpdateMode.value 
-                        ? "Shop update saved offline and will sync when connected"
-                        : "Shop creation saved offline and will sync when connected",
-                      backgroundColor: Colors.orange.withValues(alpha: 0.8),
-                      colorText: Colors.white,
-                      snackPosition: SnackPosition.TOP,
-                    );
-                  },
-                  handleErrors: (errors) {
-                    dprint(shopController.isUpdateMode.value 
-                      ? "Shop update errors:" 
-                      : "Shop creation errors:");
-                    dprint(errors);
-                    return shopController.isUpdateMode.value 
-                      ? "Failed to update shop. Please check your inputs."
-                      : "Failed to create shop. Please check your inputs.";
-                  },
-                  formGroupOrder: const [
-                    ['name'],
-                    ['description'],
-                    ['location'],
-                    ['support_email', 'support_phone'],
-                    ['image'],
-                    ['banner_image'],
-                    ['menu_file'],
-                    ['user']
-                  ],
-                  submitButtonText: "Shop",
-                  formFooter: const Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Text(
-                      "All fields with * are required",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
+                        Get.snackbar(
+                          "Saved Offline",
+                          shopController.isUpdateMode.value
+                              ? "Shop update saved offline and will sync when connected"
+                              : "Shop creation saved offline and will sync when connected",
+                          backgroundColor: Colors.orange.withValues(alpha: 0.8),
+                          colorText: Colors.white,
+                          snackPosition: SnackPosition.TOP,
+                        );
+                      },
+                      handleErrors: (errors) {
+                        dprint(shopController.isUpdateMode.value
+                            ? "Shop update errors:"
+                            : "Shop creation errors:");
+                        dprint(errors);
+                        return shopController.isUpdateMode.value
+                            ? "Failed to update shop. Please check your inputs."
+                            : "Failed to create shop. Please check your inputs.";
+                      },
+                      formGroupOrder: const [
+                        ['name'],
+                        ['description'],
+                        ['location'],
+                        ['support_email', 'support_phone'],
+                        ['image'],
+                        ['banner_image'],
+                        ['menu_file'],
+                        ['user']
+                      ],
+                      submitButtonText: "Shop",
+                      formFooter: const Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          "All fields with * are required",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                )),
+                    )),
               ),
             ),
           ],

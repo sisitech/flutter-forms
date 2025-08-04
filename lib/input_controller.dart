@@ -275,6 +275,7 @@ class InputController extends GetxController {
       dprint("THE OFFLINE KEYS ARaES container $storageContainer");
       dprint(box.getKeys());
       var rawItemsDynamic = await box.read(field.storage ?? "");
+
       List<dynamic> rawItems = [];
       if (rawItemsDynamic is List<dynamic>) {
         dprint("The items are a dynamiiiiiiic.");
