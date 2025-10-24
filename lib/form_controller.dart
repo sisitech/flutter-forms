@@ -288,29 +288,30 @@ class FormController extends GetxController {
     return {...form.value, ...extraFields ?? {}};
   }
 
-  preparePostData() {
+  Future<dynamic> preparePostData() async {
     var value = getCurrentFormFields();
-    
+
     // During updates, filter out image/file fields that contain URLs (not local files)
     if (status == FormStatus.Update || status == FormStatus.Replace) {
       value = _filterNonLocalFileFields(value);
     }
-    
+
     if (PreSaveData != null) {
-      value = PreSaveData!(value);
+      value = await PreSaveData!(value);
     }
     return value;
   }
 
   Map<String, dynamic> _filterNonLocalFileFields(Map<String, dynamic> data) {
     Map<String, dynamic> filteredData = Map.from(data);
-    
+
     // Get all file and image field names
     var fileImageFields = fields
-        .where((field) => field.type == FieldType.file || field.type == FieldType.image)
+        .where((field) =>
+            field.type == FieldType.file || field.type == FieldType.image)
         .map((field) => field.name)
         .toSet();
-    
+
     // Remove file/image fields that contain URLs (not local files)
     fileImageFields.forEach((fieldName) {
       var value = filteredData[fieldName];
@@ -328,7 +329,7 @@ class FormController extends GetxController {
         }
       }
     });
-    
+
     return filteredData;
   }
 
@@ -446,7 +447,7 @@ class FormController extends GetxController {
     const errorStatusCodes = [400, 401, 403];
 
     // Pre Save Data
-    var data = preparePostData();
+    var data = await preparePostData();
 
     // Implement CustomVlidation
     if (customDataValidation != null) {
