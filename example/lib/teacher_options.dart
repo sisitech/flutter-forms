@@ -295,6 +295,18 @@ const teacherOptions = {
         "read_only": false,
         "label": "Date of Birth"
       },
+      "appointment_datetime": {
+        "type": "datetime",
+        "required": false,
+        "read_only": false,
+        "label": "Appointment Date & Time"
+      },
+      "preferred_time": {
+        "type": "time",
+        "required": false,
+        "read_only": false,
+        "label": "Preferred Contact Time"
+      },
       "moe_id": {
         "type": "string",
         "required": false,

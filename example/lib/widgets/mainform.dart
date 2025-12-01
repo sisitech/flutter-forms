@@ -111,6 +111,8 @@ class MainForm extends StatelessWidget {
               formGroupOrder: const [
                 // ['role'],
                 ["created"],
+                ["appointment_datetime"],
+                ["preferred_time"],
                 ["category"],
                 ['subcategory'],
                 ['receipt'],
