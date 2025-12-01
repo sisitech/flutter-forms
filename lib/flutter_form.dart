@@ -13,6 +13,7 @@ import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+import 'package:reactive_date_time_picker/reactive_date_time_picker.dart';
 import 'package:flutter_utils/extensions/date_extensions.dart';
 import 'input_controller.dart';
 import 'models.dart';
@@ -543,6 +544,131 @@ getInputBasedOnType(FormItemField field) {
         },
         firstDate: start_date,
         lastDate: end_date,
+      );
+      break;
+    case FieldType.time:
+      var timeInputCont = Get.find<InputController>(tag: field.name);
+      FormGroup? timeForm = timeInputCont.form;
+
+      reactiveInput = ReactiveTimePicker(
+        formControlName: field.name,
+        builder: (BuildContext context, ReactiveTimePickerDelegate picker,
+            Widget? child) {
+          String? errorText;
+          if (picker.control.errors != null) {
+            errorText = picker.control.errors.keys.join("\n");
+          }
+          bool hasError =
+              (errorText?.isNotEmpty ?? false) && picker.control.touched;
+
+          String timeDisplay = "";
+          if (picker.control.value != null) {
+            final time = picker.control.value as TimeOfDay;
+            timeDisplay = time.format(context);
+          }
+
+          return GestureDetector(
+            onTap: () {
+              timeForm?.unfocus();
+              picker.showPicker();
+            },
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(
+                    top: 4,
+                    left: 8,
+                    right: 4,
+                    bottom: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Get.theme.primaryColor,
+                      width: 1.0,
+                    ),
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          LabelWidget(field),
+                          IconButton(
+                            onPressed: picker.showPicker,
+                            icon: Row(
+                              children: [
+                                Text(timeDisplay),
+                                const SizedBox(width: 10),
+                                Icon(
+                                  Icons.access_time,
+                                  color: hasError
+                                      ? Get.theme.colorScheme.error
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (hasError)
+                        Text(
+                          (errorText ?? "").ctr,
+                          style: TextStyle(color: Get.theme.colorScheme.error),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      );
+      break;
+    case FieldType.datetime:
+      var datetimeInputCont = Get.find<InputController>(tag: field.name);
+      FormGroup? datetimeForm = datetimeInputCont.form;
+
+      reactiveInput = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 5),
+            child: LabelWidget(field),
+          ),
+          ReactiveDateTimePicker(
+            formControlName: field.name,
+            type: ReactiveDatePickerFieldType.dateTime,
+            firstDate: start_date,
+            lastDate: end_date,
+            decoration: InputDecoration(
+              filled: false,
+              suffixIcon: const Icon(Icons.calendar_today),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Get.theme.primaryColor,
+                ),
+              ),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Get.theme.primaryColor,
+                ),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Get.theme.primaryColor.withValues(alpha: 0.5),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
       );
       break;
     case FieldType.multifield:

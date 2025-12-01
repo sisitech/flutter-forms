@@ -3,6 +3,7 @@ library flutter_form;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'models.dart';
@@ -70,6 +71,9 @@ FormControl getFormControl(FormItemField field) {
       break;
     case FieldType.datetime:
       formControl = FormControl<DateTime>(validators: validators);
+      break;
+    case FieldType.time:
+      formControl = FormControl<TimeOfDay>(validators: validators);
       break;
     case FieldType.file:
       formControl = FormControl<String>(validators: validators);

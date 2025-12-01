@@ -13,6 +13,7 @@ import 'package:flutter_utils/network_status/network_status_controller.dart';
 import 'package:flutter_utils/offline_http_cache/offline_http_cache.dart';
 import 'package:flutter_utils/text_view/text_view_extensions.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'form_connect.dart';
@@ -215,6 +216,15 @@ class FormController extends GetxController {
             if (value != null) {
               form.control(key).patchValue(DateTime.parse(value));
             }
+          } else if (field.type == FieldType.time) {
+            // Parse time string "HH:mm" to TimeOfDay
+            if (value != null && value is String && value.contains(':')) {
+              var parts = value.split(':');
+              form.control(key).patchValue(TimeOfDay(
+                hour: int.parse(parts[0]),
+                minute: int.parse(parts[1]),
+              ));
+            }
           } else {
             form.control(key).patchValue(value);
           }
@@ -259,6 +269,7 @@ class FormController extends GetxController {
       FieldType.boolean,
       FieldType.date,
       FieldType.datetime,
+      FieldType.time,
       FieldType.file,
       FieldType.image,
     ];
@@ -296,10 +307,29 @@ class FormController extends GetxController {
       value = _filterNonLocalFileFields(value);
     }
 
+    // Serialize TimeOfDay values to "HH:mm" string format
+    value = _serializeTimeFields(value);
+
     if (PreSaveData != null) {
       value = await PreSaveData!(value);
     }
     return value;
+  }
+
+  Map<String, dynamic> _serializeTimeFields(Map<String, dynamic> data) {
+    Map<String, dynamic> serializedData = Map.from(data);
+
+    for (var field in fields) {
+      if (field.type == FieldType.time) {
+        var value = serializedData[field.name];
+        if (value is TimeOfDay) {
+          serializedData[field.name] =
+              '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+        }
+      }
+    }
+
+    return serializedData;
   }
 
   Map<String, dynamic> _filterNonLocalFileFields(Map<String, dynamic> data) {

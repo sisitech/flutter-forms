@@ -23,7 +23,8 @@ dependencies:
   http: ^1.0.0
   json_annotation: ^4.8.0
   reactive_forms: ^17.0.1
-  intl: ^0.19.0
+  reactive_date_time_picker: ^5.0.1
+  intl: any
   file_picker: ^8.0.0+1
   image_picker: ^1.0.4
 
@@ -43,6 +44,7 @@ dependency_overrides:
     git:
       url: git@github.com:sisitech/flutter_utils.git
       ref: "b68a85f"
+  intl: ^0.20.2
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
