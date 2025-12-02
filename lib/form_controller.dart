@@ -229,12 +229,12 @@ class FormController extends GetxController {
               var parts = value.split(':');
               final now = DateTime.now();
               form.control(key).patchValue(DateTime(
-                now.year,
-                now.month,
-                now.day,
-                int.parse(parts[0]),
-                int.parse(parts[1]),
-              ));
+                    now.year,
+                    now.month,
+                    now.day,
+                    int.parse(parts[0]),
+                    int.parse(parts[1]),
+                  ));
             }
           } else {
             form.control(key).patchValue(value);

@@ -119,6 +119,55 @@ Forms are configured using JSON-like structures with:
 - `extraFields`: Additional data to include in submissions
 - Status-based HTTP methods (Add=POST, Update=PATCH, Replace=PUT, Delete=DELETE)
 
+## Custom Form Layouts
+
+The package supports custom form layouts via `customChild` and `customFields` parameters:
+
+### Parameters
+
+- **customChild** (`Widget?`): Custom widget to render instead of auto-generated layout. Must use ReactiveForm widgets (e.g., `ReactiveTextField`) with `formControlName` parameter.
+- **customFields** (`List<String>?`): Required when using `customChild`. Specifies which fields from `formItems` to initialize.
+
+### Rules
+
+- Either `customChild` OR `formGroupOrder` must be provided (not both, not neither)
+- `customFields` is required when using `customChild`
+
+### Example Usage
+
+```dart
+MyCustomForm(
+  name: 'customChildForm',
+  formItems: teacherOptions,
+  customFields: ['first_name', 'email'],
+  customChild: Column(
+    children: [
+      ReactiveTextField<String>(
+        formControlName: 'first_name',
+        decoration: InputDecoration(labelText: 'First Name'),
+      ),
+      ReactiveTextField<String>(
+        formControlName: 'email',
+        decoration: InputDecoration(labelText: 'Email'),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          Get.find<FormController>(tag: 'customChildForm').submit();
+        },
+        child: Text('Submit'),
+      ),
+    ],
+  ),
+  onSuccess: (res) => print("Success: $res"),
+)
+```
+
+### When to Use
+
+- Custom UI layouts not supported by `formGroupOrder`
+- Multi-step forms with custom navigation
+- Dynamic field visibility based on custom logic
+
 ## Offline Support
 
 The package includes comprehensive offline functionality:
