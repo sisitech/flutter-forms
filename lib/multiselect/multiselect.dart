@@ -58,29 +58,8 @@ class MultiSelectView extends StatelessWidget {
                     TextFormField(
                       controller: inputController.searchController,
                       decoration: InputDecoration(
-                        // icon: Icon(Icons.person),
-                        labelStyle: const TextStyle(
-                          fontSize: 14,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Get.theme.primaryColor,
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Get.theme.primaryColor,
-                          ),
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Get.theme.primaryColor.withOpacity(0.5),
-                          ),
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        suffixIcon: Icon(Icons.search),
-                        hintText: fieldOption?.placeholder ?? "",
+                        suffixIcon: const Icon(Icons.search),
+                        hintText: fieldOption.placeholder ?? "",
                         labelText: fieldOption.label,
                         errorText: reactiveField.errorText,
                       ),
@@ -364,7 +343,7 @@ class MultiSelectCustomField extends ReactiveFormField<dynamic?, dynamic?> {
               // dprint("Field value ${field.value}");
               return Container(
                 padding: const EdgeInsets.only(
-                  bottom: 20,
+                  bottom: kFormFieldSpacing,
                 ),
                 constraints:
                     BoxConstraints(maxHeight: Get.height, minHeight: 50),

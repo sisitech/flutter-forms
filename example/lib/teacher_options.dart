@@ -158,14 +158,14 @@ const teacherOptions = {
       },
       "receipt": {
         "type": "image",
-        "required": false,
+        "required": true,
         "read_only": false,
         "label": "Receipt Image",
         "placeholder": "Upload receipt photo"
       },
       "attachment": {
         "type": "file",
-        "required": false,
+        "required": true,
         "read_only": false,
         "label": "Supporting Document",
         "placeholder": "Upload supporting file"
@@ -297,13 +297,13 @@ const teacherOptions = {
       },
       "appointment_datetime": {
         "type": "datetime",
-        "required": false,
+        "required": true,
         "read_only": false,
         "label": "Appointment Date & Time"
       },
       "preferred_time": {
         "type": "time",
-        "required": false,
+        "required": true,
         "read_only": false,
         "label": "Preferred Contact Time"
       },

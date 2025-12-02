@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../pages/shop_form_page.dart';
 import '../pages/product_variant_page.dart';
+import '../pages/custom_child_page.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -79,6 +80,14 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               Get.to(() => const ProductVariantPage());
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard_customize),
+            title: const Text('Custom Child Form'),
+            onTap: () {
+              Navigator.pop(context);
+              Get.to(() => const CustomChildPage());
             },
           ),
           const Divider(),

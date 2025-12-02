@@ -76,12 +76,14 @@ class MyCustomForm extends StatelessWidget {
   final Function? onStatus;
   final Function? getDynamicUrl;
   final Function(dynamic data)? getOfflineName;
+  final Widget? customChild;
+  final List<String>? customFields;
 
   MyCustomForm({
     super.key,
     this.formTitle,
     this.formItems = defaultOptions,
-    required this.formGroupOrder,
+    this.formGroupOrder = const [],
     this.formHeader,
     this.offlineMessage,
     this.enableOfflineMode = false,
@@ -116,7 +118,15 @@ class MyCustomForm extends StatelessWidget {
     this.instance,
     this.submitButtonPreText,
     this.contentType = ContentType.json,
-  }) {
+    this.customChild,
+    this.customFields,
+  }) : assert(
+    customChild != null || formGroupOrder.isNotEmpty,
+    'Either customChild or formGroupOrder must be provided'
+  ), assert(
+    customChild == null || customFields != null,
+    'customFields is required when using customChild'
+  ) {
     final controller = Get.put(
         FormController(
           formItems: formItems,
@@ -146,6 +156,7 @@ class MyCustomForm extends StatelessWidget {
           onSuccess: onSuccess,
           contentType: contentType,
           handleErrors: handleErrors,
+          customFields: customFields,
         ),
         tag: name);
 
@@ -160,7 +171,15 @@ class MyCustomForm extends StatelessWidget {
     return GetBuilder(
         init: controller,
         builder: (_) {
-          // dprint("Rebuilding");
+          // If customChild provided, use minimal ReactiveForm wrapper
+          if (customChild != null) {
+            return ReactiveForm(
+              formGroup: controller.form,
+              child: customChild!,
+            );
+          }
+
+          // Default auto-generated form layout
           return ReactiveForm(
             formGroup: controller.form,
             child: Column(
@@ -314,30 +333,9 @@ labelName(field) => "${field.label}".ctr + " ${field.required ? '*' : ''}";
 
 inputDecoration(field) => InputDecoration(
       labelText: labelName(field),
-      labelStyle: const TextStyle(
-        fontSize: 14,
-      ),
       helperText: "${field.placeholder ?? ''}".ctr,
       counterText: "",
       floatingLabelBehavior: FloatingLabelBehavior.auto,
-      filled: false,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Get.theme.primaryColor,
-        ),
-      ),
-      border: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Get.theme.primaryColor,
-        ),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Get.theme.primaryColor.withOpacity(0.5),
-        ),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
     );
 
 Widget LabelWidget(FormItemField field) {
@@ -425,250 +423,72 @@ getInputBasedOnType(FormItemField field) {
       FormControl<bool> formControl =
           inputCont.form?.control(field.name) as FormControl<bool>;
 
-      reactiveInput = GestureDetector(
-        onTap: () {
-          formControl.updateValue(!(formControl.value ?? false));
-          formControl.focus();
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: Container(
-            padding:
-                const EdgeInsets.all(8), // Add padding inside the container
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(
-                width: 1.0, // Width of the border
-                color: Get.theme.primaryColor,
-              ),
-              borderRadius: BorderRadius.circular(4.0), // Border corner radius
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                LabelWidget(field),
-                ReactiveCheckbox(
-                  onChanged: (value) {
-                    formControl.focus();
-                  },
-                  formControlName: field.name,
-                  activeColor: Get.theme.primaryColor,
-                ),
-              ],
+      reactiveInput = Builder(
+        builder: (context) => GestureDetector(
+          onTap: () {
+            formControl.updateValue(!(formControl.value ?? false));
+            formControl.focus();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: kFormFieldSpacing),
+            child: StreamBuilder<bool>(
+              stream: formControl.focusChanges,
+              builder: (context, snapshot) {
+                final isFocused = formControl.hasFocus;
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: getThemedContainerDecoration(context, isFocused: isFocused),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      LabelWidget(field),
+                      ReactiveCheckbox(
+                        onChanged: (value) {
+                          formControl.focus();
+                        },
+                        formControlName: field.name,
+                        activeColor: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),
       );
       break;
     case FieldType.date:
-      var dateInputCont = Get.find<InputController>(tag: field.name);
-      FormGroup? form = dateInputCont.form;
-
-      reactiveInput = ReactiveDatePicker(
+      reactiveInput = ReactiveDateTimePicker(
         formControlName: field.name,
-        builder: (BuildContext context,
-            ReactiveDatePickerDelegate<dynamic> picker, Widget? child) {
-          // dprint("Picker errprs");
-          String? errorText;
-          if (picker.control.errors != null) {
-            errorText = picker.control?.errors.keys.join("\n");
-          }
-          bool hasError =
-              (errorText?.isNotEmpty ?? false) && picker.control.touched;
-
-          return GestureDetector(
-            onTap: () {
-              form?.unfocus();
-              picker.showPicker();
-            },
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(
-                    top: 4,
-                    left: 8,
-                    right: 4,
-                    bottom: 4,
-                  ), // Add padding inside the container
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Get.theme.primaryColor, // Color of the border
-                      width: 1.0, // Width of the border
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(4.0), // Border corner radius
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          LabelWidget(field),
-                          IconButton(
-                            onPressed: picker.showPicker,
-                            icon: Row(
-                              children: [
-                                Text(dateToCustomString(picker.control.value)),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Icon(
-                                  Icons.date_range_outlined,
-                                  color: hasError
-                                      ? Get.theme.colorScheme.error
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (hasError)
-                        Text(
-                          (errorText ?? "").ctr,
-                          style: TextStyle(color: Get.theme.colorScheme.error),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
-          );
-          ;
-        },
+        type: ReactiveDatePickerFieldType.date,
         firstDate: start_date,
         lastDate: end_date,
+        decoration: inputDecoration(field).copyWith(
+          suffixIcon: const Icon(Icons.date_range_outlined),
+        ),
       );
       break;
     case FieldType.time:
-      var timeInputCont = Get.find<InputController>(tag: field.name);
-      FormGroup? timeForm = timeInputCont.form;
-
-      reactiveInput = ReactiveTimePicker(
+      reactiveInput = ReactiveDateTimePicker(
         formControlName: field.name,
-        builder: (BuildContext context, ReactiveTimePickerDelegate picker,
-            Widget? child) {
-          String? errorText;
-          if (picker.control.errors != null) {
-            errorText = picker.control.errors.keys.join("\n");
-          }
-          bool hasError =
-              (errorText?.isNotEmpty ?? false) && picker.control.touched;
-
-          String timeDisplay = "";
-          if (picker.control.value != null) {
-            final time = picker.control.value as TimeOfDay;
-            timeDisplay = time.format(context);
-          }
-
-          return GestureDetector(
-            onTap: () {
-              timeForm?.unfocus();
-              picker.showPicker();
-            },
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(
-                    top: 4,
-                    left: 8,
-                    right: 4,
-                    bottom: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Get.theme.primaryColor,
-                      width: 1.0,
-                    ),
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          LabelWidget(field),
-                          IconButton(
-                            onPressed: picker.showPicker,
-                            icon: Row(
-                              children: [
-                                Text(timeDisplay),
-                                const SizedBox(width: 10),
-                                Icon(
-                                  Icons.access_time,
-                                  color: hasError
-                                      ? Get.theme.colorScheme.error
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (hasError)
-                        Text(
-                          (errorText ?? "").ctr,
-                          style: TextStyle(color: Get.theme.colorScheme.error),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
-        },
+        type: ReactiveDatePickerFieldType.time,
+        firstDate: start_date,
+        lastDate: end_date,
+        decoration: inputDecoration(field).copyWith(
+          suffixIcon: const Icon(Icons.access_time),
+        ),
       );
       break;
     case FieldType.datetime:
-      var datetimeInputCont = Get.find<InputController>(tag: field.name);
-      FormGroup? datetimeForm = datetimeInputCont.form;
-
-      reactiveInput = Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: LabelWidget(field),
-          ),
-          ReactiveDateTimePicker(
-            formControlName: field.name,
-            type: ReactiveDatePickerFieldType.dateTime,
-            firstDate: start_date,
-            lastDate: end_date,
-            decoration: InputDecoration(
-              filled: false,
-              suffixIcon: const Icon(Icons.calendar_today),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Get.theme.primaryColor,
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Get.theme.primaryColor,
-                ),
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Get.theme.primaryColor.withValues(alpha: 0.5),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-        ],
+      reactiveInput = ReactiveDateTimePicker(
+        formControlName: field.name,
+        type: ReactiveDatePickerFieldType.dateTime,
+        firstDate: start_date,
+        lastDate: end_date,
+        decoration: inputDecoration(field).copyWith(
+          suffixIcon: const Icon(Icons.calendar_today),
+        ),
       );
       break;
     case FieldType.multifield:
@@ -702,31 +522,10 @@ getInputBasedOnType(FormItemField field) {
                   inputCont.isLoading.value ? "Loading...".ctr : "Select".ctr),
               formControlName: field.name,
               items: inputCont.choices?.value ?? [],
-              decoration: InputDecoration(
-                filled: false,
-                // border: Get.theme.inputDecorationTheme.focusedBorder,
-                // focusedBorder: Get.theme.inputDecorationTheme.focusedBorder,
-                // enabledBorder: Get.theme.inputDecorationTheme.enabledBorder,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Get.theme.primaryColor,
-                  ),
-                ),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Get.theme.primaryColor,
-                  ),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Get.theme.primaryColor.withOpacity(0.5),
-                  ),
-                ),
-              ),
+              decoration: const InputDecoration(),
             ),
             const SizedBox(
-              height: 30,
+              height: kFormFieldSpacing,
             ),
           ],
         ),

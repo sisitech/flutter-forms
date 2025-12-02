@@ -23,6 +23,7 @@ import 'models.dart';
 class FormController extends GetxController {
   final Map<String, dynamic> formItems;
   List<List<String>> formGroupOrder;
+  final List<String>? customFields;
   final Map<String, dynamic>? extraFields;
   bool isValidateOnly;
   final String? url;
@@ -108,6 +109,7 @@ class FormController extends GetxController {
     required this.loadingMessage,
     required this.contentType,
     this.formGroupOrder = const [],
+    this.customFields,
   }) {
     // dprint(formItems);
     // dprint("Initialized this controller for me..");
@@ -150,12 +152,17 @@ class FormController extends GetxController {
     fields = [];
     dprint("Getting options");
     var jsonForm = formItems["actions"]["POST"] as Map<String, dynamic>;
-    // dprint(jsonForm);
-    var possibleFields = [];
-    // dprint(formGroupOrder);
-    formGroupOrder.forEach((row) {
-      possibleFields.addAll(row);
-    });
+
+    List<String> possibleFields = [];
+
+    // Use customFields if provided, otherwise flatten formGroupOrder
+    if (customFields != null && customFields!.isNotEmpty) {
+      possibleFields = customFields!;
+    } else {
+      formGroupOrder.forEach((row) {
+        possibleFields.addAll(row);
+      });
+    }
     dprint(possibleFields);
     possibleFields.forEach((value) {
       FormItemField field;
@@ -217,12 +224,16 @@ class FormController extends GetxController {
               form.control(key).patchValue(DateTime.parse(value));
             }
           } else if (field.type == FieldType.time) {
-            // Parse time string "HH:mm" to TimeOfDay
+            // Parse time string "HH:mm" to DateTime
             if (value != null && value is String && value.contains(':')) {
               var parts = value.split(':');
-              form.control(key).patchValue(TimeOfDay(
-                hour: int.parse(parts[0]),
-                minute: int.parse(parts[1]),
+              final now = DateTime.now();
+              form.control(key).patchValue(DateTime(
+                now.year,
+                now.month,
+                now.day,
+                int.parse(parts[0]),
+                int.parse(parts[1]),
               ));
             }
           } else {
@@ -322,7 +333,7 @@ class FormController extends GetxController {
     for (var field in fields) {
       if (field.type == FieldType.time) {
         var value = serializedData[field.name];
-        if (value is TimeOfDay) {
+        if (value is DateTime) {
           serializedData[field.name] =
               '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
         }

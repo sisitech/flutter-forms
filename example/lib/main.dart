@@ -416,15 +416,14 @@ class MyHomePage extends StatelessWidget {
             }),
             Theme(
               data: Theme.of(context).copyWith(
-                inputDecorationTheme:
-                    Theme.of(context).inputDecorationTheme.copyWith(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Get.theme.primaryColor,
-                            ),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                        ),
+                inputDecorationTheme: Theme.of(context)
+                    .inputDecorationTheme
+                    .copyWith(
+                      enabledBorder: Theme.of(context)
+                          .inputDecorationTheme
+                          .focusedBorder
+                          ?.copyWith(borderSide: BorderSide(color: Colors.red)),
+                    ),
               ),
               child: MainForm(),
             ),
