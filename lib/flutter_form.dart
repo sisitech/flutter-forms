@@ -121,8 +121,8 @@ class MyCustomForm extends StatelessWidget {
     this.customChild,
     this.customFields,
   }) : assert(
-    customChild != null || formGroupOrder.isNotEmpty,
-    'Either customChild or formGroupOrder must be provided'
+    customFields == null || formGroupOrder.isEmpty,
+    'customFields and formGroupOrder cannot both be provided'
   ), assert(
     customChild == null || customFields != null,
     'customFields is required when using customChild'

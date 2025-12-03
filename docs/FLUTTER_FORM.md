@@ -252,6 +252,51 @@ MyCustomForm(
 | `loadingMessage` | `String` | Loading text (default: "Loading ...") |
 | `displayRequiredFieldsOnValidate` | `bool` | Show required fields on validation error |
 
+#### Custom Form Layouts
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `customChild` | `Widget?` | Custom widget to render instead of auto-generated layout |
+| `customFields` | `List<String>?` | Field names to initialize (required when using customChild) |
+
+**Rules:**
+- Either `customChild` OR `formGroupOrder` must be provided
+- `customFields` is required when using `customChild`
+
+**Example:**
+
+```dart
+MyCustomForm(
+  name: 'custom_form',
+  formItems: formConfig,
+  customFields: ['first_name', 'email'],
+  customChild: Column(
+    children: [
+      ReactiveTextField<String>(
+        formControlName: 'first_name',
+        decoration: InputDecoration(labelText: 'First Name'),
+      ),
+      ReactiveTextField<String>(
+        formControlName: 'email',
+        decoration: InputDecoration(labelText: 'Email'),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          Get.find<FormController>(tag: 'custom_form').submit();
+        },
+        child: Text('Submit'),
+      ),
+    ],
+  ),
+  onSuccess: (res) => print("Success: $res"),
+)
+```
+
+**When to use:**
+- Custom UI layouts not supported by `formGroupOrder`
+- Multi-step forms with custom navigation
+- Dynamic field visibility based on custom logic
+
 #### Offline Configuration
 
 | Parameter | Type | Default | Description |
