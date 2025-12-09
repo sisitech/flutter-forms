@@ -51,8 +51,10 @@ FormControl getFormControl(FormItemField field) {
       formControl = FormControl<String>(validators: validators);
       break;
     case FieldType.integer:
+      formControl = FormControl<int>(validators: validators);
+      break;
     case FieldType.float:
-      formControl = FormControl<num>(validators: validators);
+      formControl = FormControl<double>(validators: validators);
       break;
     case FieldType.choice:
       formControl = FormControl<String>(validators: validators);

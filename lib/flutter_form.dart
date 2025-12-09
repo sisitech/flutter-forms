@@ -395,9 +395,21 @@ getInputBasedOnType(FormItemField field) {
       break;
 
     case FieldType.float:
-    case FieldType.integer:
-      reactiveInput = ReactiveTextField(
+      reactiveInput = ReactiveTextField<double>(
           formControlName: field.name,
+          valueAccessor: DoubleValueAccessor(),
+          validationMessages: defaultValidationMessage,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          textInputAction: TextInputAction.next,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+          ],
+          decoration: inputDecoration(field));
+      break;
+    case FieldType.integer:
+      reactiveInput = ReactiveTextField<int>(
+          formControlName: field.name,
+          valueAccessor: IntValueAccessor(),
           validationMessages: defaultValidationMessage,
           keyboardType: TextInputType.number,
           textInputAction: TextInputAction.next,

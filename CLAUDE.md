@@ -130,7 +130,7 @@ The package supports custom form layouts via `customChild` and `customFields` pa
 
 ### Rules
 
-- Either `customChild` OR `formGroupOrder` must be provided (not both, not neither)
+- `customFields` and `formGroupOrder` cannot both be provided
 - `customFields` is required when using `customChild`
 
 ### Example Usage
@@ -167,6 +167,30 @@ MyCustomForm(
 - Custom UI layouts not supported by `formGroupOrder`
 - Multi-step forms with custom navigation
 - Dynamic field visibility based on custom logic
+
+### Important: Numeric Fields
+
+When using `customChild` with numeric field types, you must add a `valueAccessor` to convert between String and the numeric type:
+
+**For integer fields:**
+```dart
+ReactiveTextField<int>(
+  formControlName: 'age',
+  valueAccessor: IntValueAccessor(),
+  keyboardType: TextInputType.number,
+  decoration: InputDecoration(labelText: 'Age'),
+)
+```
+
+**For float/double fields:**
+```dart
+ReactiveTextField<double>(
+  formControlName: 'price',
+  valueAccessor: DoubleValueAccessor(),
+  keyboardType: TextInputType.numberWithOptions(decimal: true),
+  decoration: InputDecoration(labelText: 'Price'),
+)
+```
 
 ## Offline Support
 
