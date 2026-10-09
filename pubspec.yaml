@@ -8,13 +8,13 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  flex_color_scheme: ^7.3.1
+  flex_color_scheme: ^8.0.0
   flutter:
     sdk: flutter
   flutter_utils:
     git:
       url: git@github.com:sisitech/flutter_utils.git
-      ref: b3bf4ec
+      ref: "59e8116"
   flutter_auth:
     git:
       url: git@github.com:sisitech/flutter_auth.git
@@ -43,7 +43,7 @@ dependency_overrides:
   flutter_utils:
     git:
       url: git@github.com:sisitech/flutter_utils.git
-      ref: "b68a85f"
+      ref: "59e8116"
   intl: ^0.20.2
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
